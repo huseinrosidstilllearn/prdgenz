@@ -1,0 +1,22 @@
+{
+  "name": "prdgenz",
+  "version": "0.0.1",
+  "private": true,
+  "description": "PRD GenZ - AI-powered PRD Generator (cloud SaaS + self-host)",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "turbo": "^2.1.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.10.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
+

@@ -1,0 +1,40 @@
+// Self-host database schema — SQLite, single-user, no auth (PRD §8.5.2).
+// NOTE: Prisma does not support enums on SQLite, so language/mode are Strings.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+model PRD {
+  id             String        @id @default(cuid())
+  title          String
+  language       String        @default("EN")
+  mode           String        @default("WIZARD")
+  currentVersion Int           @default(1) @map("current_version")
+  versions       PRDVersion[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("prds")
+}
+
+model PRDVersion {
+  id            String   @id @default(cuid())
+  prdId         String   @map("prd_id")
+  versionNumber Int      @map("version_number")
+  content       String
+  contentMd     String   @map("content_md")
+  prd           PRD      @relation(fields: [prdId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([prdId, versionNumber])
+  @@map("prd_versions")
+}

@@ -1,0 +1,106 @@
+// Cloud (SaaS) database schema — PRD §11
+// AES-encrypted AI provider keys are stored per user (PRD §6.2.2, §7.2).
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  avatarUrl    String?
+  passwordHash String?
+  role         Role      @default(FREE)
+  projects  Project[]
+  apiKeys   ApiKey[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+enum Role {
+  FREE
+  PRO
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  name        String
+  description String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prds        PRD[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("projects")
+}
+
+model PRD {
+  id             String        @id @default(cuid())
+  projectId      String        @map("project_id")
+  title          String
+  language       Language      @default(EN)
+  mode           PRDMode       @default(WIZARD)
+  currentVersion Int           @default(1) @map("current_version")
+  shareId        String?       @unique
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versions       PRDVersion[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("prds")
+}
+
+enum Language {
+  ID
+  EN
+}
+
+enum PRDMode {
+  WIZARD
+  CHAT
+  ONESHOT
+}
+
+model PRDVersion {
+  id            String   @id @default(cuid())
+  prdId         String   @map("prd_id")
+  versionNumber Int      @map("version_number")
+  content       Json
+  contentMd     String   @map("content_md")
+  prd           PRD      @relation(fields: [prdId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([prdId, versionNumber])
+  @@map("prd_versions")
+}
+
+// baseUrl supports custom OpenAI-compatible endpoints (PRD §6.2.1);
+// not part of the original PRD §11 schema but required by §6.2.1/§10.5.
+model ApiKey {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  provider     String
+  keyEncrypted String   @map("key_encrypted")
+  baseUrl      String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, provider])
+  @@map("api_keys")
+}
