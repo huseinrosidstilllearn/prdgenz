@@ -1,5 +1,5 @@
 export const APP_NAME = 'PRD GenZ'
-export const APP_VERSION = '1.0.0'
+export const APP_VERSION = '0.0.1'
 export const APP_DESCRIPTION = 'AI-powered PRD Generator'
 
 export const PRD_SECTIONS = [

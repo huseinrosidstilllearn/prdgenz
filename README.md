@@ -84,6 +84,20 @@ Data (SQLite) persists in the `prdgenz-data` volume.
 
 Deploy the `apps/cloud` directory to Vercel, Railway, or Render.
 
+## Documentation
+
+See the [User Guide](docs/USER_GUIDE.md) for:
+- Getting started (cloud & self-host)
+- BYOK — configuring AI provider keys
+- All environment variables
+- Troubleshooting
+
+## Testing
+
+```bash
+pnpm test          # all packages (vitest via turbo)
+```
+
 ## License
 
 MIT

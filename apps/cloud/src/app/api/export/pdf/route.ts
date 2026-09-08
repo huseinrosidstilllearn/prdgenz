@@ -4,6 +4,10 @@ import { requireUserId } from '@/lib/api-auth'
 import { assertPRDOwnership, getCurrentVersion, ServiceError } from '@/lib/prd-service'
 
 /** Minimal markdown -> HTML transform for the print document (headings, lists, bold, code). */
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
 function mdToHtml(md: string): string {
   const escape = (s: string) =>
     s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -72,7 +76,7 @@ export async function POST(req: Request) {
 </style>
 </head>
 <body onload="window.print()">
-<p class="meta">PRD GenZ — ${prd.title} — v${version.versionNumber}</p>
+<p class="meta">PRD GenZ — ${escapeHtml(prd.title)} — v${version.versionNumber}</p>
 ${mdToHtml(version.contentMd)}
 </body>
 </html>`
