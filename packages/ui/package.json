@@ -6,7 +6,8 @@
   "types": "./src/index.ts",
   "sideEffects": false,
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@prdgenz/shared": "workspace:*",
@@ -19,9 +20,14 @@
     "react": "^18.3.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.0",
-    "react": "^18.3.0"
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.1.9"
   }
 }
