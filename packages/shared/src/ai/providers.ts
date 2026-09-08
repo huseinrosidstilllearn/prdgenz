@@ -19,7 +19,7 @@ const DEFAULT_BASE_URLS: Record<string, string> = {
   anthropic: 'https://api.anthropic.com/v1',
   google: 'https://generativelanguage.googleapis.com/v1beta',
   omniroute: 'https://omniroute.io/api/v1',
-  tokenrouter: 'https://tokenrouter.ai/api/v1',
+  tokenrouter: 'https://api.tokenrouter.com/v1',
   '9router': 'https://api.9router.ai/v1',
   custom: '',
 }
@@ -80,7 +80,7 @@ function buildRequest(req: AIRequest, stream: boolean): BuiltRequest {
         system: req.systemPrompt,
         messages: [{ role: 'user', content: req.userPrompt }],
         temperature: 0.7,
-        max_tokens: 4000,
+        max_tokens: 4096,
         ...(stream ? { stream: true } : {}),
       },
       protocol,
@@ -96,7 +96,7 @@ function buildRequest(req: AIRequest, stream: boolean): BuiltRequest {
       },
       body: {
         contents: [{ role: 'user', parts: [{ text: `${req.systemPrompt}\n\n${req.userPrompt}` }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 4096 },
+        generationConfig: { temperature: 0.7, maxOutputTokens: 8192 },
       },
       protocol,
     }
@@ -116,7 +116,7 @@ function buildRequest(req: AIRequest, stream: boolean): BuiltRequest {
         { role: 'user', content: req.userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 4000,
+      max_tokens: 16000,
       ...(req.jsonMode && req.provider === 'openai' ? { response_format: { type: 'json_object' } } : {}),
       ...(stream ? { stream: true } : {}),
     },

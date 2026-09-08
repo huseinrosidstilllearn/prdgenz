@@ -24,6 +24,7 @@ describe('resolveBaseUrl (PRD §6.2.1)', () => {
     expect(resolveBaseUrl('openai')).toBe('https://api.openai.com/v1')
     expect(resolveBaseUrl('anthropic')).toBe('https://api.anthropic.com/v1')
     expect(resolveBaseUrl('google')).toBe('https://generativelanguage.googleapis.com/v1beta')
+    expect(resolveBaseUrl('tokenrouter')).toBe('https://api.tokenrouter.com/v1')
   })
   it('prefers customBaseUrl when given, stripping trailing slashes', () => {
     expect(resolveBaseUrl('openai', 'https://proxy.example.com/v1/')).toBe(
@@ -140,6 +141,27 @@ describe('callAI (non-streaming, per protocol)', () => {
     const body = JSON.parse(init.body!)
     expect(body.system).toBe('SYS')
     expect(body.messages).toEqual([{ role: 'user', content: 'USER' }])
+  })
+
+  it('sends enough output tokens for full-PRD generation (regression: 4000 truncated JSONs)', async () => {
+    const fetchMock = vi.fn(
+      async (_url: string, _init: FetchInit): Promise<Response> =>
+        new Response(JSON.stringify({ content: [{ type: 'text', text: 'OK' }] }), { status: 200 })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await callAI(req)
+    expect(JSON.parse(fetchMock.mock.calls[0]![1]!.body!).max_tokens).toBeGreaterThanOrEqual(16000)
+
+    fetchMock.mockClear()
+    await callAI({ ...req, provider: 'anthropic' })
+    expect(JSON.parse(fetchMock.mock.calls[0]![1]!.body!).max_tokens).toBe(4096)
+
+    fetchMock.mockClear()
+    await callAI({ ...req, provider: 'google' })
+    expect(
+      JSON.parse(fetchMock.mock.calls[0]![1]!.body!).generationConfig.maxOutputTokens
+    ).toBe(8192)
   })
 
   it('sends a Google request (x-goog-api-key) and extracts candidates text', async () => {
