@@ -117,8 +117,11 @@ export function truncate(text: string, max = 120): string {
 
 /**
  * SSRF guard for user-supplied provider base URLs (cloud only).
- * Rejects loopback, private, link-local and unique-local literals plus
- * `localhost`. This blocks the common literal-IP SSRF probes but NOT DNS
+ * In production: rejects loopback, private, link-local and unique-local
+ * literals plus `localhost`. Outside production (dev/test) loopback/private
+ * are allowed so local AI mocks (E2E) and local LLMs work — malformed URLs
+ * and non-http(s) protocols are still rejected in all environments.
+ * This blocks the common literal-IP SSRF probes but NOT DNS
  * rebinding (a public hostname resolving to a private IP) — callers handling
  * untrusted URLs should also pin/validate the resolved address.
  */
@@ -130,6 +133,10 @@ export function isSafeExternalUrl(raw: string): boolean {
     return false
   }
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return false
+
+  // Dev/test only: allow loopback/private so local AI mocks (E2E) and local
+  // LLMs work. Production keeps the full SSRF block.
+  if (process.env.NODE_ENV !== 'production') return true
 
   const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
   if (host === 'localhost' || host.endsWith('.localhost')) return false

@@ -1,0 +1,61 @@
+{
+  "title": "Kasir Kopi Kita",
+  "summary": "Aplikasi kasir untuk kedai kopi dengan manajemen menu, transaksi, dan laporan harian.",
+  "problem": "Pemilik kedai kopi masih mencatat transaksi manual sehingga laporan harian sering tidak akurat dan memakan waktu.",
+  "targetUser": "Pemilik kedai kopi kecil di Indonesia dengan 1-3 barista.",
+  "features": [
+    {
+      "id": "f1",
+      "name": "Manajemen Menu",
+      "description": "CRUD menu minuman dengan kategori dan harga.",
+      "priority": "must"
+    },
+    {
+      "id": "f2",
+      "name": "Transaksi Kasir",
+      "description": "Pembuatan pesanan dengan perhitungan total dan kembalian.",
+      "priority": "must"
+    }
+  ],
+  "userStories": [
+    {
+      "id": "us1",
+      "asA": "pemilik kedai",
+      "iWant": "mengelola menu",
+      "soThat": "harga selalu mutakhir"
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "ac1",
+      "featureId": "f1",
+      "criteria": "Menu baru tampil di daftar dalam 1 detik."
+    }
+  ],
+  "techStack": {
+    "frontend": ["Next.js"],
+    "backend": ["Next.js API"],
+    "database": ["PostgreSQL"],
+    "infrastructure": ["Docker"],
+    "reasoning": "Stack sederhana untuk tim kecil."
+  },
+  "timeline": [
+    {
+      "id": "t1",
+      "milestone": "MVP",
+      "duration": "2 minggu",
+      "deliverables": ["Menu CRUD", "Transaksi dasar"]
+    }
+  ],
+  "outputFormat": "Markdown + PDF",
+  "risks": [
+    {
+      "id": "r1",
+      "description": "Adopsi rendah",
+      "impact": "medium",
+      "mitigation": "Onboarding sederhana"
+    }
+  ],
+  "successMetrics": ["10 kedai aktif dalam 3 bulan"],
+  "openQuestions": ["Integrasi pembayaran QRIS?"]
+}

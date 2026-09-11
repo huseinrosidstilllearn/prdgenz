@@ -44,5 +44,11 @@ Thumbs.db
 # Testing
 coverage/
 
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.playwright-state.json
+
 # Turbo
 .turbo/

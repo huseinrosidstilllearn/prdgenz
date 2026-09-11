@@ -758,12 +758,15 @@ model ApiKey {
 | i18n UI (next-intl) | ✗ Backlog | Hanya output dokumen ID/EN yang ada |
 | Version diff view | ✗ Backlog | Restore versi implemented, diff belum |
 | Wizard section reorder/toggle + generate per-section | ✗ Backlog | buildSectionSystemPrompt ada di shared, belum dipakai route |
-| Playwright integration/E2E | ✗ Backlog | Unit/integration via Vitest only |
+| ESLint + Prettier | ✓ Implemented (1.1.1) | next/core-web-vitals (apps), @typescript-eslint (packages); `pnpm lint` di CI |
+| Coverage thresholds | ✓ Implemented (1.1.1) | @vitest/coverage-v8 per package, threshold dikalibrasi dari baseline; `pnpm test:coverage` enforce di CI |
+| Playwright smoke E2E (cloud) | ✓ Implemented (1.1.1) | 5 test: register/login/project/key/generate→export→share; mock AI 127.0.0.1:3999; job CI `e2e` + Postgres service; E2E user PRO |
 | DOCX export | ✗ v2 | Sesuai rencana |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1.1 | 2026-09-11 | Quality hardening: ESLint enforced, coverage thresholds enforced, Playwright smoke E2E (cloud) di CI |
 | 1.1.0 | 2026-09-11 | Security audit fixes: rate-limit coverage, share password & expiry, free-plan project limit, OAuth (env-gated), SSRF guard, PDF escaping |
 | 1.0.0 | 2026-09-08 | Initial draft |
 

@@ -75,24 +75,28 @@ describe('POST /api/ai/generate (PRD Â§10.3, Â§6.2.4)', () => {
     expect(body.details.fieldErrors.input).toContain('Invalid one-shot input')
   })
 
-  it('rejects a link-local customBaseUrl with 400 (SSRF guard)', async () => {
+  it('rejects a link-local customBaseUrl with 400 (SSRF guard, production)', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(getUserCredential).mockResolvedValue(null)
+    vi.stubEnv('NODE_ENV', 'production')
 
     const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://169.254.169.254/v1' }))
     expect(res.status).toBe(400)
     const body = await res.json()
     expect(body.error).toBe('customBaseUrl must be a public http(s) URL')
     expect(getUserCredential).not.toHaveBeenCalled()
+    vi.unstubAllEnvs()
   })
 
-  it('rejects a private-IP customBaseUrl with 400', async () => {
+  it('rejects a private-IP customBaseUrl with 400 (production)', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(getUserCredential).mockResolvedValue(null)
+    vi.stubEnv('NODE_ENV', 'production')
 
     const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://10.0.0.5/v1' }))
     expect(res.status).toBe(400)
     expect(getUserCredential).not.toHaveBeenCalled()
+    vi.unstubAllEnvs()
   })
 
   it('lets a valid public https customBaseUrl through to the credential lookup', async () => {

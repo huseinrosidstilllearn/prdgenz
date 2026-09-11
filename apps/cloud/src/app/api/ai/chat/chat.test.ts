@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 vi.mock('@/lib/api-auth', () => ({
   requireUserId: vi.fn(),
@@ -117,14 +117,16 @@ describe('POST /api/ai/chat (PRD Â§10.3, Â§6.1.2)', () => {
     expect(arg.apiKey).toBe('sk-key')
   })
 
-  it('rejects a link-local customBaseUrl with 400 (SSRF guard)', async () => {
+  it('rejects a link-local customBaseUrl with 400 (SSRF guard, production)', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(getUserCredential).mockResolvedValue({ apiKey: 'sk-key', baseUrl: undefined })
+    vi.stubEnv('NODE_ENV', 'production')
 
     const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://169.254.169.254/v1' }))
     expect(res.status).toBe(400)
     expect((await res.json()).error).toBe('customBaseUrl must be a public http(s) URL')
     expect(getUserCredential).not.toHaveBeenCalled()
+    vi.unstubAllEnvs()
   })
 
   it('lets a valid public https customBaseUrl through to the credential lookup', async () => {

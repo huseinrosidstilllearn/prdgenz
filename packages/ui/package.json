@@ -7,7 +7,9 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "@prdgenz/shared": "workspace:*",
@@ -24,7 +26,10 @@
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "2.1.9",
     "jsdom": "^25.0.1",
     "react": "^18.3.0",
     "typescript": "^5.5.4",

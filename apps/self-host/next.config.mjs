@@ -14,7 +14,7 @@ const nextConfig = {
     outputFileTracingRoot: path.join(here, '../../'),
     // Prisma runtime trace expands an os.homedir() path (C:\Users\...) that
     // Windows refuses to scandir ("My Documents"); keep tracing out of it
-    outputFileTracingIgnores: ['**/Users/**', '**/My Documents/**'],
+    outputFileTracingExcludes: ['**/Users/**', '**/My Documents/**'],
   },
 }
 

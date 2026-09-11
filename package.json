@@ -8,9 +8,14 @@
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "e2e": "pnpm --filter @prdgenz/cloud e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "eslint": "^8.57.0",
     "prettier": "^3.3.3",
     "turbo": "^2.1.0",
     "typescript": "^5.5.4",

@@ -124,13 +124,26 @@ function buildRequest(req: AIRequest, stream: boolean): BuiltRequest {
   }
 }
 
-function extractFullText(protocol: Protocol, json: any): string {
+/**
+ * Loose shapes of provider response events/payloads. Provider APIs evolve
+ * independently, so access is defensive (`?.`) throughout — these types only
+ * describe the fields we read.
+ */
+type ProviderEvent = {
+  type?: string
+  content?: { text?: string }[]
+  candidates?: { content?: { parts?: { text?: string }[] } }[]
+  choices?: { message?: { content?: string }; delta?: { content?: string } }[]
+  delta?: { text?: string }
+}
+
+function extractFullText(protocol: Protocol, json: ProviderEvent): string {
   if (protocol === 'anthropic') return json?.content?.[0]?.text ?? ''
   if (protocol === 'google') return json?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
   return json?.choices?.[0]?.message?.content ?? ''
 }
 
-function extractStreamDelta(protocol: Protocol, json: any): string {
+function extractStreamDelta(protocol: Protocol, json: ProviderEvent): string {
   if (protocol === 'anthropic') {
     return json?.type === 'content_block_delta' ? (json?.delta?.text ?? '') : ''
   }
@@ -180,7 +193,7 @@ async function drainSseAsText(res: Response, protocol: Protocol): Promise<string
 }
 
 /** Parse an SSE body into JSON events. */
-async function* parseSSE(res: Response): AsyncGenerator<any> {
+async function* parseSSE(res: Response): AsyncGenerator<ProviderEvent> {
   if (!res.body) throw new Error('Streaming not supported by response body')
   const reader = res.body.getReader()
   const decoder = new TextDecoder()

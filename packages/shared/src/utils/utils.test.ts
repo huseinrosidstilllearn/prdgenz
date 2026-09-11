@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   generateId,
   parseAIResponse,
@@ -8,6 +8,7 @@ import {
   slugify,
   truncate,
   formatDate,
+  isSafeExternalUrl,
 } from './index'
 
 const KEY_64 = 'a'.repeat(64)
@@ -127,5 +128,56 @@ describe('formatDate', () => {
   it('formats in Indonesian when requested', () => {
     const out = formatDate(new Date('2026-01-15T00:00:00Z'), 'id')
     expect(out).toMatch(/2026/)
+  })
+})
+
+describe('isSafeExternalUrl (SSRF guard, non-production carve-out)', () => {
+  const savedEnv: Record<string, string | undefined> = {}
+  const keysToSave = ['NODE_ENV']
+
+  beforeEach(() => {
+    for (const k of keysToSave) savedEnv[k] = process.env[k]
+    vi.unstubAllEnvs()
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    for (const k of keysToSave) {
+      if (savedEnv[k] === undefined) delete process.env[k]
+      else process.env[k] = savedEnv[k] as string
+    }
+  })
+
+  it('rejects malformed URLs in all environments', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('not-a-url')).toBe(false)
+    vi.stubEnv('NODE_ENV', 'test')
+    expect(isSafeExternalUrl('not-a-url')).toBe(false)
+  })
+
+  it('rejects non-http(s) protocols in all environments', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('ftp://example.com/file')).toBe(false)
+    vi.stubEnv('NODE_ENV', 'test')
+    expect(isSafeExternalUrl('ftp://example.com/file')).toBe(false)
+  })
+
+  it('production: blocks loopback/link-local, allows public https', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('http://127.0.0.1:8080')).toBe(false)
+    expect(isSafeExternalUrl('http://169.254.169.254')).toBe(false)
+    expect(isSafeExternalUrl('https://api.openai.com/v1')).toBe(true)
+  })
+
+  it('non-production: allows loopback/private so local AI mocks work', () => {
+    vi.stubEnv('NODE_ENV', 'test')
+    expect(isSafeExternalUrl('http://127.0.0.1:3999/v1')).toBe(true)
+    expect(isSafeExternalUrl('https://api.openai.com/v1')).toBe(true)
+  })
+
+  it('non-production (development): allows loopback too', () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    expect(isSafeExternalUrl('http://127.0.0.1:3999/v1')).toBe(true)
+    expect(isSafeExternalUrl('ftp://example.com/file')).toBe(false)
   })
 })
