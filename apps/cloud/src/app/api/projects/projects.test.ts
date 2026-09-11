@@ -6,7 +6,8 @@ vi.mock('@/lib/api-auth', () => ({
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
-    project: { findMany: vi.fn(), create: vi.fn() },
+    project: { findMany: vi.fn(), create: vi.fn(), count: vi.fn() },
+    user: { findUnique: vi.fn() },
   },
 }))
 
@@ -61,6 +62,8 @@ describe('POST /api/projects', () => {
   beforeEach(() => {
     vi.mocked(requireUserId).mockReset()
     vi.mocked(prisma.project.create).mockReset()
+    vi.mocked(prisma.project.count).mockReset()
+    vi.mocked(prisma.user.findUnique).mockReset()
   })
 
   function makeReq(body: unknown): Request {
@@ -73,6 +76,7 @@ describe('POST /api/projects', () => {
 
   it('creates a project for the session user', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'PRO' } as never)
     vi.mocked(prisma.project.create).mockResolvedValue({
       id: 'p1',
       userId: 'u1',
@@ -97,5 +101,75 @@ describe('POST /api/projects', () => {
     vi.mocked(requireUserId).mockResolvedValue(null)
     const res = await POST(makeReq({ name: 'X' }))
     expect(res.status).toBe(401)
+  })
+})
+
+describe('POST /api/projects — free-plan 1-project limit (PRD §14)', () => {
+  beforeEach(() => {
+    vi.mocked(requireUserId).mockReset()
+    vi.mocked(prisma.project.create).mockReset()
+    vi.mocked(prisma.project.count).mockReset()
+    vi.mocked(prisma.user.findUnique).mockReset()
+  })
+
+  function makeReq(body: unknown): Request {
+    return new Request('http://localhost/api/projects', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  it('lets PRO users create projects regardless of existing count', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'PRO' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(99)
+    vi.mocked(prisma.project.create).mockResolvedValue({
+      id: 'p2',
+      userId: 'u1',
+      name: 'Projek kedua',
+    } as never)
+
+    const res = await POST(makeReq({ name: 'Projek kedua' }))
+    expect(res.status).toBe(201)
+    expect(prisma.project.count).not.toHaveBeenCalled()
+  })
+
+  it('lets a FREE user with 0 existing projects create their first', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'FREE' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(0)
+    vi.mocked(prisma.project.create).mockResolvedValue({
+      id: 'p1',
+      userId: 'u1',
+      name: 'Projek Pertama',
+    } as never)
+
+    const res = await POST(makeReq({ name: 'Projek Pertama' }))
+    expect(res.status).toBe(201)
+    const countArg = vi.mocked(prisma.project.count).mock.calls[0]![0]!
+    expect(countArg.where).toEqual({ userId: 'u1' })
+  })
+
+  it('blocks a FREE user who already has 1 project with 403', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'FREE' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(1)
+
+    const res = await POST(makeReq({ name: 'Projek Kedua' }))
+    expect(res.status).toBe(403)
+    expect((await res.json()).error).toBe(
+      'Free plan is limited to 1 project. Upgrade to Pro for unlimited projects.'
+    )
+    expect(prisma.project.create).not.toHaveBeenCalled()
+  })
+
+  it('returns 401 when the user no longer exists', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('ghost')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+
+    const res = await POST(makeReq({ name: 'X' }))
+    expect(res.status).toBe(401)
+    expect(prisma.project.create).not.toHaveBeenCalled()
   })
 })

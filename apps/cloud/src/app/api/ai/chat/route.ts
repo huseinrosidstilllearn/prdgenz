@@ -3,6 +3,7 @@ import {
   buildChatSystemPrompt,
   callAIStream,
   chatMessageSchema,
+  isSafeExternalUrl,
   Language,
 } from '@prdgenz/shared'
 import { requireUserId } from '@/lib/api-auth'
@@ -44,6 +45,13 @@ export async function POST(req: Request) {
     )
   }
   const { language, provider, model, messages, customBaseUrl } = parsed.data
+
+  if (customBaseUrl && !isSafeExternalUrl(customBaseUrl)) {
+    return new Response(JSON.stringify({ error: 'customBaseUrl must be a public http(s) URL' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
   const cred = await getUserCredential(userId, provider)
   if (!cred) {

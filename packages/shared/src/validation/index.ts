@@ -143,3 +143,13 @@ export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1).max(100),
 })
+
+
+// ---------------------------------------------------------------------------
+// Share link protection (PRD §6.7 — optional password + expiry)
+// ---------------------------------------------------------------------------
+
+export const shareCreateSchema = z.object({
+  password: z.string().min(8).max(100).optional(),
+  expiresInDays: z.number().int().min(1).max(365).optional(),
+})

@@ -16,7 +16,7 @@ model PRD {
   title          String
   language       String        @default("EN")
   mode           String        @default("WIZARD")
-  currentVersion Int           @default(1) @map("current_version")
+  currentVersion Int           @default(0) @map("current_version")
   versions       PRDVersion[]
 
   createdAt DateTime @default(now()) @map("created_at")

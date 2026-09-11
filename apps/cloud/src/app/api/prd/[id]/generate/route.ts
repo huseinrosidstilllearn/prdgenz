@@ -4,6 +4,7 @@ import {
   buildUserPrompt,
   callAI,
   generateRequestSchema,
+  isSafeExternalUrl,
   Language,
   PRDMode,
   parseAIResponse,
@@ -38,6 +39,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       )
     }
     const { language, mode, provider, model, input, customBaseUrl } = parsed.data
+    if (customBaseUrl && !isSafeExternalUrl(customBaseUrl)) {
+      return NextResponse.json(
+        { error: 'customBaseUrl must be a public http(s) URL' },
+        { status: 400 }
+      )
+    }
     await assertPRDOwnership(userId, params.id)
 
     const cred = await getUserCredential(userId, provider)

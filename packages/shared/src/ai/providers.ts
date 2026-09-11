@@ -160,8 +160,23 @@ export async function callAI(req: AIRequest): Promise<string> {
     signal: req.signal,
   })
   if (!res.ok) throw new Error(await describeError(res))
+
+  if (isEventStream(res)) return await drainSseAsText(res, protocol)
+
   const json = await res.json()
   return extractFullText(protocol, json)
+}
+
+function isEventStream(res: Response): boolean {
+  return (res.headers.get('content-type') ?? '').includes('text/event-stream')
+}
+
+async function drainSseAsText(res: Response, protocol: Protocol): Promise<string> {
+  let full = ''
+  for await (const evt of parseSSE(res)) {
+    full += extractStreamDelta(protocol, evt)
+  }
+  return full
 }
 
 /** Parse an SSE body into JSON events. */

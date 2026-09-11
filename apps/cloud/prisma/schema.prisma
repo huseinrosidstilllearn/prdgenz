@@ -47,15 +47,17 @@ model Project {
 }
 
 model PRD {
-  id             String        @id @default(cuid())
-  projectId      String        @map("project_id")
-  title          String
-  language       Language      @default(EN)
-  mode           PRDMode       @default(WIZARD)
-  currentVersion Int           @default(1) @map("current_version")
-  shareId        String?       @unique
-  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  versions       PRDVersion[]
+  id                String        @id @default(cuid())
+  projectId         String        @map("project_id")
+  title             String
+  language          Language      @default(EN)
+  mode              PRDMode       @default(WIZARD)
+  currentVersion    Int           @default(0) @map("current_version")
+  shareId           String?       @unique
+  sharePasswordHash String?
+  shareExpiresAt    DateTime?
+  project           Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versions          PRDVersion[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

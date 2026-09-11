@@ -42,7 +42,7 @@ const validPayload = {
   input: { idea: 'Aplikasi kasir warung kopi dengan inventaris sederhana' },
 }
 
-describe('POST /api/ai/generate (PRD §10.3, §6.2.4)', () => {
+describe('POST /api/ai/generate (PRD Â§10.3, Â§6.2.4)', () => {
   beforeEach(() => {
     vi.mocked(requireUserId).mockReset()
     vi.mocked(getUserCredential).mockReset()
@@ -73,6 +73,36 @@ describe('POST /api/ai/generate (PRD §10.3, §6.2.4)', () => {
     expect(res.status).toBe(400)
     const body = await res.json()
     expect(body.details.fieldErrors.input).toContain('Invalid one-shot input')
+  })
+
+  it('rejects a link-local customBaseUrl with 400 (SSRF guard)', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(getUserCredential).mockResolvedValue(null)
+
+    const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://169.254.169.254/v1' }))
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toBe('customBaseUrl must be a public http(s) URL')
+    expect(getUserCredential).not.toHaveBeenCalled()
+  })
+
+  it('rejects a private-IP customBaseUrl with 400', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(getUserCredential).mockResolvedValue(null)
+
+    const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://10.0.0.5/v1' }))
+    expect(res.status).toBe(400)
+    expect(getUserCredential).not.toHaveBeenCalled()
+  })
+
+  it('lets a valid public https customBaseUrl through to the credential lookup', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(getUserCredential).mockResolvedValue(null)
+
+    const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'https://api.openai.com/v1' }))
+    expect(res.status).toBe(400) // passes guard, fails at key lookup
+    expect((await res.json()).error).toContain('No API key configured')
+    expect(getUserCredential).toHaveBeenCalledWith('u1', 'openai')
   })
 
   it('returns JSON errors with Content-Type application/json (not SSE) for early failures', async () => {

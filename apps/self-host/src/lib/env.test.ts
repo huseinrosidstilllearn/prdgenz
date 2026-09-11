@@ -9,6 +9,12 @@ const ALL_ENV_KEYS = [
   'TOKENROUTER_API_KEY',
   '9ROUTER_API_KEY',
   'CUSTOM_API_KEY',
+  'OPENAI_BASE_URL',
+  'ANTHROPIC_BASE_URL',
+  'GOOGLE_BASE_URL',
+  'OMNIROUTE_BASE_URL',
+  'TOKENROUTER_BASE_URL',
+  '9ROUTER_BASE_URL',
   'CUSTOM_BASE_URL',
   'AI_DEFAULT_PROVIDER',
 ]
@@ -41,6 +47,25 @@ describe('getCredential (env-based keys, PRD §6.2.2)', () => {
     expect(getCredential('custom')).toEqual({
       apiKey: 'k',
       baseUrl: 'https://llm.internal/v1',
+    })
+  })
+
+  it('supports per-provider base URL overrides for aggregators (e.g. 9Router mirror)', () => {
+    process.env['9ROUTER_API_KEY'] = 'sk-mirror'
+    expect(getCredential('9router')).toEqual({ apiKey: 'sk-mirror' })
+    process.env['9ROUTER_BASE_URL'] = 'https://mirror.example.com/v1'
+    expect(getCredential('9router')).toEqual({
+      apiKey: 'sk-mirror',
+      baseUrl: 'https://mirror.example.com/v1',
+    })
+  })
+
+  it('supports base URL overrides for direct providers too', () => {
+    process.env.OPENAI_API_KEY = 'sk-proxy'
+    process.env.OPENAI_BASE_URL = 'https://proxy.example.com/v1'
+    expect(getCredential('openai')).toEqual({
+      apiKey: 'sk-proxy',
+      baseUrl: 'https://proxy.example.com/v1',
     })
   })
 })

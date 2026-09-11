@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/api-auth'
+import { rateLimit } from '@/lib/rate-limit'
 import { assertProjectOwnership, assertCreateAllowed, ServiceError } from '@/lib/prd-service'
 
 const createSchema = z.object({
@@ -28,6 +29,9 @@ export async function GET() {
 export async function POST(req: Request) {
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!rateLimit(`prd:${userId}`)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
   try {
     const parsed = createSchema.safeParse((await req.json()) ?? {})
     if (!parsed.success) {

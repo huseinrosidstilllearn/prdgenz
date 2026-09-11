@@ -103,6 +103,20 @@ describe('truncate', () => {
     expect(out.length).toBe(120)
     expect(out.endsWith('…')).toBe(true)
   })
+  it('returns empty string unchanged', () => {
+    expect(truncate('')).toBe('')
+  })
+  it('returns text exactly at max length unchanged', () => {
+    const input = 'a'.repeat(120)
+    expect(truncate(input, 120)).toBe(input)
+    expect(truncate(input, 120).length).toBe(120)
+  })
+  it('ends with a single Unicode ellipsis and stays within max (URL-safe result)', () => {
+    const out = truncate('https://example.com/' + 'x'.repeat(200), 60)
+    expect(out.length).toBe(60)
+    expect(out.endsWith('…')).toBe(true)
+    expect(out).not.toContain('...')
+  })
 })
 
 describe('formatDate', () => {

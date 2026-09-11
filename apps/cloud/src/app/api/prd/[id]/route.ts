@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/api-auth'
+import { rateLimit } from '@/lib/rate-limit'
 import { assertPRDOwnership, ServiceError } from '@/lib/prd-service'
 
 const updateSchema = z.object({
@@ -63,6 +64,9 @@ export async function PUT(req: Request, { params }: Params) {
 export async function DELETE(_req: Request, { params }: Params) {
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!rateLimit(`prd:${userId}`)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
   try {
     await assertPRDOwnership(userId, params.id)
     await prisma.pRD.delete({ where: { id: params.id } })

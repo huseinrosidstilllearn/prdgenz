@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/api-auth'
 import { rateLimit } from '@/lib/rate-limit'
-import { ServiceError } from '@/lib/prd-service'
+import { ServiceError, assertProjectCreateAllowed } from '@/lib/prd-service'
 
 const createProjectSchema = z.object({
   name: z.string().min(1).max(100),
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
+    await assertProjectCreateAllowed(userId)
     const project = await prisma.project.create({ data: { ...parsed.data, userId } })
     return NextResponse.json({ project }, { status: 201 })
   } catch (err) {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 vi.mock('./prisma', () => ({
   prisma: {
@@ -15,8 +15,19 @@ import { encryptSecret } from '@prdgenz/shared'
 const KEY_64 = 'a'.repeat(64)
 
 describe('getEncryptionKey via encryptApiKey', () => {
+  const savedEnv: Record<string, string | undefined> = {}
+  const keysToSave = ['NODE_ENV', 'ENCRYPTION_KEY']
+
   beforeEach(() => {
+    for (const k of keysToSave) savedEnv[k] = process.env[k]
     vi.unstubAllEnvs()
+  })
+
+  afterEach(() => {
+    for (const k of keysToSave) {
+      if (savedEnv[k] === undefined) delete process.env[k]
+      else vi.stubEnv(k, savedEnv[k] as string)
+    }
   })
 
   it('roundtrips a user API key', async () => {
@@ -36,6 +47,15 @@ describe('getEncryptionKey via encryptApiKey', () => {
   it('throws when ENCRYPTION_KEY is the wrong length', async () => {
     process.env.ENCRYPTION_KEY = 'abcd'
     await expect(encryptApiKey('sk-x')).rejects.toThrow()
+  })
+
+  it('rejects a repeated-char placeholder key only in production', async () => {
+    process.env.ENCRYPTION_KEY = KEY_64
+    vi.stubEnv('NODE_ENV', 'test')
+    await expect(encryptApiKey('sk-x')).resolves.toBeTypeOf('string')
+
+    vi.stubEnv('NODE_ENV', 'production')
+    await expect(encryptApiKey('sk-x')).rejects.toThrow('ENCRYPTION_KEY looks like a placeholder')
   })
 })
 

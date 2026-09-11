@@ -8,6 +8,7 @@ import { Button } from '@prdgenz/ui'
 import { Input } from '@prdgenz/ui'
 import { Label } from '@prdgenz/ui'
 import { loginSchema } from '@prdgenz/shared'
+import { safeCallbackUrl } from '@/lib/redirect'
 
 export default function LoginPage() {
   return (
@@ -46,7 +47,7 @@ function LoginForm() {
       setError('Invalid email or password.')
       return
     }
-    router.push(searchParams.get('callbackUrl') ?? '/dashboard')
+    router.push(safeCallbackUrl(searchParams.get('callbackUrl')))
     router.refresh()
   }
 

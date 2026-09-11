@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { registerSchema } from '@prdgenz/shared'
+import { clientKey, rateLimit } from '@/lib/rate-limit'
 
 /** POST /api/auth/register — create a new user (PRD §10.1). */
 export async function POST(req: Request) {
+  if (!rateLimit(clientKey(req, 'register'), 10, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
   try {
     const body = await req.json()
     const parsed = registerSchema.safeParse(body)

@@ -46,7 +46,7 @@ const validPayload = {
   ],
 }
 
-describe('POST /api/ai/chat (PRD §10.3, §6.1.2)', () => {
+describe('POST /api/ai/chat (PRD Â§10.3, Â§6.1.2)', () => {
   beforeEach(() => {
     vi.mocked(requireUserId).mockReset()
     vi.mocked(getUserCredential).mockReset()
@@ -115,6 +115,26 @@ describe('POST /api/ai/chat (PRD §10.3, §6.1.2)', () => {
     expect(arg.systemPrompt).toContain('PRD')
     expect(arg.model).toBe('glm-5.3-free')
     expect(arg.apiKey).toBe('sk-key')
+  })
+
+  it('rejects a link-local customBaseUrl with 400 (SSRF guard)', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(getUserCredential).mockResolvedValue({ apiKey: 'sk-key', baseUrl: undefined })
+
+    const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'http://169.254.169.254/v1' }))
+    expect(res.status).toBe(400)
+    expect((await res.json()).error).toBe('customBaseUrl must be a public http(s) URL')
+    expect(getUserCredential).not.toHaveBeenCalled()
+  })
+
+  it('lets a valid public https customBaseUrl through to the credential lookup', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(getUserCredential).mockResolvedValue({ apiKey: 'sk-key', baseUrl: undefined })
+    vi.mocked(callAIStream).mockImplementation(async function* () {} as never)
+
+    const res = await POST(makeReq({ ...validPayload, customBaseUrl: 'https://api.openai.com/v1' }))
+    expect(res.status).toBe(200)
+    expect(getUserCredential).toHaveBeenCalledWith('u1', 'tokenrouter')
   })
 
   it('emits an SSE error event when the provider fails mid-stream', async () => {

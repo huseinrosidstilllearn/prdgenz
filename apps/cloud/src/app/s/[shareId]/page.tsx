@@ -1,13 +1,16 @@
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { Badge } from '@prdgenz/ui'
 import { prisma } from '@/lib/prisma'
 import { getCurrentVersion } from '@/lib/prd-service'
+import { shareAuthValid } from '@/lib/share-auth'
+import { ShareGate } from '@/components/share-gate'
 import { truncate } from '@prdgenz/shared'
 
-// Public share page backed by the DB — always render on demand.
+// Public share page backed by the DB â€” always render on demand.
 export const dynamic = 'force-dynamic'
 
-/** Public view-only PRD page via share link — no login required (PRD §6.7). */
+/** Public view-only PRD page via share link â€” no login required (PRD Â§6.7). */
 export default async function SharedPRDPage({
   params,
 }: {
@@ -18,7 +21,8 @@ export default async function SharedPRDPage({
     include: { project: { select: { name: true } } },
   })
 
-  if (!prd) {
+  // Expired shares are treated exactly like revoked ones (PRD Â§6.7).
+  if (!prd || (prd.shareExpiresAt && prd.shareExpiresAt.getTime() < Date.now())) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-center">
         <h1 className="text-2xl font-semibold">PRD not found</h1>
@@ -32,6 +36,13 @@ export default async function SharedPRDPage({
     )
   }
 
+  if (
+    prd.sharePasswordHash &&
+    !shareAuthValid(cookies(), params.shareId, prd.sharePasswordHash)
+  ) {
+    return <ShareGate shareId={params.shareId} />
+  }
+
   const version = await getCurrentVersion(prd.id)
   const content = (version?.content ?? null) as never
 
@@ -42,12 +53,12 @@ export default async function SharedPRDPage({
           <Link href="/" className="text-lg font-bold">
             PRD GenZ
           </Link>
-          <Badge variant="secondary">Shared · View only</Badge>
+          <Badge variant="secondary">Shared Â· View only</Badge>
         </div>
       </header>
       <main className="container max-w-3xl py-10">
         <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-          {prd.project.name} · v{prd.currentVersion}
+          {prd.project.name} Â· v{prd.currentVersion}
         </p>
         {content ? (
           <div className="rounded-xl border bg-card p-8 shadow-sm">
@@ -70,3 +81,4 @@ import { PRDPreview } from '@prdgenz/ui'
 function PRDBody({ content }: { content: never }) {
   return <PRDPreview content={content} />
 }
+

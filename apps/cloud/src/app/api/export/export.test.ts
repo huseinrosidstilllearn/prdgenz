@@ -155,6 +155,23 @@ describe('POST /api/export/pdf (PRO-only, PRD §10.4 + §14)', () => {
     expect(html).toContain('&lt;script&gt;')
   })
 
+  it('fully escapes a PRD title made of markup (<script>alert(1)</script>)', async () => {
+    vi.mocked(requireUserId).mockResolvedValue('u1')
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'PRO' } as never)
+    vi.mocked(assertPRDOwnership).mockResolvedValue({
+      ...ownedPrd,
+      title: '<script>alert(1)</script>',
+    } as never)
+    vi.mocked(getCurrentVersion).mockResolvedValue(generatedVersion as never)
+
+    const res = await exportPdf(makeReq({ prdId: 'prd1' }))
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('&lt;script&gt;')
+    expect(html).not.toContain('<title><script>')
+    expect(html).not.toContain('meta">PRD GenZ — <script>')
+  })
+
   it('returns 409 when the PRD has no generated content', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'PRO' } as never)

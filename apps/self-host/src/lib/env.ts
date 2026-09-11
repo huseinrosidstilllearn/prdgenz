@@ -14,6 +14,16 @@ const ENV_KEYS: Record<string, string> = {
   custom: 'CUSTOM_API_KEY',
 }
 
+const ENV_BASE_URLS: Record<string, string> = {
+  openai: 'OPENAI_BASE_URL',
+  anthropic: 'ANTHROPIC_BASE_URL',
+  google: 'GOOGLE_BASE_URL',
+  omniroute: 'OMNIROUTE_BASE_URL',
+  tokenrouter: 'TOKENROUTER_BASE_URL',
+  '9router': '9ROUTER_BASE_URL',
+  custom: 'CUSTOM_BASE_URL',
+}
+
 export interface EnvCredential {
   apiKey: string
   baseUrl?: string
@@ -24,7 +34,7 @@ export function getCredential(provider: string): EnvCredential | null {
   if (!envName) return null
   const apiKey = process.env[envName]
   if (!apiKey) return null
-  const baseUrl = provider === 'custom' ? process.env.CUSTOM_BASE_URL : undefined
+  const baseUrl = process.env[ENV_BASE_URLS[provider] ?? '']
   if (provider === 'custom' && !baseUrl) return null
   return { apiKey, baseUrl }
 }

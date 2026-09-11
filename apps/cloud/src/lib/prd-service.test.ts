@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('./prisma', () => ({
   prisma: {
-    project: { findFirst: vi.fn() },
+    project: { findFirst: vi.fn(), count: vi.fn() },
     pRD: {
       findFirst: vi.fn(),
       count: vi.fn(),
@@ -21,6 +21,7 @@ import {
   assertProjectOwnership,
   assertPRDOwnership,
   assertCreateAllowed,
+  assertProjectCreateAllowed,
   validatePRDContent,
   markdownFor,
   restoreVersion,
@@ -107,6 +108,40 @@ describe('assertCreateAllowed (free-plan limiter, PRD §14)', () => {
   })
 })
 
+describe('assertProjectCreateAllowed (free-plan 1-project limit, PRD §14)', () => {
+  beforeEach(() => {
+    vi.mocked(prisma.user.findUnique).mockReset()
+    vi.mocked(prisma.project.count).mockReset()
+  })
+
+  it('lets PRO users bypass the limit entirely', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'PRO' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(99)
+    await expect(assertProjectCreateAllowed('u1')).resolves.toBeUndefined()
+    expect(prisma.project.count).not.toHaveBeenCalled()
+  })
+
+  it('allows a FREE user with 0 existing projects', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'FREE' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(0)
+    await expect(assertProjectCreateAllowed('u1')).resolves.toBeUndefined()
+    expect(vi.mocked(prisma.project.count).mock.calls[0]![0]!.where).toEqual({ userId: 'u1' })
+  })
+
+  it('blocks a FREE user with 1 existing project using 403', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ role: 'FREE' } as never)
+    vi.mocked(prisma.project.count).mockResolvedValue(1)
+    await expect(assertProjectCreateAllowed('u1')).rejects.toMatchObject({
+      status: 403,
+      message: 'Free plan is limited to 1 project. Upgrade to Pro for unlimited projects.',
+    })
+  })
+
+  it('throws 401 when the user does not exist', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+    await expect(assertProjectCreateAllowed('ghost')).rejects.toMatchObject({ status: 401 })
+  })
+})
 describe('validatePRDContent (AI output guard, PRD §6.3)', () => {
   it('passes through valid content', () => {
     expect(validatePRDContent(validContent)).toEqual(validContent)

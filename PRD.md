@@ -723,6 +723,8 @@ model ApiKey {
 4. Apakah perlu integrasi GitHub (save PRD ke repo)?
 5. Bagaimana monetisasi self-host (donasi / license fee)?
 
+> Status v1.1.0: pertanyaan #3 (prompt injection handling) — input user dibatasi Zod schema + max length; mitigasi penuh masih open.
+
 ---
 
 ## 17. Appendix
@@ -741,9 +743,28 @@ model ApiKey {
 - [shadcn/ui](https://ui.shadcn.com/) — UI component library
 - [NextAuth.js](https://next-auth.js.org/) — Authentication
 
-### 17.3 Changelog
+### 17.3 Status Implementasi (Audit 2026-09-11)
+
+| Fitur | Status | Catatan |
+|---|---|---|
+| Email+Password login | ✓ Implemented | NextAuth credentials, bcrypt cost 12 |
+| OAuth Google/GitHub | ✓ Implemented | Aktif hanya jika GOOGLE_CLIENT_ID/SECRET & GITHUB_CLIENT_ID/SECRET diset (env-gated); user OAuth di-upsert by email |
+| Rate limiting | ◐ Partial | In-memory sliding window 100 req/min — semua route mutasi cloud terlindungi; wajib ganti ke Redis sebelum scaling horizontal |
+| Share link password + expiry | ✓ Implemented | bcrypt sharePasswordHash, shareExpiresAt, cookie gate /api/share/[shareId]/auth |
+| Free plan 10 PRD/30 hari + 1 project | ✓ Implemented | assertCreateAllowed + assertProjectCreateAllowed |
+| API key encryption (AES-256-GCM) | ✓ Implemented | ENCRYPTION_KEY 64-hex; guard placeholder key di production |
+| SSRF guard customBaseUrl | ✓ Implemented | isSafeExternalUrl (literal IP privat/loopback diblok; DNS rebinding belum) |
+| Export MD/PDF | ✓ Implemented | PDF via print-HTML, title di-escape (anti HTML-injection) |
+| i18n UI (next-intl) | ✗ Backlog | Hanya output dokumen ID/EN yang ada |
+| Version diff view | ✗ Backlog | Restore versi implemented, diff belum |
+| Wizard section reorder/toggle + generate per-section | ✗ Backlog | buildSectionSystemPrompt ada di shared, belum dipakai route |
+| Playwright integration/E2E | ✗ Backlog | Unit/integration via Vitest only |
+| DOCX export | ✗ v2 | Sesuai rencana |
+
+### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1.0 | 2026-09-11 | Security audit fixes: rate-limit coverage, share password & expiry, free-plan project limit, OAuth (env-gated), SSRF guard, PDF escaping |
 | 1.0.0 | 2026-09-08 | Initial draft |
 
 ---

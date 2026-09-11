@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server'
 import {
   apiKeyUpsertSchema,
+  isSafeExternalUrl,
   maskApiKey,
   testProviderConnection,
 } from '@prdgenz/shared'
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/api-auth'
+import { rateLimit } from '@/lib/rate-limit'
 import { encryptApiKey, decryptApiKey } from '@/lib/encryption'
 
 /** GET /api/settings/apikey — masked key list (PRD §10.5, §15). */
@@ -37,6 +39,9 @@ export async function GET() {
 export async function PUT(req: Request) {
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!rateLimit(`apikey:${userId}`)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
 
   const parsed = apiKeyUpsertSchema.safeParse(await req.json().catch(() => null))
   if (!parsed.success) {
@@ -46,6 +51,13 @@ export async function PUT(req: Request) {
     )
   }
   const { provider, key, customBaseUrl } = parsed.data
+
+  if (customBaseUrl && !isSafeExternalUrl(customBaseUrl)) {
+    return NextResponse.json(
+      { error: 'customBaseUrl must be a public http(s) URL' },
+      { status: 400 }
+    )
+  }
 
   const keyEncrypted = await encryptApiKey(key)
   const connectionOk = await testProviderConnection(provider, key, customBaseUrl)

@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 <html lang="${prd.language === 'ID' ? 'id' : 'en'}">
 <head>
 <meta charset="utf-8">
-<title>${prd.title.replace(/</g, '&lt;')}</title>
+<title>${escapeHtml(prd.title)}</title>
 <style>
   body { font-family: Georgia, 'Times New Roman', serif; max-width: 780px; margin: 40px auto; color: #1a1a1a; line-height: 1.65; }
   h1 { font-size: 28px; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; }

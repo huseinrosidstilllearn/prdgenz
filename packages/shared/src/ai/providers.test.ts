@@ -191,6 +191,28 @@ describe('callAI (non-streaming, per protocol)', () => {
     )
     await expect(callAI(req)).rejects.toThrow('AI provider error 401')
   })
+
+  it('tolerates mirrors that force SSE on non-stream requests (regression)', async () => {
+    const encoder = new TextEncoder()
+    const sse = 'data: {"choices":[{"delta":{"content":"Hel"}}]}\n\ndata: {"choices":[{"delta":{"content":"lo"}}]}\n\ndata: [DONE]\n\n'
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async (): Promise<Response> =>
+          new Response(
+            new ReadableStream({
+              start(c) {
+                c.enqueue(encoder.encode(sse))
+                c.close()
+              },
+            }),
+            { status: 200, headers: { 'Content-Type': 'text/event-stream' } }
+          )
+      )
+    )
+    const out = await callAI(req)
+    expect(out).toBe('Hello')
+  })
 })
 
 describe('callAIStream (SSE, PRD §6.2.4)', () => {

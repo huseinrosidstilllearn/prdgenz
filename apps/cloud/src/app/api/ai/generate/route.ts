@@ -3,6 +3,7 @@ import {
   buildUserPrompt,
   callAIStream,
   generateRequestSchema,
+  isSafeExternalUrl,
   Language,
   PRDMode,
   parseAIResponse,
@@ -46,6 +47,13 @@ export async function POST(req: Request) {
     )
   }
   const { language, mode, provider, model, projectId, prdId, input, customBaseUrl } = parsed.data
+
+  if (customBaseUrl && !isSafeExternalUrl(customBaseUrl)) {
+    return new Response(JSON.stringify({ error: 'customBaseUrl must be a public http(s) URL' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
   const cred = await getUserCredential(userId, provider)
   if (!cred) {

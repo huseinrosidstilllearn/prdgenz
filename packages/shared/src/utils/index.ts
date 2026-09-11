@@ -109,7 +109,45 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-/** Truncate long text for list previews. */
+/** Truncate long text for list previews — the result never exceeds `max` chars. */
 export function truncate(text: string, max = 120): string {
-  return text.length <= max ? text : `${text.slice(0, max - 1)}…`
+  if (text.length <= max) return text
+  return `${text.slice(0, max - 1)}…`
+}
+
+/**
+ * SSRF guard for user-supplied provider base URLs (cloud only).
+ * Rejects loopback, private, link-local and unique-local literals plus
+ * `localhost`. This blocks the common literal-IP SSRF probes but NOT DNS
+ * rebinding (a public hostname resolving to a private IP) — callers handling
+ * untrusted URLs should also pin/validate the resolved address.
+ */
+export function isSafeExternalUrl(raw: string): boolean {
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return false
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return false
+
+  const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+  if (host === 'localhost' || host.endsWith('.localhost')) return false
+
+  const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host)
+  if (ipv4) {
+    const a = Number(ipv4[1])
+    const b = Number(ipv4[2])
+    if (a === 10 || a === 127 || a === 0) return false
+    if (a === 169 && b === 254) return false
+    if (a === 172 && b >= 16 && b <= 31) return false
+    if (a === 192 && b === 168) return false
+    return true
+  }
+
+  // IPv6 loopback / link-local / unique-local (fc00::/7, fe80::/10)
+  if (host === '::1' || host === '::') return false
+  if (host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd')) return false
+
+  return true
 }

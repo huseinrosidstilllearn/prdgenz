@@ -49,6 +49,16 @@ export async function assertCreateAllowed(userId: string) {
   }
 }
 
+/** Free plan: max 1 project total (PRD §14). */
+export async function assertProjectCreateAllowed(userId: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } })
+  if (!user) throw new ServiceError('Unauthorized', 401)
+  if (user.role === 'PRO') return
+  const count = await prisma.project.count({ where: { userId } })
+  if (count >= 1) {
+    throw new ServiceError('Free plan is limited to 1 project. Upgrade to Pro for unlimited projects.', 403)
+  }
+}
 /** Validate raw AI output against the PRD content schema (PRD §6.3). */
 export function validatePRDContent(raw: unknown): PRDContent {
   const parsed = prdContentSchema.safeParse(raw)

@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getCurrentVersion, getPRD, ServiceError } from '@/lib/prd-service'
 
-/** Minimal markdown -> HTML for the print document (same approach as cloud). */
+/** Escape PRD-sourced text before interpolating into the print document. */
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
 function mdToHtml(md: string): string {
   const escape = (s: string) =>
     s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -44,7 +47,7 @@ export async function POST(req: Request) {
 <html lang="${prd.language === 'ID' ? 'id' : 'en'}">
 <head>
 <meta charset="utf-8">
-<title>${prd.title.replace(/</g, '&lt;')}</title>
+<title>${escapeHtml(prd.title)}</title>
 <style>
   body { font-family: Georgia, 'Times New Roman', serif; max-width: 780px; margin: 40px auto; color: #1a1a1a; line-height: 1.65; }
   h1 { font-size: 28px; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; }
@@ -58,7 +61,7 @@ export async function POST(req: Request) {
 </style>
 </head>
 <body onload="window.print()">
-<p class="meta">PRD GenZ (self-hosted) — ${prd.title} — v${version.versionNumber}</p>
+<p class="meta">PRD GenZ (self-hosted) — ${escapeHtml(prd.title)} — v${version.versionNumber}</p>
 ${mdToHtml(version.contentMd)}
 </body>
 </html>`

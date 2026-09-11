@@ -12,6 +12,9 @@ const nextConfig = {
     // pnpm monorepo: keep file tracing inside the workspace (avoids EPERM on
     // symlinked store paths outside the repo)
     outputFileTracingRoot: path.join(here, '../../'),
+    // Prisma runtime trace expands an os.homedir() path (C:\Users\...) that
+    // Windows refuses to scandir ("My Documents"); keep tracing out of it
+    outputFileTracingIgnores: ['**/Users/**', '**/My Documents/**'],
   },
 }
 

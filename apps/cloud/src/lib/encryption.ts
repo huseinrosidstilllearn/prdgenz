@@ -7,6 +7,9 @@ function getEncryptionKey(): string {
   if (!key || !/^[0-9a-fA-F]{64}$/.test(key)) {
     throw new Error('ENCRYPTION_KEY must be set to exactly 64 hex characters (32 bytes)')
   }
+  if (process.env.NODE_ENV === 'production' && /^([0-9a-fA-F])\1{63}$/.test(key)) {
+    throw new Error('ENCRYPTION_KEY looks like a placeholder (repeated character). Generate a real key with: openssl rand -hex 32')
+  }
   return key
 }
 
