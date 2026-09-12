@@ -170,6 +170,7 @@ export function VersionSidebar({
         versions={versions}
         currentVersion={currentVersion}
         onRestore={(v) => restore(v)}
+        onDiff={(v) => router.push(`/prd/${prdId}/diff?from=${v}&to=${currentVersion}`)}
       />
       {busy !== null && <p className="text-xs text-muted-foreground">Restoring v{busy}…</p>}
       {error && <p className="text-xs text-destructive">{error}</p>}

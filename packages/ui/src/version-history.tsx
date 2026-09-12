@@ -13,9 +13,10 @@ export interface VersionHistoryProps {
   versions: VersionItem[]
   currentVersion: number
   onRestore?: (versionNumber: number) => void
+  onDiff?: (versionNumber: number) => void
 }
 
-export function VersionHistory({ versions, currentVersion, onRestore }: VersionHistoryProps) {
+export function VersionHistory({ versions, currentVersion, onRestore, onDiff }: VersionHistoryProps) {
   return (
     <ul className="space-y-2">
       {versions.map((v) => (
@@ -33,10 +34,19 @@ export function VersionHistory({ versions, currentVersion, onRestore }: VersionH
           {v.versionNumber === currentVersion ? (
             <span className="text-xs font-medium text-primary">Current</span>
           ) : (
-            onRestore && (
-              <Button variant="outline" size="sm" onClick={() => onRestore(v.versionNumber)}>
-                Restore
-              </Button>
+            (onRestore || onDiff) && (
+              <div className="flex items-center gap-2">
+                {onDiff && (
+                  <Button variant="outline" size="sm" onClick={() => onDiff(v.versionNumber)}>
+                    Diff
+                  </Button>
+                )}
+                {onRestore && (
+                  <Button variant="outline" size="sm" onClick={() => onRestore(v.versionNumber)}>
+                    Restore
+                  </Button>
+                )}
+              </div>
             )
           )}
         </li>

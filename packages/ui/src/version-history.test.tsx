@@ -34,4 +34,38 @@ describe('VersionHistory (PRD §6.6)', () => {
     render(<VersionHistory versions={VERSIONS} currentVersion={3} />)
     expect(screen.queryAllByRole('button')).toHaveLength(0)
   })
+
+  it('shows a Diff button on non-current rows when onDiff is given', () => {
+    render(
+      <VersionHistory versions={VERSIONS} currentVersion={3} onRestore={vi.fn()} onDiff={vi.fn()} />
+    )
+    const diffButtons = screen.getAllByRole('button', { name: /^diff$/i })
+    expect(diffButtons).toHaveLength(2) // v1 and v2 only
+  })
+
+  it('fires onDiff with the version number of the clicked row', () => {
+    const onDiff = vi.fn()
+    render(<VersionHistory versions={VERSIONS} currentVersion={3} onDiff={onDiff} />)
+    fireEvent.click(screen.getAllByRole('button', { name: /^diff$/i })[0])
+    expect(onDiff).toHaveBeenCalledWith(1)
+  })
+
+  it('shows no diff button on the current row or without an onDiff handler', () => {
+    const { rerender } = render(
+      <VersionHistory versions={VERSIONS} currentVersion={3} onRestore={vi.fn()} onDiff={vi.fn()} />
+    )
+    // current row (v3) shows the Current marker, not buttons
+    expect(screen.getByText('Current')).toBeDefined()
+    expect(screen.getAllByRole('button', { name: /^diff$/i })).toHaveLength(2)
+
+    rerender(<VersionHistory versions={VERSIONS} currentVersion={3} onRestore={vi.fn()} />)
+    expect(screen.queryAllByRole('button', { name: /^diff$/i })).toHaveLength(0)
+    expect(screen.getAllByRole('button', { name: /restore/i })).toHaveLength(2)
+  })
+
+  it('renders rows with only a Diff button when onRestore is not given', () => {
+    render(<VersionHistory versions={VERSIONS} currentVersion={3} onDiff={vi.fn()} />)
+    expect(screen.getAllByRole('button', { name: /^diff$/i })).toHaveLength(2)
+    expect(screen.queryAllByRole('button', { name: /restore/i })).toHaveLength(0)
+  })
 })

@@ -89,3 +89,20 @@ test('one-shot generate → PRD page → export MD → share link → anonymous 
   ).toBeVisible()
   await anon.close()
 })
+
+test('version diff page renders empty-state after a single generate', async ({ page }) => {
+  // Reuse the PRD created by the one-shot test (single worker → serial order).
+  const prds = await (
+    await page.request.get('/api/prd', { headers: { 'Content-Type': 'application/json' } })
+  ).json()
+  const prdId = prds.prds?.find((p: { title: string }) => p.title === 'Kasir Kopi Kita')?.id
+  expect(prdId).toBeTruthy()
+
+  // One generated version only → the diff page shows its empty-state.
+  await page.goto(`/prd/${prdId}/diff`)
+  await expect(page.getByText('Only one version exists')).toBeVisible({ timeout: 30_000 })
+  await expect(
+    page.getByText('Regenerate the PRD to create a new version', { exact: false })
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Back to PRD' }).first()).toBeVisible()
+})

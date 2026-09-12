@@ -756,7 +756,7 @@ model ApiKey {
 | SSRF guard customBaseUrl | ✓ Implemented | isSafeExternalUrl (literal IP privat/loopback diblok; DNS rebinding belum) |
 | Export MD/PDF | ✓ Implemented | PDF via print-HTML, title di-escape (anti HTML-injection) |
 | i18n UI (next-intl) | ✗ Backlog | Hanya output dokumen ID/EN yang ada |
-| Version diff view | ✗ Backlog | Restore versi implemented, diff belum |
+| Version diff view | ✓ Implemented (1.3.0) | diffPRDVersions (shared) + VersionDiff (ui); halaman /prd/[id]/diff di cloud+self-host; entry dari tombol Diff di version history |
 | Wizard section reorder/toggle + generate per-section | ✗ Backlog | buildSectionSystemPrompt ada di shared, belum dipakai route |
 | ESLint + Prettier | ✓ Implemented (1.1.1) | next/core-web-vitals (apps), @typescript-eslint (packages); `pnpm lint` di CI |
 | Coverage thresholds | ✓ Implemented (1.1.1) | @vitest/coverage-v8 per package, threshold dikalibrasi dari baseline; `pnpm test:coverage` enforce di CI |
@@ -768,6 +768,7 @@ model ApiKey {
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3.0 | 2026-09-13 | Version diff view: per-section markdown diff, picker from/to, cloud + self-host |
 | 1.2.1 | 2026-09-12 | Self-host parity: dark mode, status pages, favicon, noindex SEO |
 | 1.2.0 | 2026-09-12 | UI foundation polish: dark mode (next-themes), error/loading/not-found pages, favicon, SEO metadata (cloud-first) |
 | 1.1.1 | 2026-09-11 | Quality hardening: ESLint enforced, coverage thresholds enforced, Playwright smoke E2E (cloud) di CI |
