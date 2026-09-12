@@ -19,9 +19,19 @@ export const metadata: Metadata = {
       'AI-powered PRD Generator — turn raw ideas into structured, actionable PRDs in minutes.',
     type: 'website',
     siteName: 'PRD GenZ',
+    images: [{ url: '/og-image.png', width: 2560, height: 1280, alt: 'PRD GenZ' }],
   },
   twitter: {
     card: 'summary_large_image',
+    images: ['/og-image.png'],
+  },
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
   robots: {
     index: true,

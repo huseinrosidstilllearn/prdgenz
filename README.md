@@ -1,6 +1,14 @@
-# PRD GenZ
+<div align="center">
 
-> AI-powered PRD Generator — generate professional PRDs for AI coding assistants (Cline, Cursor, Lovable, etc.)
+<img src="assets/banner.png" alt="PRD GenZ — AI-powered PRD Generator" width="800">
+
+[![Made with Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+AI-powered PRD Generator — generate professional PRDs for AI coding assistants (Cline, Cursor, Lovable, etc.)
+
+</div>
 
 ## Features
 
