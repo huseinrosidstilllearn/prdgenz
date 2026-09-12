@@ -106,3 +106,36 @@ test('version diff page renders empty-state after a single generate', async ({ p
   ).toBeVisible()
   await expect(page.getByRole('link', { name: 'Back to PRD' }).first()).toBeVisible()
 })
+
+test('per-section regenerate saves a new version (PRD §6.1.1)', async ({ page }) => {
+  // Reuse the PRD created by the one-shot test (single worker → serial order).
+  const prds = await (
+    await page.request.get('/api/prd', { headers: { 'Content-Type': 'application/json' } })
+  ).json()
+  const prdId = prds.prds?.find((p: { title: string }) => p.title === 'Kasir Kopi Kita')?.id
+  expect(prdId).toBeTruthy()
+
+  await page.goto(`/prd/${prdId}`)
+  await expect(page.getByText('Current').first()).toBeVisible({ timeout: 30_000 })
+
+  // Regenerate one section through the mock AI (streams the same fixture PRD
+  // JSON; the section value gets merged and saved as v2). The wizard persists
+  // the provider choice in localStorage — mirror that here (mock = custom).
+  await page.addInitScript(() => localStorage.setItem('prdgenz:provider', 'custom'))
+  await page.goto(`/prd/${prdId}`)
+  await page.locator('#section-regen').selectOption('summary')
+  await page.getByRole('button', { name: 'Regenerate', exact: true }).click()
+
+  // The section regenerates and saves v2: the version history flips to show
+  // v2 as Current with v1 offering Restore/Diff.
+  await expect(page.getByText('Current').first()).toBeVisible({ timeout: 90_000 })
+  const restoreButtons = page.getByRole('button', { name: 'Restore' })
+  await expect(restoreButtons.first()).toBeVisible({ timeout: 30_000 })
+
+  // The version list contains both v1 (restorable) and v2 (current).
+  const versions = await page.request.get(`/api/prd/${prdId}/versions`, {
+    headers: { 'Content-Type': 'application/json' },
+  })
+  const versionData = await versions.json()
+  expect(versionData.versions?.map((v: { versionNumber: number }) => v.versionNumber)).toContain(2)
+})

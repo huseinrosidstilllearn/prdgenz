@@ -757,7 +757,7 @@ model ApiKey {
 | Export MD/PDF | ✓ Implemented | PDF via print-HTML, title di-escape (anti HTML-injection) |
 | i18n UI (next-intl) | ✗ Backlog | Hanya output dokumen ID/EN yang ada |
 | Version diff view | ✓ Implemented (1.3.0) | diffPRDVersions (shared) + VersionDiff (ui); halaman /prd/[id]/diff di cloud+self-host; entry dari tombol Diff di version history |
-| Wizard section reorder/toggle + generate per-section | ✗ Backlog | buildSectionSystemPrompt ada di shared, belum dipakai route |
+| Wizard section reorder/toggle + generate per-section | ◐ Partial (1.4.0) | Per-section generate implemented: buildSectionUserPrompt + mergeSectionIntoDraft (shared), POST /api/ai/section di cloud+self-host, UI SectionRegenerate di PRD page (regenerate per-section → new version); wizard step reorder/toggle UI belum |
 | ESLint + Prettier | ✓ Implemented (1.1.1) | next/core-web-vitals (apps), @typescript-eslint (packages); `pnpm lint` di CI |
 | Coverage thresholds | ✓ Implemented (1.1.1) | @vitest/coverage-v8 per package, threshold dikalibrasi dari baseline; `pnpm test:coverage` enforce di CI |
 | Playwright smoke E2E (cloud) | ✓ Implemented (1.1.1) | 5 test: register/login/project/key/generate→export→share; mock AI 127.0.0.1:3999; job CI `e2e` + Postgres service; E2E user PRO |
@@ -768,6 +768,7 @@ model ApiKey {
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4.0 | 2026-09-13 | Per-section generate: dynamic section prompt + merge draft (shared), /api/ai/section SSE route cloud + self-host, SectionRegenerate UI di PRD page, full-PRD-answer unwrap |
 | 1.3.0 | 2026-09-13 | Version diff view: per-section markdown diff, picker from/to, cloud + self-host |
 | 1.2.1 | 2026-09-12 | Self-host parity: dark mode, status pages, favicon, noindex SEO |
 | 1.2.0 | 2026-09-12 | UI foundation polish: dark mode (next-themes), error/loading/not-found pages, favicon, SEO metadata (cloud-first) |

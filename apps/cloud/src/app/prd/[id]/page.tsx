@@ -53,7 +53,7 @@ export default async function PRDPage({ params }: { params: { id: string } }) {
       </div>
 
       {content ? (
-        <PRDActions prdId={prd.id} title={prd.title} content={content} isPro={user?.role === 'PRO'} />
+        <PRDActions prdId={prd.id} title={prd.title} content={content} isPro={user?.role === 'PRO'} language={prd.language} />
       ) : (
         <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
           No generated content yet — generate a version from Wizard / Chat / One-Shot.
