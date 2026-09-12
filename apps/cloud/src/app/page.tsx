@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@prdgenz/ui'
+import { Button, ThemeToggle } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
 
 const FEATURES = [
@@ -48,6 +48,7 @@ export default function LandingPage() {
             <Link href="/login" className="text-muted-foreground hover:text-foreground">
               Login
             </Link>
+            <ThemeToggle />
             <Button asChild size="sm">
               <Link href="/register">Get Started</Link>
             </Button>

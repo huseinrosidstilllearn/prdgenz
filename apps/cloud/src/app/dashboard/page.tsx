@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
-import { Badge } from '@prdgenz/ui'
+import { Badge, ThemeToggle } from '@prdgenz/ui'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { CreateProjectButton } from '@/components/create-project'
@@ -43,6 +43,7 @@ export default async function DashboardPage() {
             <Link href="/settings" className="text-muted-foreground hover:text-foreground">
               Settings
             </Link>
+            <ThemeToggle />
             <Badge variant={user?.role === 'PRO' ? 'default' : 'secondary'}>
               {user?.role ?? 'FREE'}
             </Badge>

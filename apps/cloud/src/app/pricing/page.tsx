@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@prdgenz/ui'
-import { Button } from '@prdgenz/ui'
+import { Button, ThemeToggle } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
 
 /** Public pricing page (PRD §9.2, §14). */
@@ -48,6 +48,7 @@ export default function PricingPage() {
             <Link href="/login" className="text-muted-foreground hover:text-foreground">
               Login
             </Link>
+            <ThemeToggle />
             <Button asChild size="sm">
               <Link href="/register">Get Started</Link>
             </Button>

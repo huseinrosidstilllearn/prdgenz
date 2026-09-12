@@ -82,6 +82,9 @@ export default async function globalSetup(): Promise<void> {
 
   // Sign in through the real /login page so NextAuth sets its cookies in a
   // real browser context — then capture the storage state.
+  // Cold-start on Windows (first compile of the dev server) can exceed the
+  // default 30s navigation timeout, so allow up to 120s for this first goto.
+  page.setDefaultNavigationTimeout(120_000)
   await page.goto(`${BASE_URL}/login`)
   await page.getByLabel('Email').fill(E2E_EMAIL)
   await page.getByLabel('Password').fill(E2E_PASSWORD)
