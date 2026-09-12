@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Badge } from '@prdgenz/ui'
+import { Badge, ThemeToggle } from '@prdgenz/ui'
 import { prisma } from '@/lib/prisma'
 import { configuredProviderIds, defaultProvider } from '@/lib/env'
 import { truncate } from '@prdgenz/shared'
@@ -27,6 +27,7 @@ export default async function Home() {
             <Link href="/settings" className="text-muted-foreground hover:text-foreground">
               Settings
             </Link>
+            <ThemeToggle />
             <Badge variant={configured.length ? 'default' : 'destructive'}>
               {configured.length ? `${configured.length} provider(s) ready` : 'no key set'}
             </Badge>

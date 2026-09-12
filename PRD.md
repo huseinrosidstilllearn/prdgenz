@@ -761,13 +761,14 @@ model ApiKey {
 | ESLint + Prettier | ✓ Implemented (1.1.1) | next/core-web-vitals (apps), @typescript-eslint (packages); `pnpm lint` di CI |
 | Coverage thresholds | ✓ Implemented (1.1.1) | @vitest/coverage-v8 per package, threshold dikalibrasi dari baseline; `pnpm test:coverage` enforce di CI |
 | Playwright smoke E2E (cloud) | ✓ Implemented (1.1.1) | 5 test: register/login/project/key/generate→export→share; mock AI 127.0.0.1:3999; job CI `e2e` + Postgres service; E2E user PRO |
-| Dark mode + SEO + error pages | ✓ Cloud (1.2.0) | next-themes (system default + toggle), metadataBase/OG/robots/sitemap, error/global-error/not-found/loading; self-host adopt backlog |
+| Dark mode + SEO + error pages | ✓ Cloud + Self-Host (1.2.1) | next-themes (system default + toggle), error/global-error/not-found/loading; cloud: metadataBase/OG/robots/sitemap; self-host: noindex robots (private instance), favicon, manifest |
 | Aksesibilitas | ◐ Partial (1.2.0) | aria-label toggle, focus-ring shadcn; WCAG AA audit backlog |
 | DOCX export | ✗ v2 | Sesuai rencana |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2.1 | 2026-09-12 | Self-host parity: dark mode, status pages, favicon, noindex SEO |
 | 1.2.0 | 2026-09-12 | UI foundation polish: dark mode (next-themes), error/loading/not-found pages, favicon, SEO metadata (cloud-first) |
 | 1.1.1 | 2026-09-11 | Quality hardening: ESLint enforced, coverage thresholds enforced, Playwright smoke E2E (cloud) di CI |
 | 1.1.0 | 2026-09-11 | Security audit fixes: rate-limit coverage, share password & expiry, free-plan project limit, OAuth (env-gated), SSRF guard, PDF escaping |

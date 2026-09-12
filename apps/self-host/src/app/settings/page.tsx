@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@prdgenz/ui'
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, ThemeToggle } from '@prdgenz/ui'
 import { AI_PROVIDERS } from '@prdgenz/shared'
 import { configuredProviderIds } from '@/lib/env'
 
@@ -19,13 +19,16 @@ export default function SettingsPage() {
 
   return (
     <div className="container max-w-2xl space-y-8 py-10">
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Self-hosted keys are configured via environment variables (e.g.{' '}
-          <code className="rounded bg-muted px-1">.env</code> or{' '}
-          <code className="rounded bg-muted px-1">docker-compose.yml</code>).
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="text-sm text-muted-foreground">
+            Self-hosted keys are configured via environment variables (e.g.{' '}
+            <code className="rounded bg-muted px-1">.env</code> or{' '}
+            <code className="rounded bg-muted px-1">docker-compose.yml</code>).
+          </p>
+        </div>
+        <ThemeToggle />
       </div>
 
       <Card>

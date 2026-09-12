@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Badge, PRDPreview } from '@prdgenz/ui'
+import { Badge, PRDPreview, ThemeToggle } from '@prdgenz/ui'
 import type { PRDContent } from '@prdgenz/shared'
 import { prisma } from '@/lib/prisma'
 import { getCurrentVersion } from '@/lib/prd-service'
@@ -39,6 +39,7 @@ export default async function PRDPage({ params }: { params: { id: string } }) {
           >
             Edit
           </Link>
+          <ThemeToggle />
         </div>
       </div>
 
