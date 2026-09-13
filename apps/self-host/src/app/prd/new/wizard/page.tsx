@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AIChatBubble,
   Button,
@@ -13,12 +13,23 @@ import {
   Textarea,
   WizardStepper,
 } from '@prdgenz/ui'
-import { WIZARD_STEPS, type PRDContent } from '@prdgenz/shared'
+import {
+  FIXED_WIZARD_STEPS,
+  WIZARD_STEPS,
+  filterWizardInput,
+  normalizeWizardSteps,
+  type PRDContent,
+} from '@prdgenz/shared'
 import { useGenerationSetup } from '@/hooks/use-generation-setup'
+
+const WIZARD_CONFIG_KEY = 'prdgenz:wizard-config'
 
 export default function WizardPage() {
   const setup = useGenerationSetup()
-  const [step, setStep] = useState(0)
+  const [currentStepName, setCurrentStepName] = useState<string>('idea')
+  const [stepOrder, setStepOrder] = useState<string[]>([...WIZARD_STEPS])
+  const [hiddenSteps, setHiddenSteps] = useState<string[]>([])
+  const [configuring, setConfiguring] = useState(false)
   const [idea, setIdea] = useState('')
   const [problem, setProblem] = useState('')
   const [targetUser, setTargetUser] = useState('')
@@ -33,7 +44,81 @@ export default function WizardPage() {
   const [generating, setGenerating] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
 
-  const canNext = [idea.trim().length >= 3, true, true, true, true, true, true, true]
+  // Load persisted wizard config (order + hidden) once from localStorage.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WIZARD_CONFIG_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw) as { order?: string[]; hidden?: string[] }
+        const normalized = normalizeWizardSteps(parsed.order, parsed.hidden)
+        if (normalized) {
+          setStepOrder(normalized.order)
+          setHiddenSteps(normalized.hidden)
+        }
+      }
+    } catch {
+      /* corrupt JSON → keep defaults */
+    }
+  }, [])
+
+  function persistConfig(order: string[], hidden: string[]) {
+    try {
+      localStorage.setItem(WIZARD_CONFIG_KEY, JSON.stringify({ order, hidden }))
+    } catch {
+      /* private mode */
+    }
+  }
+
+  function updateStepOrder(next: string[]) {
+    setStepOrder(next)
+    persistConfig(next, hiddenSteps)
+  }
+
+  function updateHiddenSteps(next: string[]) {
+    setHiddenSteps(next)
+    persistConfig(stepOrder, next)
+    // Toggle-hide on the active step → auto-jump to the next visible step.
+    if (next.includes(currentStepName)) {
+      const visible = stepOrder.filter((s) => !next.includes(s))
+      const idx = visible.indexOf(currentStepName)
+      const fallback = visible[Math.min(idx + 1, visible.length - 1)] ?? visible[0] ?? 'idea'
+      setCurrentStepName(fallback)
+    }
+  }
+
+  /** Visible navigation order: stepOrder minus hiddenSteps. */
+  const visibleSteps = stepOrder.filter((s) => !hiddenSteps.includes(s))
+  const currentStep = stepOrder.indexOf(currentStepName) // derived index for WizardStepper
+  const lastStep = visibleSteps[visibleSteps.length - 1] === currentStepName
+
+  function next() {
+    const i = visibleSteps.indexOf(currentStepName)
+    const target = visibleSteps[Math.min(visibleSteps.length - 1, i + 1)]
+    if (target) setCurrentStepName(target)
+  }
+
+  function back() {
+    const i = visibleSteps.indexOf(currentStepName)
+    const target = visibleSteps[Math.max(0, i - 1)]
+    if (target) setCurrentStepName(target)
+  }
+
+  function moveStep(from: number, to: number) {
+    if (to < 0 || to >= stepOrder.length || from === to) return
+    const next = [...stepOrder]
+    const [moved] = next.splice(from, 1)
+    next.splice(to, 0, moved)
+    updateStepOrder(next)
+  }
+
+  function toggleStep(step: string) {
+    if ((FIXED_WIZARD_STEPS as readonly string[]).includes(step)) return
+    updateHiddenSteps(
+      hiddenSteps.includes(step) ? hiddenSteps.filter((s) => s !== step) : [...hiddenSteps, step]
+    )
+  }
+
+  const canNext = currentStepName === 'idea' ? idea.trim().length >= 3 : true
 
   async function generate() {
     setError(null)
@@ -52,18 +137,22 @@ export default function WizardPage() {
           mode: 'WIZARD',
           provider: setup.provider,
           model: setup.model,
-          input: {
-            idea,
-            problem,
-            targetUser,
-            features,
-            techStack: techStack
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean),
-            timeline,
-            constraints: outputFormat,
-          },
+          // Hidden steps are excluded from the AI payload (deterministic).
+          input: filterWizardInput(
+            {
+              idea,
+              problem,
+              targetUser,
+              features,
+              techStack: techStack
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean),
+              timeline,
+              constraints: outputFormat,
+            },
+            hiddenSteps
+          ),
         }),
       })
       if (!res.ok) {
@@ -109,11 +198,9 @@ export default function WizardPage() {
     setFeatureInput('')
   }
 
-  const lastStep = step === WIZARD_STEPS.length - 1
-
   const stepFields = (
     <>
-      {step === 0 && (
+      {currentStepName === 'idea' && (
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="idea">Idea / Problem Statement *</Label>
@@ -137,7 +224,7 @@ export default function WizardPage() {
           </div>
         </div>
       )}
-      {step === 1 && (
+      {currentStepName === 'targetUser' && (
         <div className="space-y-2">
           <Label htmlFor="targetUser">Target User</Label>
           <Textarea
@@ -149,7 +236,7 @@ export default function WizardPage() {
           />
         </div>
       )}
-      {step === 2 && (
+      {currentStepName === 'features' && (
         <div className="space-y-3">
           <Label>Key Features</Label>
           <div className="flex gap-2">
@@ -188,26 +275,37 @@ export default function WizardPage() {
           <p className="text-xs text-muted-foreground">Leave empty to let the AI propose features.</p>
         </div>
       )}
-      {step >= 3 && step <= 4 && (
+      {(currentStepName === 'userStories' || currentStepName === 'acceptanceCriteria') && (
         <div className="space-y-2">
-          <Label htmlFor={`notes-${step}`}>
-            {step === 3 ? 'User Story Notes' : 'Acceptance Criteria Notes'} (optional)
+          <Label htmlFor={`notes-${currentStepName}`}>
+            {currentStepName === 'userStories'
+              ? 'User Story Notes'
+              : 'Acceptance Criteria Notes'}{' '}
+            (optional)
           </Label>
           <p className="text-xs text-muted-foreground">
-            {step === 3
+            {currentStepName === 'userStories'
               ? 'Any preferred flows — the AI will expand them into As a / I want / So that stories.'
               : 'Specific criteria — the AI will derive checklist items per feature.'}
           </p>
           <Textarea
-            id={`notes-${step}`}
-            value={step === 3 ? targetUser : problem}
-            onChange={(e) => (step === 3 ? setTargetUser(e.target.value) : setProblem(e.target.value))}
+            id={`notes-${currentStepName}`}
+            value={currentStepName === 'userStories' ? targetUser : problem}
+            onChange={(e) =>
+              currentStepName === 'userStories'
+                ? setTargetUser(e.target.value)
+                : setProblem(e.target.value)
+            }
             rows={3}
-            placeholder={step === 3 ? 'e.g. users can invite team members…' : 'e.g. login must support Google SSO…'}
+            placeholder={
+              currentStepName === 'userStories'
+                ? 'e.g. users can invite team members…'
+                : 'e.g. login must support Google SSO…'
+            }
           />
         </div>
       )}
-      {step === 5 && (
+      {currentStepName === 'techStack' && (
         <div className="space-y-2">
           <Label htmlFor="techstack">Preferred Tech Stack (optional)</Label>
           <p className="text-xs text-muted-foreground">Comma-separated. Leave blank for AI recommendation.</p>
@@ -219,7 +317,7 @@ export default function WizardPage() {
           />
         </div>
       )}
-      {step === 6 && (
+      {currentStepName === 'timeline' && (
         <div className="space-y-2">
           <Label htmlFor="timeline">Timeline Notes (optional)</Label>
           <Textarea
@@ -231,18 +329,16 @@ export default function WizardPage() {
           />
         </div>
       )}
-      {step === 7 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="outputformat">Output Format Requirements (optional)</Label>
-            <Textarea
-              id="outputformat"
-              value={outputFormat}
-              onChange={(e) => setOutputFormat(e.target.value)}
-              rows={3}
-              placeholder="e.g. mobile-first responsive web app with offline support"
-            />
-          </div>
+      {currentStepName === 'outputFormat' && (
+        <div className="space-y-2">
+          <Label htmlFor="outputformat">Output Format Requirements (optional)</Label>
+          <Textarea
+            id="outputformat"
+            value={outputFormat}
+            onChange={(e) => setOutputFormat(e.target.value)}
+            rows={3}
+            placeholder="e.g. mobile-first responsive web app with offline support"
+          />
         </div>
       )}
     </>
@@ -253,15 +349,33 @@ export default function WizardPage() {
       <div>
         <h1 className="text-2xl font-bold">PRD Wizard</h1>
         <p className="text-sm text-muted-foreground">
-          Step {step + 1} of {WIZARD_STEPS.length}: {WIZARD_STEPS[step]}
+          Step {visibleSteps.indexOf(currentStepName) + 1} of {visibleSteps.length}:{' '}
+          {currentStepName}
         </p>
       </div>
 
-      <WizardStepper steps={WIZARD_STEPS} currentStep={step} onStepClick={setStep} />
+      <WizardStepper
+        steps={stepOrder}
+        currentStep={currentStep}
+        onStepClick={(i) => setCurrentStepName(stepOrder[i])}
+        canConfigure={configuring}
+        onMoveStep={moveStep}
+        onToggleStep={toggleStep}
+        hiddenSteps={hiddenSteps}
+      />
 
       <Card>
-        <CardHeader>
-          <CardTitle className="capitalize">{WIZARD_STEPS[step]}</CardTitle>
+        <CardHeader className="flex-row items-center justify-between space-y-0">
+          <CardTitle className="capitalize">{currentStepName}</CardTitle>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setConfiguring((c) => !c)}
+            disabled={generating}
+          >
+            {configuring ? 'Done' : 'Reorder steps'}
+          </Button>
         </CardHeader>
         <CardContent className="space-y-6">
           {setup.config}
@@ -279,27 +393,33 @@ export default function WizardPage() {
             </div>
           )}
           {result && <p className="text-sm text-primary">PRD generated — redirecting…</p>}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setStep((s) => Math.max(0, s - 1))}
-              disabled={step === 0 || generating}
-            >
-              Back
-            </Button>
-            {lastStep ? (
-              <Button onClick={generate} disabled={generating || !canNext[0]}>
-                {generating ? 'Generating…' : 'Generate PRD'}
-              </Button>
-            ) : (
+          {!configuring && (
+            <div className="flex items-center justify-between">
               <Button
-                onClick={() => setStep((s) => Math.min(WIZARD_STEPS.length - 1, s + 1))}
-                disabled={!canNext[step]}
+                variant="outline"
+                onClick={back}
+                disabled={currentStepName === 'idea' || generating}
               >
-                Next
+                Back
               </Button>
-            )}
-          </div>
+              {lastStep ? (
+                <Button onClick={generate} disabled={generating || idea.trim().length < 3}>
+                  {generating ? 'Generating…' : 'Generate PRD'}
+                </Button>
+              ) : (
+                <Button onClick={next} disabled={!canNext || generating}>
+                  Next
+                </Button>
+              )}
+            </div>
+          )}
+          {configuring && (
+            <p className="text-xs text-muted-foreground">
+              Reorder steps with ↑/↓ and hide optional steps with Hide. Hidden steps are skipped
+              during navigation and excluded from the AI input. The idea step stays first and is
+              always required.
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -109,6 +109,8 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+export * from './wizard-steps'
+
 /** Truncate long text for list previews — the result never exceeds `max` chars. */
 export function truncate(text: string, max = 120): string {
   if (text.length <= max) return text
