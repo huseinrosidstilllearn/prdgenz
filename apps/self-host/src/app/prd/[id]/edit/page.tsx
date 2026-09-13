@@ -86,7 +86,7 @@ export default function EditPRDPage({ params }: { params: { id: string } }) {
       </Card>
 
       <p className="text-sm text-muted-foreground">
-        To change content, generate a new version via Wizard / Chat / One-Shot — every change is
+        To change content, generate a new version via Create from Scratch / Chat / One-Shot — every change is
         kept as a restorable version.
       </p>
     </div>

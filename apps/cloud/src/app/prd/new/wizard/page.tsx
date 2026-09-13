@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -62,7 +62,7 @@ export default function WizardPage() {
         }
       }
     } catch {
-      /* corrupt JSON → keep defaults */
+      /* corrupt JSON â†’ keep defaults */
     }
     setConfigLoaded(true)
   }, [])
@@ -83,7 +83,7 @@ export default function WizardPage() {
   function updateHiddenSteps(next: string[]) {
     setHiddenSteps(next)
     persistConfig(stepOrder, next)
-    // Toggle-hide on the active step → auto-jump to the next visible step.
+    // Toggle-hide on the active step â†’ auto-jump to the next visible step.
     if (next.includes(currentStepName)) {
       const visible = stepOrder.filter((s) => !next.includes(s))
       const idx = visible.indexOf(currentStepName)
@@ -217,7 +217,7 @@ export default function WizardPage() {
               id="idea"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              placeholder="Describe the product you want to build…"
+              placeholder="Describe the product you want to buildâ€¦"
               rows={5}
             />
           </div>
@@ -240,7 +240,7 @@ export default function WizardPage() {
             id="targetUser"
             value={targetUser}
             onChange={(e) => setTargetUser(e.target.value)}
-            placeholder="Who will use this product? e.g. freelance developers in Indonesia…"
+            placeholder="Who will use this product? e.g. freelance developers in Indonesiaâ€¦"
             rows={4}
           />
         </div>
@@ -276,7 +276,7 @@ export default function WizardPage() {
                   className="text-muted-foreground hover:text-destructive"
                   onClick={() => setFeatures((arr) => arr.filter((_, j) => j !== i))}
                 >
-                  ×
+                  Ã—
                 </button>
               </li>
             ))}
@@ -296,8 +296,8 @@ export default function WizardPage() {
           </Label>
           <p className="text-xs text-muted-foreground">
             {currentStepName === 'userStories'
-              ? 'Any preferred flows — the AI will expand them into As a / I want / So that stories.'
-              : 'Specific criteria — the AI will derive checklist items per feature.'}
+              ? 'Any preferred flows â€” the AI will expand them into As a / I want / So that stories.'
+              : 'Specific criteria â€” the AI will derive checklist items per feature.'}
           </p>
           <Textarea
             id={`notes-${currentStepName}`}
@@ -310,8 +310,8 @@ export default function WizardPage() {
             rows={3}
             placeholder={
               currentStepName === 'userStories'
-                ? 'e.g. users can invite team members…'
-                : 'e.g. login must support Google SSO…'
+                ? 'e.g. users can invite team membersâ€¦'
+                : 'e.g. login must support Google SSOâ€¦'
             }
           />
         </div>
@@ -358,7 +358,7 @@ export default function WizardPage() {
               id="project"
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              placeholder="Project ID — paste from dashboard, or leave blank"
+              placeholder="Project ID â€” paste from dashboard, or leave blank"
             />
           </div>
         </div>
@@ -369,7 +369,7 @@ export default function WizardPage() {
   return (
     <div className="container max-w-2xl space-y-6 py-10">
       <div>
-        <h1 className="text-2xl font-bold">PRD Wizard</h1>
+        <h1 className="text-2xl font-bold">Create from Scratch</h1>
         <p className="text-sm text-muted-foreground">
           Step {visibleSteps.indexOf(currentStepName) + 1} of {visibleSteps.length}:{' '}
           {currentStepName}
@@ -406,16 +406,16 @@ export default function WizardPage() {
           {generating && (
             <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
               <p className="text-xs font-medium text-muted-foreground">
-                Generating… {streamText.length} chars streamed
+                Generatingâ€¦ {streamText.length} chars streamed
               </p>
-              <AIChatBubble role="assistant" content={streamText || 'Contacting AI…'} streaming />
+              <AIChatBubble role="assistant" content={streamText || 'Contacting AIâ€¦'} streaming />
               <Button variant="outline" size="sm" onClick={() => abortRef.current?.abort()}>
                 Cancel
               </Button>
             </div>
           )}
           {result && (
-            <p className="text-sm text-primary">PRD generated — redirecting to the PRD page…</p>
+            <p className="text-sm text-primary">PRD generated â€” redirecting to the PRD pageâ€¦</p>
           )}
           {!configuring && (
             <div className="flex items-center justify-between">
@@ -428,7 +428,7 @@ export default function WizardPage() {
               </Button>
               {lastStep ? (
                 <Button onClick={generate} disabled={generating || idea.trim().length < 3}>
-                  {generating ? 'Generating…' : 'Generate PRD'}
+                  {generating ? 'Generatingâ€¦' : 'Generate PRD'}
                 </Button>
               ) : (
                 <Button onClick={next} disabled={!canNext || generating}>
@@ -439,7 +439,7 @@ export default function WizardPage() {
           )}
           {configuring && (
             <p className="text-xs text-muted-foreground">
-              Reorder steps with ↑/↓ and hide optional steps with Hide. Hidden steps are skipped
+              Reorder steps with â†‘/â†“ and hide optional steps with Hide. Hidden steps are skipped
               during navigation and excluded from the AI input. The idea step stays first and is
               always required.
             </p>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { SVGProps } from 'react'
-import { Badge, Button, LiveBadge, ModeCard, IconChip, ThemeToggle } from '@prdgenz/ui'
+import { Badge, Button, LiveBadge, ModeCard, IconChip, ShimmerButton, ThemeToggle, DotPattern, Marquee } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
 
 // Icons — lucide-style strokes, same visual family as ngodingpakeai.
@@ -79,9 +79,9 @@ const MODES = [
   {
     href: '/prd/new/wizard',
     badge: 'UPDATE BARU',
-    title: 'Wizard Mode',
+    title: 'Create from Scratch',
     description:
-      'Dari ide jadi PRD lengkap — step-by-step, atur urutan & pilih section, generate per-section.',
+      'Susun sendiri step-by-step — atur urutan & pilih section, generate per-section.',
     icon: WandIcon,
     chipClass: 'bg-emerald-950/80 text-emerald-400 dark:bg-emerald-400/15',
   },
@@ -151,8 +151,9 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero — "Mau bikin PRD apa hari ini?" + mode grid */}
-        <section className="flex flex-col items-center px-4 pb-24 pt-16 sm:px-6 sm:pt-20">
-          <div className="w-full max-w-4xl space-y-10">
+        <section className="relative flex flex-col items-center overflow-hidden px-4 pb-24 pt-16 sm:px-6 sm:pt-20">
+          <DotPattern className="absolute inset-0 h-full w-full text-border/60 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_75%)]" />
+          <div className="relative w-full max-w-4xl space-y-10">
             <div className="space-y-6 text-center">
               {/* LIVE pill with stats — social proof like the reference */}
               <div className="flex justify-center">
@@ -177,7 +178,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
+              <h1 className="text-gradient font-heading text-4xl font-bold tracking-tight sm:text-5xl">
                 Mau bikin PRD apa hari ini?
               </h1>
               <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg">
@@ -185,13 +186,18 @@ export default function LandingPage() {
                 siap dipake AI coding agent — <span className="font-semibold text-foreground">gratis</span> untuk
                 mulai, API key kamu sendiri.
               </p>
+              <div className="flex justify-center pt-2">
+                <ShimmerButton asChild>
+                  <Link href="/register">Mulai Gratis</Link>
+                </ShimmerButton>
+              </div>
             </div>
 
             {/* Mode cards — border-2 tiles, icon chip, hover lift */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {MODES.map((m) => (
                 <Link key={m.href} href={m.href} className="group cursor-pointer">
-                  <ModeCard className="h-full cursor-pointer">
+                  <ModeCard beam className="h-full cursor-pointer">
                     {m.badge && (
                       <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                         {m.badge}
@@ -223,14 +229,16 @@ export default function LandingPage() {
         {/* Feature strip */}
         <section className="border-t bg-muted/40 py-16">
           <div className="container">
-            <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
-              {['AI-Ready Output', 'Version History', 'Per-Section Generate', 'Share Link', 'Dark Mode'].map(
-                (f) => (
-                  <Badge key={f} variant="secondary" className="px-3 py-1">
-                    {f}
-                  </Badge>
-                )
-              )}
+            <div className="mb-8">
+              <Marquee className="opacity-80">
+                {['AI-Ready Output', 'Version History', 'Per-Section Generate', 'Share Link', 'Dark Mode'].map(
+                  (f) => (
+                    <Badge key={f} variant="secondary" className="px-3 py-1">
+                      {f}
+                    </Badge>
+                  )
+                )}
+              </Marquee>
             </div>
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">

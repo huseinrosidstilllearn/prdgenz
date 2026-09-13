@@ -57,7 +57,7 @@ export default async function PRDPage({ params }: { params: Promise<{ id: string
         <PRDActions prdId={prd.id} title={prd.title} content={content} isPro={user?.role === 'PRO'} language={prd.language} />
       ) : (
         <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
-          No generated content yet — generate a version from Wizard / Chat / One-Shot.
+          No generated content yet — generate a version from Create from Scratch / Chat / One-Shot.
         </div>
       )}
 

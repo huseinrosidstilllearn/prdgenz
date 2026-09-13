@@ -1,14 +1,18 @@
 import * as React from 'react'
 import { cn } from './lib/utils'
+import { BorderBeam } from './border-beam'
+
+export interface ModeCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Show a BorderBeam dot traveling the card edge (Magic UI style). */
+  beam?: boolean
+}
 
 /**
- * ModeCard — action tile styled after ngodingpakeai.com home cards:
- * border-2, icon chip, bold heading, hover lift + border highlight.
- * Wrap in a link/button and make it feel alive:
- *   hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0
+ * ModeCard — action tile: border-2, icon chip, bold heading,
+ * hover lift + border highlight, optional border beam.
  */
-const ModeCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+const ModeCard = React.forwardRef<HTMLDivElement, ModeCardProps>(
+  ({ className, beam = false, children, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
@@ -20,7 +24,10 @@ const ModeCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
         className
       )}
       {...props}
-    />
+    >
+      {beam ? <BorderBeam /> : null}
+      {children}
+    </div>
   )
 )
 ModeCard.displayName = 'ModeCard'

@@ -12,7 +12,7 @@ AI-powered PRD Generator — generate professional PRDs for AI coding assistants
 
 ## Features
 
-- **Wizard Mode** — step-by-step guided PRD creation
+- **Create from Scratch** — step-by-step guided PRD creation
 - **Chat Mode** — conversational AI assistant that clarifies your idea
 - **One-Shot Mode** — single input, full PRD output
 - **Multi-Provider AI** — OpenAI, Anthropic, Google, OmniRoute, TokenRouter, 9Router

@@ -112,7 +112,7 @@ export default function EditPRDPage({ params }: { params: Promise<{ id: string }
 
       <p className="text-sm text-muted-foreground">
         To change the content itself, use <strong>Regenerate</strong> on the PRD page or create a new
-        version via Wizard / Chat / One-Shot — every change is kept as a new version you can
+        version via Create from Scratch / Chat / One-Shot — every change is kept as a new version you can
         restore.
       </p>
     </div>

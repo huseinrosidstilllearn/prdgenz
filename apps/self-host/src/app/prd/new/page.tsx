@@ -61,9 +61,9 @@ const MODES = [
   {
     href: '/prd/new/wizard',
     badge: 'UPDATE BARU',
-    title: 'Wizard',
+    title: 'Create from Scratch',
     description:
-      'Step-by-step dari ide ke PRD. Atur urutan section, hide yang nggak perlu, generate per-section.',
+      'Susun sendiri step-by-step dari ide ke PRD. Atur urutan section, hide yang nggak perlu, generate per-section.',
     icon: WandIcon,
     chipClass: 'bg-emerald-950/80 text-emerald-400 dark:bg-emerald-400/15',
   },
@@ -101,7 +101,7 @@ export default function NewPRDPage() {
         <div className="grid gap-4 md:grid-cols-3">
           {MODES.map((m) => (
             <Link key={m.href} href={m.href} className="group cursor-pointer">
-              <ModeCard className="h-full cursor-pointer">
+              <ModeCard beam className="h-full cursor-pointer">
                 {m.badge && (
                   <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                     {m.badge}

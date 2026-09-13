@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { DM_Sans, Inter } from 'next/font/google'
+import { Bricolage_Grotesque, Plus_Jakarta_Sans } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
@@ -26,16 +26,16 @@ export const metadata: Metadata = {
   },
 }
 
-// Visual language synced to ngodingpakeai.com: DM Sans display + Inter body.
-const inter = Inter({
+// Brand identity: Bricolage Grotesque display + Plus Jakarta Sans body.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-jakarta',
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-bricolage',
   display: 'swap',
 })
 
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}
+        className={`${jakarta.variable} ${bricolage.variable} min-h-screen bg-background font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

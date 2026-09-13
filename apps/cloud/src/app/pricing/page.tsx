@@ -1,9 +1,9 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@prdgenz/ui'
 import { Button, ThemeToggle } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
 
-/** Public pricing page (PRD §9.2, §14). */
+/** Public pricing page (PRD Â§9.2, Â§14). */
 export default function PricingPage() {
   const plans = [
     {
@@ -12,7 +12,7 @@ export default function PricingPage() {
       cadence: 'forever',
       features: [
         `${FREE_PLAN_LIMIT} PRDs per 30 days`,
-        'Wizard, Chat & One-Shot modes',
+        'Create from Scratch, Chat & One-Shot modes',
         'Markdown + AI-prompt export',
         '1 project',
         'Bring your own API key',
@@ -39,7 +39,7 @@ export default function PricingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Sticky blurred header — same treatment as landing */}
+      {/* Sticky blurred header â€” same treatment as landing */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-14 items-center justify-between px-2 sm:px-3">
           <Link href="/" className="font-heading text-lg font-bold tracking-tight">
@@ -104,7 +104,7 @@ export default function PricingPage() {
                 <ul className="space-y-2 text-sm">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2">
-                      <span className="text-primary">✓</span>
+                      <span className="text-primary">âœ“</span>
                       {f}
                     </li>
                   ))}
@@ -117,7 +117,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Prefer full control? Run the open-source self-hosted version with Docker —
+          Prefer full control? Run the open-source self-hosted version with Docker â€”
           free forever, no account needed.
         </p>
       </main>

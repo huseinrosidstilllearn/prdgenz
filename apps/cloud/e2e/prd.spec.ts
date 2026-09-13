@@ -146,7 +146,7 @@ test('wizard step reorder/toggle configures navigation and AI payload exclusion 
   // Fresh wizard visit — assert the configure-mode UI only (the payload
   // exclusion itself is covered by the filterWizardInput unit tests).
   await page.goto('/prd/new/wizard')
-  await expect(page.getByRole('heading', { name: 'PRD Wizard' })).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByRole('heading', { name: 'Create from Scratch' })).toBeVisible({ timeout: 30_000 })
 
   // Fill the idea so the Next guard passes and the step buttons activate.
   await page.getByLabel(/Idea \/ Problem Statement/).fill('Aplikasi kasir untuk kedai kopi.')
@@ -162,7 +162,7 @@ test('wizard step reorder/toggle configures navigation and AI payload exclusion 
 
   // Close configure mode — the nav buttons reappear.
   await page.getByRole('button', { name: 'Done', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'Next' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Next', exact: true })).toBeVisible()
 
   // Hidden step is dimmed + labeled (hidden) in the stepper; idea stays first
   // and features now sits right before it (moved above userStories).

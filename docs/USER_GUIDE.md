@@ -23,7 +23,7 @@ Panduan lengkap memakai PRD GenZ: versi cloud (SaaS, multi-user) dan self-host (
 |---|---|
 | **Project** | Wadah untuk mengelompokkan PRD (mis. satu per produk) |
 | **PRD** | Product Requirements Document — hasil generate AI |
-| **Mode** | Cara memberi input ke AI: **Wizard** (bertahap), **Chat** (percakapan), **One-Shot** (satu ide → PRD penuh) |
+| **Mode** | Cara memberi input ke AI: **Create from Scratch** (bertahap), **Chat** (percakapan), **One-Shot** (satu ide → PRD penuh) |
 | **BYOK** | *Bring Your Own Key* — Anda memakai API key AI milik sendiri |
 | **Provider** | Layanan AI yang dipakai: OpenAI, Anthropic, Google, OmniRoute, TokenRouter, 9Router, atau endpoint custom OpenAI-compatible |
 | **Version** | Setiap generate/menyimpan membuat versi baru — versi lama tidak pernah tertimpa |
@@ -55,7 +55,7 @@ Dua bahasa output PRD: **ID** (Bahasa Indonesia) dan **EN** (English).
 ### One-Shot Mode
 Tulis ide dalam 1–2 paragraf → AI langsung menghasilkan PRD lengkap (fitur, user story, kriteria, tech stack, timeline, risiko). Cocok saat ide sudah jelas di kepala.
 
-### Wizard Mode
+### Create from Scratch
 Dipandu 8 langkah terstruktur: ide → target user → fitur → user story → kriteria → tech stack → timeline → format output. Cocok saat mau memikirkan tiap bagian dengan teliti.
 
 ### Chat Mode
