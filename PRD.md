@@ -36,7 +36,7 @@ Membantu developer dan product manager mengubah ide mentah menjadi dokumen PRD y
 4. Tool PRD yang ada tidak mendukung output yang siap langsung dipakai oleh AI coding assistant
 
 ### 2.2 Solusi
-PRD GenZ mengubah ide/problem menjadi PRD lengkap dengan bantuan AI, melalui wizard terstruktur, chat interaktif, atau input satu kali. Outputnya langsung bisa dipakai untuk AI coding.
+PRD GenZ mengubah ide/problem menjadi PRD lengkap dengan bantuan AI, melalui mode terstruktur Create from Scratch, chat interaktif, atau input satu kali. Outputnya langsung bisa dipakai untuk AI coding.
 
 ---
 
@@ -101,7 +101,9 @@ PRD GenZ mengubah ide/problem menjadi PRD lengkap dengan bantuan AI, melalui wiz
 
 ### 6.1 Mode Pembuatan PRD
 
-#### 6.1.1 Wizard Mode (Default)
+#### 6.1.1 Create from Scratch Mode (Default)
+
+> Sebelumnya "Wizard Mode" — URL route (`/prd/new/wizard`), enum API (`WIZARD`), dan identifier internal (`WizardStepper`, `prdgenz:wizard-config`) tetap tidak berubah.
 - **Input**: User mengisi form multi-step
 - **Langkah**:
   1. Ide / Problem Statement
@@ -468,8 +470,8 @@ prdgenz/
 | Login | /login | Email/password + OAuth |
 | Register | /register | Email/password + OAuth |
 | Dashboard | /dashboard | List project + PRD |
-| New PRD | /prd/new | Pilih mode (wizard/chat/one-shot) |
-| Wizard | /prd/new/wizard | Form multi-step |
+| New PRD | /prd/new | Pilih mode (create-from-scratch/chat/one-shot) |
+| Create from Scratch | /prd/new/wizard | Form multi-step |
 | Chat | /prd/new/chat | Chat interface |
 | One-Shot | /prd/new/oneshot | Single input |
 | PRD View | /prd/[id] | Preview + export + version |
@@ -765,10 +767,12 @@ model ApiKey {
 | Aksesibilitas | ◐ Partial (1.2.0) | aria-label toggle, focus-ring shadcn; WCAG AA audit backlog |
 | DOCX export | ✗ v2 | Sesuai rencana |
 | Deploy cloud (Cloudflare Workers) | ✓ Live 2026-09-13 | https://prdgenz.my.id via OpenNext (cloudflare-node wrapper, nodejs_compat); DB Supabase Postgres via session pooler (IPv4) dengan @prisma/adapter-pg; secrets via wrangler secret; build:cf/deploy:cf scripts; tanpa rilis versi/tag |
+| UI revamp Magic UI × GenZ | ✓ Implemented (1.5.0) | Token violet oklch (primary electric violet, dark violet-slate), font Bricolage Grotesque + Plus Jakarta Sans (next/font), komponen CSS-only ShimmerButton/BorderBeam/DotPattern/Marquee (packages/ui, smoke tests), ModeCard beam prop, rebrand label "Wizard" → "Create from Scratch" (UI copy saja, URL/enum tetap) |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5.0 | 2026-09-14 | UI revamp: Magic UI aesthetic (shimmer/beam/marquee/dot-pattern), font Bricolage + Plus Jakarta Sans, Wizard → Create from Scratch rebrand |
 | 1.4.0 | 2026-09-13 | Per-section generate: dynamic section prompt + merge draft (shared), /api/ai/section SSE route cloud + self-host, SectionRegenerate UI di PRD page, full-PRD-answer unwrap |
 | 1.3.0 | 2026-09-13 | Version diff view: per-section markdown diff, picker from/to, cloud + self-host |
 | 1.2.1 | 2026-09-12 | Self-host parity: dark mode, status pages, favicon, noindex SEO |
