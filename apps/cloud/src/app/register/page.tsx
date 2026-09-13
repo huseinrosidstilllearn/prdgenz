@@ -51,15 +51,22 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <Link href="/" className="text-lg font-bold">
-            PRD GenZ
+          <Link href="/" className="text-lg font-bold tracking-tight">
+            <span className="font-heading font-bold tracking-tight">
+              prd<span className="text-primary">genz</span>
+            </span>
           </Link>
-          <h1 className="mt-2 text-2xl font-semibold">Create your account</h1>
+          <h1 className="font-heading mt-2 text-2xl font-bold tracking-tight">
+            Create your account
+          </h1>
           <p className="text-sm text-muted-foreground">
             Free plan: 10 PRDs per month, Markdown export
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 rounded-xl border-2 bg-card p-6 shadow-sm"
+        >
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" name="name" placeholder="Your name" required />
@@ -79,7 +86,7 @@ export default function RegisterPage() {
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" size="lg" disabled={loading}>
             {loading ? 'Creating account…' : 'Create account'}
           </Button>
         </form>

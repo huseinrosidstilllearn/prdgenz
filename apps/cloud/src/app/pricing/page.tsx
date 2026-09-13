@@ -39,29 +39,49 @@ export default function PricingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="text-lg font-bold">
-            PRD GenZ
+      {/* Sticky blurred header — same treatment as landing */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+        <div className="container flex h-14 items-center justify-between px-2 sm:px-3">
+          <Link href="/" className="font-heading text-lg font-bold tracking-tight">
+            prd<span className="text-primary">genz</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link href="/login" className="text-muted-foreground hover:text-foreground">
+          <nav className="flex items-center gap-2 text-sm sm:gap-4">
+            <Link
+              href="/login"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
               Login
             </Link>
             <ThemeToggle />
             <Button asChild size="sm">
-              <Link href="/register">Get Started</Link>
+              <Link href="/register">Mulai Gratis</Link>
             </Button>
           </nav>
         </div>
       </header>
 
       <main className="container flex-1 py-20">
-        <h1 className="mb-3 text-center text-4xl font-bold">Simple pricing</h1>
-        <p className="mb-12 text-center text-muted-foreground">
-          Start free. Upgrade when you need more.
-        </p>
-        <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+        <div className="mx-auto max-w-2xl space-y-6 text-center">
+          <div className="flex justify-center">
+            <div className="flex items-center gap-3 rounded-full border bg-card px-4 py-1.5 shadow-sm">
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                Pricing
+              </span>
+              <span className="h-4 w-px bg-border opacity-60" aria-hidden="true" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Gratis buat mulai, Pro kalau butuh lebih
+              </span>
+            </div>
+          </div>
+          <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
+            Harga sederhana, tanpa drama
+          </h1>
+          <p className="text-muted-foreground">
+            Start free. Upgrade when you need more.
+          </p>
+        </div>
+
+        <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
           {plans.map((plan) => (
             <Card
               key={plan.name}
@@ -69,11 +89,13 @@ export default function PricingPage() {
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
+                  <CardTitle className="font-heading text-xl">{plan.name}</CardTitle>
                   {plan.highlight && <Badge>Popular</Badge>}
                 </div>
                 <div className="pt-2">
-                  <span className="text-4xl font-bold">{plan.price}</span>{' '}
+                  <span className="font-heading text-4xl font-bold tabular-nums">
+                    {plan.price}
+                  </span>{' '}
                   <span className="text-sm text-muted-foreground">{plan.cadence}</span>
                 </div>
                 <CardDescription>&nbsp;</CardDescription>

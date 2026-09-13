@@ -85,7 +85,7 @@ export default function SettingsPage() {
   return (
     <div className="container max-w-2xl space-y-8 py-10">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
           Manage your AI provider API keys. Keys are encrypted (AES-256) before storage.
         </p>

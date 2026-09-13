@@ -31,16 +31,24 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard" className="text-lg font-bold">
-            PRD GenZ
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+        <div className="container flex h-14 items-center justify-between px-2 sm:px-3">
+          <Link href="/dashboard" className="text-lg font-bold tracking-tight">
+            <span className="font-heading font-bold tracking-tight">
+              prd<span className="text-primary">genz</span>
+            </span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link href="/prd/new" className="text-muted-foreground hover:text-foreground">
+          <nav className="flex items-center gap-2 text-sm sm:gap-4">
+            <Link
+              href="/prd/new"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
               New PRD
             </Link>
-            <Link href="/settings" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/settings"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
               Settings
             </Link>
             <ThemeToggle />
@@ -52,9 +60,9 @@ export default async function DashboardPage() {
       </header>
 
       <main className="container flex-1 space-y-10 py-10">
-        <section className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <section className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-1">
+            <h1 className="font-heading text-2xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-sm text-muted-foreground">
               {user?.role === 'PRO'
                 ? 'Unlimited PRDs — Pro plan'
@@ -65,9 +73,9 @@ export default async function DashboardPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Recent PRDs</h2>
+          <h2 className="font-heading text-lg font-bold tracking-tight">Recent PRDs</h2>
           {prds.length === 0 ? (
-            <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
+            <div className="rounded-xl border-2 border-dashed p-10 text-center text-muted-foreground">
               <p className="mb-4">No PRDs yet.</p>
               <Link
                 href="/prd/new"
@@ -82,9 +90,9 @@ export default async function DashboardPage() {
                 <Link
                   key={prd.id}
                   href={`/prd/${prd.id}`}
-                  className="rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                  className="rounded-xl border-2 bg-card p-5 shadow-sm transition-all duration-150 hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0"
                 >
-                  <p className="mb-1 font-medium">{truncate(prd.title, 60)}</p>
+                  <p className="mb-1 font-semibold">{truncate(prd.title, 60)}</p>
                   <p className="mb-3 text-xs text-muted-foreground">
                     {prd.project.name} · v{prd.currentVersion} · {prd.mode.toLowerCase()}
                   </p>
@@ -96,9 +104,9 @@ export default async function DashboardPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Projects</h2>
+          <h2 className="font-heading text-lg font-bold tracking-tight">Projects</h2>
           {projects.length === 0 ? (
-            <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
+            <div className="rounded-xl border-2 border-dashed p-10 text-center text-muted-foreground">
               No projects yet — create one to organize your PRDs.
             </div>
           ) : (
@@ -106,9 +114,9 @@ export default async function DashboardPage() {
               {projects.map((p) => (
                 <div
                   key={p.id}
-                  className="rounded-xl border bg-card p-5 shadow-sm"
+                  className="rounded-xl border-2 bg-card p-5 shadow-sm"
                 >
-                  <p className="font-medium">{p.name}</p>
+                  <p className="font-semibold">{p.name}</p>
                   {p.description && (
                     <p className="mt-1 text-sm text-muted-foreground">{truncate(p.description, 80)}</p>
                   )}

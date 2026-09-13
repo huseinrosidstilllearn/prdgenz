@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { DM_Sans, Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
@@ -25,13 +26,28 @@ export const metadata: Metadata = {
   },
 }
 
+// Visual language synced to ngodingpakeai.com: DM Sans display + Inter body.
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body
+        className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}
+      >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

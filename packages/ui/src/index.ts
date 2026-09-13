@@ -23,3 +23,6 @@ export { ProviderSelector } from './provider-selector'
 export { PRDPreview } from './prd-preview'
 export { ThemeToggle } from './theme-toggle'
 export { SectionRegenerate } from './section-regenerate'
+
+// Visual language (ngodingpakeai.com style)
+export { ModeCard, IconChip, LiveBadge } from './mode-card'

@@ -46,10 +46,13 @@ export function WizardStepper({
                 disabled={!onStepClick || i > currentStep}
                 aria-label={isHidden ? `${step} (hidden)` : undefined}
                 className={cn(
-                  'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                  'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150',
+                  'hover:border-ring/40',
                   state === 'done' && 'border-primary bg-primary/10 text-primary',
-                  state === 'active' && 'border-primary bg-primary text-primary-foreground',
+                  state === 'active' &&
+                    'border-primary bg-primary text-primary-foreground shadow-sm',
                   state === 'todo' && 'border-muted text-muted-foreground',
+                  (onStepClick || i <= currentStep) && 'cursor-pointer active:translate-y-px',
                   isHidden && 'opacity-40 line-through'
                 )}
               >

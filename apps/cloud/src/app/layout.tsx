@@ -1,9 +1,23 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { DM_Sans, Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+
+// Visual language synced to ngodingpakeai.com: DM Sans display + Inter body.
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
@@ -42,10 +56,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body
+        className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}
+      >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
