@@ -764,6 +764,7 @@ model ApiKey {
 | Dark mode + SEO + error pages | ✓ Cloud + Self-Host (1.2.1) | next-themes (system default + toggle), error/global-error/not-found/loading; cloud: metadataBase/OG/robots/sitemap; self-host: noindex robots (private instance), favicon, manifest |
 | Aksesibilitas | ◐ Partial (1.2.0) | aria-label toggle, focus-ring shadcn; WCAG AA audit backlog |
 | DOCX export | ✗ v2 | Sesuai rencana |
+| Deploy cloud (Cloudflare Workers) | ✓ Live 2026-09-13 | https://prdgenz.my.id via OpenNext (cloudflare-node wrapper, nodejs_compat); DB Supabase Postgres via session pooler (IPv4) dengan @prisma/adapter-pg; secrets via wrangler secret; build:cf/deploy:cf scripts; tanpa rilis versi/tag |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
