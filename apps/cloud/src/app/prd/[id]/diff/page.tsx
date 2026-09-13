@@ -10,8 +10,8 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 
 interface DiffPageProps {
-  params: { id: string }
-  searchParams: { from?: string; to?: string }
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ from?: string; to?: string }>
 }
 
 /** Resolve the from/to pair: explicit query when valid, else the two newest versions. */
@@ -39,11 +39,12 @@ function resolvePair(
 
 /** Version diff view: per-section markdown diff between two versions (PRD §6.6). */
 export default async function PRDDiffPage({ params, searchParams }: DiffPageProps) {
+  const [{ id }, sp] = await Promise.all([params, searchParams])
   const session = await getServerSession(authOptions)
   const userId = (session?.user as { id?: string } | undefined)?.id
 
   const prd = await prisma.pRD.findFirst({
-    where: { id: params.id, project: { userId: userId! } },
+    where: { id, project: { userId: userId! } },
   })
   if (!prd) notFound()
 
@@ -78,7 +79,7 @@ export default async function PRDDiffPage({ params, searchParams }: DiffPageProp
     )
   }
 
-  const pair = resolvePair(available, prd.currentVersion, searchParams.from, searchParams.to)
+  const pair = resolvePair(available, prd.currentVersion, sp.from, sp.to)
   if (!pair) notFound() // e.g. only one distinct version — unreachable after the guard above, kept for safety
 
   const [fromVersion, toVersion] = await prisma.$transaction([

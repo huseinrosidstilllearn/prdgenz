@@ -3,10 +3,11 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { shareAuthCookieName, shareAuthValue } from '@/lib/share-auth'
 
-type Params = { params: { shareId: string } }
+type Params = { params: Promise<{ shareId: string }> }
 
 /** POST /api/share/[shareId]/auth — verify a share-link password (PRD §6.7). */
 export async function POST(req: Request, { params }: Params) {
+  const { shareId } = await params
   try {
     const body = await req.json().catch(() => ({}))
     const password = typeof (body as { password?: unknown })?.password === 'string'
@@ -16,7 +17,7 @@ export async function POST(req: Request, { params }: Params) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 })
     }
 
-    const prd = await prisma.pRD.findUnique({ where: { shareId: params.shareId } })
+    const prd = await prisma.pRD.findUnique({ where: { shareId } })
     if (!prd?.shareId || !prd.sharePasswordHash) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 })
     }

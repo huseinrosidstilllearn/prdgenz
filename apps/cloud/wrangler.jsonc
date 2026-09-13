@@ -1,0 +1,28 @@
+{
+  // Cloudflare Workers config for OpenNext (PRD GenZ cloud app).
+  // Secrets (DATABASE_URL, NEXTAUTH_SECRET, ENCRYPTION_KEY) are set via
+  // `wrangler secret put` — NEVER commit them here.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prdgenz-cloud",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "CF_WORKERS": "1",
+    "NEXTAUTH_URL": "https://prdgenz.my.id",
+    "NEXT_PUBLIC_APP_URL": "https://prdgenz.my.id"
+  },
+  "routes": [
+    {
+      "pattern": "prdgenz.my.id",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

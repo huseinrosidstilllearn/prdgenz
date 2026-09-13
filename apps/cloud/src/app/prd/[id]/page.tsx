@@ -12,12 +12,13 @@ import { PRDActions, VersionSidebar } from '@/components/prd-actions'
 export const dynamic = 'force-dynamic'
 
 /** PRD view: preview + export + share + version history (PRD §9.2 /prd/[id]). */
-export default async function PRDPage({ params }: { params: { id: string } }) {
+export default async function PRDPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   const userId = (session?.user as { id?: string } | undefined)?.id
 
   const prd = await prisma.pRD.findFirst({
-    where: { id: params.id, project: { userId: userId! } },
+    where: { id, project: { userId: userId! } },
     include: { project: { select: { name: true } } },
   })
   if (!prd) notFound()

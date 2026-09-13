@@ -37,17 +37,18 @@ function shareExpired(shareExpiresAt: Date | null): boolean {
 export async function generateMetadata({
   params,
 }: {
-  params: { shareId: string }
+  params: Promise<{ shareId: string }>
 }): Promise<Metadata> {
-  const prd = await getSharedPRD(params.shareId)
+  const { shareId } = await params
+  const prd = await getSharedPRD(shareId)
 
   if (!prd || shareExpired(prd.shareExpiresAt)) return { title: 'PRD not found' }
 
   if (
     prd.sharePasswordHash &&
-    !shareAuthValid(cookies(), params.shareId, prd.sharePasswordHash)
+    !(await shareAuthValid(await cookies(), shareId, prd.sharePasswordHash))
   ) {
-    return { title: 'Shared PRD â password required' }
+    return { title: 'Shared PRD â password required' }
   }
 
   return {
@@ -65,9 +66,10 @@ export async function generateMetadata({
 export default async function SharedPRDPage({
   params,
 }: {
-  params: { shareId: string }
+  params: Promise<{ shareId: string }>
 }) {
-  const prd = await getSharedPRD(params.shareId)
+  const { shareId } = await params
+  const prd = await getSharedPRD(shareId)
 
   // Expired shares are treated exactly like revoked ones (PRD Â§6.7).
   if (!prd || shareExpired(prd.shareExpiresAt)) {
@@ -86,9 +88,9 @@ export default async function SharedPRDPage({
 
   if (
     prd.sharePasswordHash &&
-    !shareAuthValid(cookies(), params.shareId, prd.sharePasswordHash)
+    !(await shareAuthValid(await cookies(), shareId, prd.sharePasswordHash))
   ) {
-    return <ShareGate shareId={params.shareId} />
+    return <ShareGate shareId={shareId} />
   }
 
   const version = await getCurrentVersion(prd.id)

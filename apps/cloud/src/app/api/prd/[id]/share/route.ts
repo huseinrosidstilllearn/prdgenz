@@ -6,14 +6,15 @@ import { requireUserId } from '@/lib/api-auth'
 import { assertPRDOwnership, ServiceError } from '@/lib/prd-service'
 import { slugify, shareCreateSchema } from '@prdgenz/shared'
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 /** POST /api/prd/[id]/share — create a view-only share link (PRD §6.7, cloud only). */
 export async function POST(req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const prd = await assertPRDOwnership(userId, params.id)
+    const prd = await assertPRDOwnership(userId, id)
     const parsed = shareCreateSchema.safeParse(await req.json().catch(() => ({})))
     if (!parsed.success) {
       return NextResponse.json(
@@ -54,10 +55,11 @@ export async function POST(req: Request, { params }: Params) {
 
 /** DELETE /api/prd/[id]/share — revoke the share link. */
 export async function DELETE(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const prd = await assertPRDOwnership(userId, params.id)
+    const prd = await assertPRDOwnership(userId, id)
     await prisma.pRD.update({
       where: { id: prd.id },
       data: { shareId: null, sharePasswordHash: null, shareExpiresAt: null },

@@ -21,7 +21,7 @@ import { POST } from './route'
 
 function call(vid: string): ReturnType<typeof POST> {
   return POST(new Request('http://localhost/x', { method: 'POST' }), {
-    params: { id: 'prd1', vid },
+    params: Promise.resolve({ id: 'prd1', vid }),
   })
 }
 

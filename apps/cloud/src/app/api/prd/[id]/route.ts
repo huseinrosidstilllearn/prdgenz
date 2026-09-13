@@ -10,15 +10,16 @@ const updateSchema = z.object({
   language: z.enum(['ID', 'EN']).optional(),
 })
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 /** GET /api/prd/[id] — PRD detail with current version (PRD §10.2). */
 export async function GET(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const prd = await prisma.pRD.findFirst({
-      where: { id: params.id, project: { userId } },
+      where: { id: id, project: { userId } },
       include: {
         project: { select: { id: true, name: true } },
         versions: {
@@ -41,6 +42,7 @@ export async function GET(_req: Request, { params }: Params) {
 
 /** PUT /api/prd/[id] — update PRD metadata. */
 export async function PUT(req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
@@ -48,8 +50,8 @@ export async function PUT(req: Request, { params }: Params) {
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
     }
-    await assertPRDOwnership(userId, params.id)
-    const prd = await prisma.pRD.update({ where: { id: params.id }, data: parsed.data })
+    await assertPRDOwnership(userId, id)
+    const prd = await prisma.pRD.update({ where: { id: id }, data: parsed.data })
     return NextResponse.json({ prd })
   } catch (err) {
     if (err instanceof ServiceError) {
@@ -62,14 +64,15 @@ export async function PUT(req: Request, { params }: Params) {
 
 /** DELETE /api/prd/[id] — delete PRD and its versions. */
 export async function DELETE(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!rateLimit(`prd:${userId}`)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
   try {
-    await assertPRDOwnership(userId, params.id)
-    await prisma.pRD.delete({ where: { id: params.id } })
+    await assertPRDOwnership(userId, id)
+    await prisma.pRD.delete({ where: { id: id } })
     return NextResponse.json({ ok: true })
   } catch (err) {
     if (err instanceof ServiceError) {

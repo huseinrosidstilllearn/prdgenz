@@ -50,7 +50,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithoutShare as never)
     vi.mocked(prisma.pRD.update).mockResolvedValue({ ...prdWithoutShare, shareId: 'x' } as never)
 
-    const res = await share(makeReq(), { params: { id: 'prd1' } })
+    const res = await share(makeReq(), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.shareId).toMatch(/^aplikasi-kasir-[0-9a-f]{8}$/)
@@ -62,7 +62,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithShare as never)
 
-    const res = await share(makeReq(), { params: { id: 'prd1' } })
+    const res = await share(makeReq(), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(200)
     expect((await res.json()).shareId).toBe('aplikasi-kasir-abc12345')
     expect(prisma.pRD.update).not.toHaveBeenCalled()
@@ -71,13 +71,13 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
   it('returns 404 for a PRD owned by someone else', async () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockRejectedValue(new ServiceError('PRD not found', 404))
-    const res = await share(makeReq(), { params: { id: 'foreign' } })
+    const res = await share(makeReq(), { params: Promise.resolve({ id: 'foreign' }) })
     expect(res.status).toBe(404)
   })
 
   it('returns 401 without a session', async () => {
     vi.mocked(requireUserId).mockResolvedValue(null)
-    const res = await share(makeReq(), { params: { id: 'prd1' } })
+    const res = await share(makeReq(), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(401)
   })
 
@@ -86,7 +86,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithoutShare as never)
     vi.mocked(prisma.pRD.update).mockResolvedValue({ ...prdWithoutShare, shareId: 'x' } as never)
 
-    const res = await share(makeReq({ password: 'supersecret1' }), { params: { id: 'prd1' } })
+    const res = await share(makeReq({ password: 'supersecret1' }), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(200)
     const updateArg = vi.mocked(prisma.pRD.update).mock.calls[0]![0]
     const hash = updateArg.data.sharePasswordHash as string
@@ -103,7 +103,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(prisma.pRD.update).mockResolvedValue({ ...prdWithoutShare, shareId: 'x' } as never)
 
     const before = Date.now()
-    const res = await share(makeReq({ expiresInDays: 7 }), { params: { id: 'prd1' } })
+    const res = await share(makeReq({ expiresInDays: 7 }), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(200)
     const updateArg = vi.mocked(prisma.pRD.update).mock.calls[0]![0]
     const expiresAt = updateArg.data.shareExpiresAt as Date
@@ -121,7 +121,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(prisma.pRD.update).mockResolvedValue({ ...prdWithoutShare, shareId: 'x' } as never)
 
     const res = await share(new Request('http://localhost/x', { method: 'POST' }), {
-      params: { id: 'prd1' },
+      params: Promise.resolve({ id: 'prd1' }),
     })
     expect(res.status).toBe(200)
     const updateArg = vi.mocked(prisma.pRD.update).mock.calls[0]![0]
@@ -133,7 +133,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithoutShare as never)
 
-    const res = await share(makeReq({ password: 'short' }), { params: { id: 'prd1' } })
+    const res = await share(makeReq({ password: 'short' }), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(400)
     expect(prisma.pRD.update).not.toHaveBeenCalled()
   })
@@ -142,7 +142,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithoutShare as never)
 
-    const res = await share(makeReq({ expiresInDays: 400 }), { params: { id: 'prd1' } })
+    const res = await share(makeReq({ expiresInDays: 400 }), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(400)
     expect(prisma.pRD.update).not.toHaveBeenCalled()
   })
@@ -151,7 +151,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithShare as never)
 
-    const res = await share(makeReq({ password: 'supersecret1' }), { params: { id: 'prd1' } })
+    const res = await share(makeReq({ password: 'supersecret1' }), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(400)
     expect((await res.json()).error).toBe(
       'Share link already exists — revoke it first to change protection settings'
@@ -163,7 +163,7 @@ describe('POST /api/prd/[id]/share (PRD §6.7, cloud only)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockResolvedValue(prdWithShare as never)
 
-    const res = await share(makeReq(), { params: { id: 'prd1' } })
+    const res = await share(makeReq(), { params: Promise.resolve({ id: 'prd1' }) })
     expect(res.status).toBe(200)
     expect((await res.json()).shareId).toBe('aplikasi-kasir-abc12345')
     expect(prisma.pRD.update).not.toHaveBeenCalled()
@@ -183,7 +183,7 @@ describe('DELETE /api/prd/[id]/share (revoke)', () => {
     vi.mocked(prisma.pRD.update).mockResolvedValue(prdWithoutShare as never)
 
     const res = await revoke(new Request('http://localhost/x', { method: 'DELETE' }), {
-      params: { id: 'prd1' },
+      params: Promise.resolve({ id: 'prd1' }),
     })
     expect(res.status).toBe(200)
     expect((await res.json()).ok).toBe(true)
@@ -201,7 +201,7 @@ describe('DELETE /api/prd/[id]/share (revoke)', () => {
     vi.mocked(prisma.pRD.update).mockResolvedValue(prdWithoutShare as never)
 
     const res = await revoke(new Request('http://localhost/x', { method: 'DELETE' }), {
-      params: { id: 'prd1' },
+      params: Promise.resolve({ id: 'prd1' }),
     })
     expect(res.status).toBe(200)
     const updateArg = vi.mocked(prisma.pRD.update).mock.calls[0]![0]
@@ -214,7 +214,7 @@ describe('DELETE /api/prd/[id]/share (revoke)', () => {
     vi.mocked(requireUserId).mockResolvedValue('u1')
     vi.mocked(assertPRDOwnership).mockRejectedValue(new ServiceError('PRD not found', 404))
     const res = await revoke(new Request('http://localhost/x', { method: 'DELETE' }), {
-      params: { id: 'foreign' },
+      params: Promise.resolve({ id: 'foreign' }),
     })
     expect(res.status).toBe(404)
   })

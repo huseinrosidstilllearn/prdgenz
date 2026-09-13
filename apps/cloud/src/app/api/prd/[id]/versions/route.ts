@@ -3,14 +3,15 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/api-auth'
 import { assertPRDOwnership, ServiceError } from '@/lib/prd-service'
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 /** GET /api/prd/[id]/versions — list all versions, newest first (PRD §10.2). */
 export async function GET(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const prd = await assertPRDOwnership(userId, params.id)
+    const prd = await assertPRDOwnership(userId, id)
     const versions = await prisma.pRDVersion.findMany({
       where: { prdId: prd.id },
       orderBy: { versionNumber: 'desc' },

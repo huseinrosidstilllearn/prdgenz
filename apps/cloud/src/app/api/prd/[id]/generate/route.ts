@@ -23,7 +23,7 @@ import {
  * POST /api/prd/[id]/generate — non-streaming regenerate for an existing PRD
  * (PRD §10.2). Creates a new version from validated AI JSON output.
  */
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!rateLimit(`generate:${userId}`)) {
@@ -31,6 +31,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   try {
+    const { id } = await params
     const parsed = generateRequestSchema.safeParse(await req.json())
     if (!parsed.success) {
       return NextResponse.json(
@@ -45,7 +46,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         { status: 400 }
       )
     }
-    await assertPRDOwnership(userId, params.id)
+    await assertPRDOwnership(userId, id)
 
     const cred = await getUserCredential(userId, provider)
     if (!cred) {
@@ -66,7 +67,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     })
 
     const content = validatePRDContent(parseAIResponse(raw))
-    const version = await appendPRDVersion(userId, params.id, content, language as Language)
+    const version = await appendPRDVersion(userId, id, content, language as Language)
 
     return NextResponse.json({
       version: {

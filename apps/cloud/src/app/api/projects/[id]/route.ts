@@ -9,15 +9,16 @@ const updateSchema = z.object({
   description: z.string().max(500).optional(),
 })
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 /** GET /api/projects/[id] — project detail with its PRDs. */
 export async function GET(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const project = await prisma.project.findFirst({
-      where: { id: params.id, userId },
+      where: { id: id, userId },
       include: {
         prds: {
           orderBy: { updatedAt: 'desc' },
@@ -35,6 +36,7 @@ export async function GET(_req: Request, { params }: Params) {
 
 /** PATCH /api/projects/[id] — rename / edit description. */
 export async function PATCH(req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
@@ -42,8 +44,8 @@ export async function PATCH(req: Request, { params }: Params) {
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
     }
-    await assertProjectOwnership(userId, params.id)
-    const project = await prisma.project.update({ where: { id: params.id }, data: parsed.data })
+    await assertProjectOwnership(userId, id)
+    const project = await prisma.project.update({ where: { id }, data: parsed.data })
     return NextResponse.json({ project })
   } catch (err) {
     if (err instanceof ServiceError) {
@@ -56,11 +58,12 @@ export async function PATCH(req: Request, { params }: Params) {
 
 /** DELETE /api/projects/[id] — delete project and all contained PRDs. */
 export async function DELETE(_req: Request, { params }: Params) {
+  const { id } = await params
   const userId = await requireUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    await assertProjectOwnership(userId, params.id)
-    await prisma.project.delete({ where: { id: params.id } })
+    await assertProjectOwnership(userId, id)
+    await prisma.project.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (err) {
     if (err instanceof ServiceError) {

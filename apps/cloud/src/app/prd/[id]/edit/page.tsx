@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@prdgenz/ui'
 
 /** Edit mode: rename PRD, change language, delete (PRD §9.2 /prd/[id]/edit). */
-export default function EditPRDPage({ params }: { params: { id: string } }) {
+export default function EditPRDPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [language, setLanguage] = useState<'EN' | 'ID'>('EN')
@@ -14,10 +14,14 @@ export default function EditPRDPage({ params }: { params: { id: string } }) {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [note, setNote] = useState<string | null>(null)
+  const [id, setId] = useState<string | null>(null)
 
-  // fetch current metadata once
-  if (!loaded) {
-    fetch(`/api/prd/${params.id}`)
+  // Unwrap async params (Next 15) and fetch current metadata once.
+  if (id === null) {
+    params.then((p) => setId(p.id)).catch(() => {})
+  }
+  if (id !== null && !loaded) {
+    fetch(`/api/prd/${id}`)
       .then((r) => r.json())
       .then((d) => {
         if (d?.prd) {
@@ -30,11 +34,12 @@ export default function EditPRDPage({ params }: { params: { id: string } }) {
   }
 
   async function save() {
+    if (id === null) return
     setSaving(true)
     setError(null)
     setNote(null)
     try {
-      const res = await fetch(`/api/prd/${params.id}`, {
+      const res = await fetch(`/api/prd/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, language }),
@@ -53,9 +58,10 @@ export default function EditPRDPage({ params }: { params: { id: string } }) {
   }
 
   async function remove() {
+    if (id === null) return
     if (!confirm('Delete this PRD and all its versions? This cannot be undone.')) return
     setDeleting(true)
-    const res = await fetch(`/api/prd/${params.id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/prd/${id}`, { method: 'DELETE' })
     if (res.ok) router.push('/dashboard')
     else {
       setError('Delete failed.')
