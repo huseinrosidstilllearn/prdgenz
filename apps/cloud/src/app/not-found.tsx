@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="flex min-h-screen items-center justify-center p-6">
       <Card className="max-w-md text-center">
         <CardHeader>
-          <CardTitle>404 — Page not found</CardTitle>
+          <CardTitle>404: Page not found</CardTitle>
           <CardDescription>The page you are looking for does not exist.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">

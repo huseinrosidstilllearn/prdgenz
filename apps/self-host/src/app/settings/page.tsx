@@ -70,7 +70,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Storage</CardTitle>
           <CardDescription>
-            All PRDs live in a local SQLite file — back it up by copying the mounted{' '}
+            All PRDs live in a local SQLite file. Back it up by copying the mounted{' '}
             <code className="rounded bg-muted px-1">/data</code> volume.
           </CardDescription>
         </CardHeader>

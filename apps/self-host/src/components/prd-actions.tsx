@@ -76,7 +76,7 @@ export function PRDActions({
           const evt = JSON.parse(line.slice(5).trim())
           if (evt.type === 'done') {
             setSectionNote(
-              `"${section}" regenerated — saved as v${evt.saved?.versionNumber ?? '?'}.`
+              `"${section}" regenerated, saved as v${evt.saved?.versionNumber ?? '?'}.`
             )
             router.refresh()
           } else if (evt.type === 'error') {

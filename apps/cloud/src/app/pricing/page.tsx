@@ -39,7 +39,7 @@ export default function PricingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Sticky blurred header â€” same treatment as landing */}
+      {/* Sticky blurred header: same treatment as landing */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-14 items-center justify-between px-2 sm:px-3">
           <Link href="/" className="font-heading text-lg font-bold tracking-tight">
@@ -117,7 +117,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Prefer full control? Run the open-source self-hosted version with Docker â€”
+          Prefer full control? Run the open-source self-hosted version with Docker : 
           free forever, no account needed.
         </p>
       </main>

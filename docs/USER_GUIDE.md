@@ -1,4 +1,4 @@
-# PRD GenZ — User Guide
+# PRD GenZ User Guide
 
 Panduan lengkap memakai PRD GenZ: versi cloud (SaaS, multi-user) dan self-host (lokal, single-user).
 
@@ -22,11 +22,11 @@ Panduan lengkap memakai PRD GenZ: versi cloud (SaaS, multi-user) dan self-host (
 | Istilah | Arti |
 |---|---|
 | **Project** | Wadah untuk mengelompokkan PRD (mis. satu per produk) |
-| **PRD** | Product Requirements Document — hasil generate AI |
+| **PRD** | Product Requirements Document: hasil generate AI |
 | **Mode** | Cara memberi input ke AI: **Create from Scratch** (bertahap), **Chat** (percakapan), **One-Shot** (satu ide → PRD penuh) |
-| **BYOK** | *Bring Your Own Key* — Anda memakai API key AI milik sendiri |
+| **BYOK** | *Bring Your Own Key*: Anda memakai API key AI milik sendiri |
 | **Provider** | Layanan AI yang dipakai: OpenAI, Anthropic, Google, OmniRoute, TokenRouter, 9Router, atau endpoint custom OpenAI-compatible |
-| **Version** | Setiap generate/menyimpan membuat versi baru — versi lama tidak pernah tertimpa |
+| **Version** | Setiap generate/menyimpan membuat versi baru: versi lama tidak pernah tertimpa |
 
 Dua bahasa output PRD: **ID** (Bahasa Indonesia) dan **EN** (English).
 
@@ -45,7 +45,7 @@ Dua bahasa output PRD: **ID** (Bahasa Indonesia) dan **EN** (English).
 ### BYOK (Bring Your Own Key)
 
 - Cloud: masukkan key per provider di halaman **Settings**. Satu key per provider; ganti kapan saja; connection test otomatis jalan saat menyimpan.
-- Key tidak pernah dikirim ke pihak lain — hanya dipakai langsung ke endpoint provider saat generate.
+- Key tidak pernah dikirim ke pihak lain: hanya dipakai langsung ke endpoint provider saat generate.
 - Plan **Pro** ($9/bulan): PRD unlimited, export PDF, share link, unlimited projects.
 
 ---
@@ -67,10 +67,10 @@ Bercakap-cakap dengan AI. AI akan bertanya klarifikasi singkat; ketik "generate"
 
 ## 4. Cloud: Export, Share & Versioning
 
-- **Export Markdown** — semua plan, dari halaman PRD.
-- **Export PDF** — Pro only; membuka dokumen cetak rapi → gunakan *Save as PDF* browser.
-- **Share link** — Pro only; menghasilkan URL publik *view-only* (`/s/...`) yang bisa dibuka tanpa login. Bisa di-revoke kapan saja.
-- **Version history** — setiap PRD menyimpan semua versinya. Klik **Restore** pada versi lama untuk menjadikannya versi terbaru (versi lama tetap ada, tidak destruktif).
+- **Export Markdown**: semua plan, dari halaman PRD.
+- **Export PDF**: Pro only; membuka dokumen cetak rapi → gunakan *Save as PDF* browser.
+- **Share link**: Pro only; menghasilkan URL publik *view-only* (`/s/...`) yang bisa dibuka tanpa login. Bisa di-revoke kapan saja.
+- **Version history**: setiap PRD menyimpan semua versinya. Klik **Restore** pada versi lama untuk menjadikannya versi terbaru (versi lama tetap ada, tidak destruktif).
 
 ---
 
@@ -106,7 +106,7 @@ cp ../.env.example .env      # isi minimal satu *_API_KEY
 docker compose up -d         # app jalan di http://localhost:3000
 ```
 
-- Data (SQLite) tersimpan di volume `prdgenz-data` — aman saat container di-rebuild/update.
+- Data (SQLite) tersimpan di volume `prdgenz-data`: aman saat container di-rebuild/update.
 - Update: `docker compose up -d --build` (data lama tetap).
 
 Atau build manual dari root repo:
@@ -125,24 +125,24 @@ docker build -f apps/self-host/docker/Dockerfile -t prdgenz-self-host .
 |---|---|---|
 | `DATABASE_URL` | ✅ | PostgreSQL, mis. `postgresql://user:pass@localhost:5432/prdgenz` |
 | `NEXTAUTH_URL` | ✅ | URL dasar aplikasi, mis. `http://localhost:3000` |
-| `NEXTAUTH_SECRET` | ✅ | Rahasia NextAuth — generate: `openssl rand -base64 32` |
-| `ENCRYPTION_KEY` | ✅ | Kunci AES-256 (64 karakter hex) untuk enkripsi API key user — generate: `openssl rand -hex 32` |
+| `NEXTAUTH_SECRET` | ✅ | Rahasia NextAuth. Generate: `openssl rand -base64 32` |
+| `ENCRYPTION_KEY` | ✅ | Kunci AES-256 (64 karakter hex) untuk enkripsi API key user. Generate: `openssl rand -hex 32` |
 
 ### Self-Host (`apps/self-host/.env` / docker `.env`)
 
 | Variabel | Wajib | Keterangan |
 |---|---|---|
-| `DATABASE_URL` | ✅ | SQLite, dev: `file:./prdgenz.db` — Docker: `file:/data/prdgenz.db` (sudah diset otomatis) |
-| `OPENAI_API_KEY` | — | Key OpenAI |
-| `ANTHROPIC_API_KEY` | — | Key Anthropic |
-| `GOOGLE_API_KEY` | — | Key Google AI Studio |
-| `OMNIROUTE_API_KEY` | — | Key OmniRoute |
-| `TOKENROUTER_API_KEY` | — | Key TokenRouter |
-| `9ROUTER_API_KEY` | — | Key 9Router |
-| `CUSTOM_API_KEY` + `CUSTOM_BASE_URL` | — | Endpoint custom OpenAI-compatible (keduanya harus terisi) |
-| `AI_DEFAULT_PROVIDER` | — | Default: `openai` — dipakai kalau user belum memilih |
-| `AI_DEFAULT_MODEL` | — | Default model (kosong = model pertama provider) |
-| `AI_DEFAULT_LANGUAGE` | — | `EN` (default) atau `ID` |
+| `DATABASE_URL` | ✅ | SQLite. Dev: `file:./prdgenz.db`, Docker: `file:/data/prdgenz.db` (sudah diset otomatis) |
+| `OPENAI_API_KEY` | - | Key OpenAI |
+| `ANTHROPIC_API_KEY` | - | Key Anthropic |
+| `GOOGLE_API_KEY` | - | Key Google AI Studio |
+| `OMNIROUTE_API_KEY` | - | Key OmniRoute |
+| `TOKENROUTER_API_KEY` | - | Key TokenRouter |
+| `9ROUTER_API_KEY` | - | Key 9Router |
+| `CUSTOM_API_KEY` + `CUSTOM_BASE_URL` | - | Endpoint custom OpenAI-compatible (keduanya harus terisi) |
+| `AI_DEFAULT_PROVIDER` | - | Default: `openai`: dipakai kalau user belum memilih |
+| `AI_DEFAULT_MODEL` | - | Default model (kosong = model pertama provider) |
+| `AI_DEFAULT_LANGUAGE` | - | `EN` (default) atau `ID` |
 
 > Minimal **satu** provider harus punya key agar fitur generate aktif.
 
@@ -152,13 +152,13 @@ docker build -f apps/self-host/docker/Dockerfile -t prdgenz-self-host .
 
 | Gejala | Penyebab & Solusi |
 |---|---|
-| "No API key configured for provider X" | Key belum diisi (cloud: Settings; self-host: env var) atau key provider lain yang terisi — pilih provider yang punya key |
-| "Free plan limit reached" | Free: 10 PRD / 30 hari — hapus PRD lama atau upgrade Pro |
-| "AI returned an invalid PRD structure" | Respons AI tidak valid — coba generate ulang, atau ganti model yang lebih kuat |
-| "ENCRYPTION_KEY must be set to exactly 64 hex characters" | Key salah format — generate ulang dengan `openssl rand -hex 32` |
-| Connection test gagal saat simpan key | Key salah/tidak aktif, atau baseUrl custom salah — key tetap tersimpan, perbaiki lalu simpan ulang |
+| "No API key configured for provider X" | Key belum diisi (cloud: Settings; self-host: env var) atau key provider lain yang terisi: pilih provider yang punya key |
+| "Free plan limit reached" | Free: 10 PRD / 30 hari: hapus PRD lama atau upgrade Pro |
+| "AI returned an invalid PRD structure" | Respons AI tidak valid: coba generate ulang, atau ganti model yang lebih kuat |
+| "ENCRYPTION_KEY must be set to exactly 64 hex characters" | Key salah format: generate ulang dengan `openssl rand -hex 32` |
+| Connection test gagal saat simpan key | Key salah/tidak aktif, atau baseUrl custom salah: key tetap tersimpan, perbaiki lalu simpan ulang |
 | Self-host: generate 404/tidak muncul | Pastikan minimal satu `*_API_KEY` terisi dan container/service di-restart setelah mengubah `.env` |
 | Docker: data hilang setelah update | Jangan hapus volume `prdgenz-data` (`docker volume rm` menghapus semua PRD) |
-| Rate limit (429) | 100 request/menit per user — tunggu sebentar |
+| Rate limit (429) | 100 request/menit per user: tunggu sebentar |
 
 Untuk pengembangan lanjutan, lihat [README](../README.md) (struktur repo, script, build).

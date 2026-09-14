@@ -47,7 +47,7 @@ export default async function PRDPage({ params }: { params: { id: string } }) {
         <PRDActions prdId={prd.id} title={prd.title} content={content} language={prd.language} />
       ) : (
         <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
-          No generated content yet — generate a version from Create from Scratch / Chat / One-Shot.
+          No generated content yet. Generate a version from Create from Scratch / Chat / One-Shot.
         </div>
       )}
 

@@ -65,7 +65,7 @@ export default async function DashboardPage() {
             <h1 className="font-heading text-2xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-sm text-muted-foreground">
               {user?.role === 'PRO'
-                ? 'Unlimited PRDs — Pro plan'
+                ? 'Unlimited PRDs: Pro plan'
                 : `Free plan: ${FREE_PLAN_LIMIT} PRDs per 30 days`}
             </p>
           </div>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
           <h2 className="font-heading text-lg font-bold tracking-tight">Projects</h2>
           {projects.length === 0 ? (
             <div className="rounded-xl border-2 border-dashed p-10 text-center text-muted-foreground">
-              No projects yet — create one to organize your PRDs.
+              No projects yet. Create one to organize your PRDs.
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

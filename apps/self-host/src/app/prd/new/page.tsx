@@ -61,6 +61,7 @@ const MODES = [
   {
     href: '/prd/new/wizard',
     badge: 'UPDATE BARU',
+    beam: true,
     title: 'Create from Scratch',
     description:
       'Susun sendiri step-by-step dari ide ke PRD. Atur urutan section, hide yang nggak perlu, generate per-section.',
@@ -70,15 +71,17 @@ const MODES = [
   {
     href: '/prd/new/chat',
     badge: null,
+    beam: false,
     title: 'Chat',
     description:
-      'Ngobrol dengan AI — dia nanya balik, ingat konteks penuh, PRD jadi natural. Streaming real-time.',
+      'Ngobrol dengan AI: dia nanya balik, ingat konteks penuh, PRD jadi natural. Streaming real-time.',
     icon: ChatIcon,
     chipClass: 'bg-indigo-950/80 text-indigo-400 dark:bg-indigo-400/15',
   },
   {
     href: '/prd/new/oneshot',
     badge: null,
+    beam: false,
     title: 'One-Shot',
     description:
       'Paste ide + constraints, langsung keluar PRD lengkap. Cocok untuk draft cepat, regenerate kapan saja.',
@@ -101,7 +104,7 @@ export default function NewPRDPage() {
         <div className="grid gap-4 md:grid-cols-3">
           {MODES.map((m) => (
             <Link key={m.href} href={m.href} className="group cursor-pointer">
-              <ModeCard beam className="h-full cursor-pointer">
+              <ModeCard beam={m.beam} className="h-full cursor-pointer">
                 {m.badge && (
                   <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                     {m.badge}

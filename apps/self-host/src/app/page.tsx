@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Badge, Button, LiveBadge, ThemeToggle } from '@prdgenz/ui'
+import { Badge, Button, ThemeToggle } from '@prdgenz/ui'
 import { prisma } from '@/lib/prisma'
 import { configuredProviderIds, defaultProvider } from '@/lib/env'
 import { truncate } from '@prdgenz/shared'
@@ -49,7 +49,11 @@ export default async function Home() {
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <h1 className="font-heading text-2xl font-bold tracking-tight">Your PRDs</h1>
-              {prds.length > 0 && <LiveBadge label={`${prds.length} live`} />}
+              {prds.length > 0 && (
+                <span className="text-sm font-medium tabular-nums text-muted-foreground">
+                  {prds.length} PRD
+                </span>
+              )}
             </div>
             <p className="text-sm text-muted-foreground">
               Stored locally in SQLite · default provider:{' '}

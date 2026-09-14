@@ -117,7 +117,7 @@ export default function ChatPage() {
         <div>
           <h1 className="text-2xl font-bold">Chat Mode</h1>
           <p className="text-sm text-muted-foreground">
-            Discuss your idea — the AI asks clarifying questions. Say &quot;generate&quot; to get the full PRD.
+            Discuss your idea: the AI asks clarifying questions. Say &quot;generate&quot; to get the full PRD.
           </p>
         </div>
         {setup.config}

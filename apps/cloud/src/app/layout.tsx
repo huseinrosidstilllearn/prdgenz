@@ -26,11 +26,11 @@ export const metadata: Metadata = {
     template: '%s | PRD GenZ',
   },
   description:
-    'AI-powered PRD Generator — turn raw ideas into structured, actionable PRDs in minutes.',
+    'AI-powered PRD Generator: turn raw ideas into structured, actionable PRDs in minutes.',
   openGraph: {
     title: 'PRD GenZ',
     description:
-      'AI-powered PRD Generator — turn raw ideas into structured, actionable PRDs in minutes.',
+      'AI-powered PRD Generator: turn raw ideas into structured, actionable PRDs in minutes.',
     type: 'website',
     siteName: 'PRD GenZ',
     images: [{ url: '/og-image.png', width: 2560, height: 1280, alt: 'PRD GenZ' }],

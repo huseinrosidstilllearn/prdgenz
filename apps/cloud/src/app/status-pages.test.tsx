@@ -14,7 +14,7 @@ vi.mock('next/link', () => ({
 describe('not-found (T3)', () => {
   it('renders 404 with links to Dashboard and Landing', () => {
     render(<NotFound />)
-    expect(screen.getByText('404 — Page not found')).toBeDefined()
+    expect(screen.getByText('404: Page not found')).toBeDefined()
     expect(
       screen.getByRole('link', { name: 'Back to Dashboard' }).getAttribute('href')
     ).toBe('/dashboard')

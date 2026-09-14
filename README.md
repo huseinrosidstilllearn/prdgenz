@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-AI-powered PRD Generator — generate professional PRDs for AI coding assistants (Cline, Cursor, Lovable, etc.)
+AI-powered PRD Generator: generate professional PRDs for AI coding assistants (Cline, Cursor, Lovable, etc.)
 
 </div>
 

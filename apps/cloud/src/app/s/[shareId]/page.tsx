@@ -9,7 +9,7 @@ import { shareAuthValid } from '@/lib/share-auth'
 import { ShareGate } from '@/components/share-gate'
 import { truncate } from '@prdgenz/shared'
 
-// Public share page backed by the DB â€” always render on demand.
+// Public share page backed by the DB: always render on demand.
 export const dynamic = 'force-dynamic'
 
 /**
@@ -28,7 +28,7 @@ function shareExpired(shareExpiresAt: Date | null): boolean {
   return Boolean(shareExpiresAt && shareExpiresAt.getTime() < Date.now())
 }
 
-/** OG-friendly metadata for a shared PRD (T4 â€” SEO).
+/** OG-friendly metadata for a shared PRD (T4: SEO).
  *
  * Applies the same gating as the page body: expired/revoked shares get a
  * neutral title, and password-protected shares only expose the real title

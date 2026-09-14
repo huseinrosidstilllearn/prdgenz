@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { SVGProps } from 'react'
-import { Badge, Button, LiveBadge, ModeCard, IconChip, ShimmerButton, ThemeToggle, DotPattern, Marquee } from '@prdgenz/ui'
+import { Badge, Button, ModeCard, IconChip, ShimmerButton, ThemeToggle } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
 
 // Icons — lucide-style strokes, same visual family as ngodingpakeai.
@@ -79,35 +79,30 @@ const MODES = [
   {
     href: '/prd/new/wizard',
     badge: 'UPDATE BARU',
+    beam: true,
     title: 'Create from Scratch',
     description:
-      'Susun sendiri step-by-step — atur urutan & pilih section, generate per-section.',
+      'Susun sendiri step-by-step: atur urutan & pilih section, generate per-section.',
     icon: WandIcon,
     chipClass: 'bg-emerald-950/80 text-emerald-400 dark:bg-emerald-400/15',
   },
   {
     href: '/prd/new/chat',
     badge: null,
+    beam: false,
     title: 'Chat Mode',
-    description: 'Ngobrol santai — AI nanya balik, konteks penuh diingat, PRD terbentuk natural.',
+    description: 'Ngobrol santai: AI nanya balik, konteks penuh diingat, PRD terbentuk natural.',
     icon: ChatIcon,
     chipClass: 'bg-indigo-950/80 text-indigo-400 dark:bg-indigo-400/15',
   },
   {
     href: '/prd/new/oneshot',
     badge: null,
+    beam: false,
     title: 'One-Shot Mode',
     description: 'Paste ide, langsung keluar PRD profesional siap dipake. Satu input, satu output.',
     icon: BoltIcon,
     chipClass: 'bg-amber-950/80 text-amber-500 dark:bg-amber-400/15',
-  },
-  {
-    href: '/register',
-    badge: null,
-    title: 'BYOK — Key Sendiri',
-    description: 'Pake API key OpenAI, Anthropic, Google, atau aggregator milikmu sendiri.',
-    icon: KeyIcon,
-    chipClass: 'bg-sky-950/80 text-sky-400 dark:bg-sky-400/15',
   },
 ]
 
@@ -150,54 +145,34 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Hero — "Mau bikin PRD apa hari ini?" + mode grid */}
-        <section className="relative flex flex-col items-center overflow-hidden px-4 pb-24 pt-16 sm:px-6 sm:pt-20">
-          <DotPattern className="absolute inset-0 h-full w-full text-border/60 [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_75%)]" />
-          <div className="relative w-full max-w-4xl space-y-10">
+        {/* Hero: headline + mode cards */}
+        <section className="flex flex-col items-center px-4 pb-24 pt-16 sm:px-6 sm:pt-20">
+          <div className="w-full max-w-4xl space-y-10">
             <div className="space-y-6 text-center">
-              {/* LIVE pill with stats — social proof like the reference */}
-              <div className="flex justify-center">
-                <div className="flex items-center gap-3 rounded-full border bg-card px-4 py-1.5 shadow-sm">
-                  <LiveBadge label="Live" />
-                  <div
-                    className="h-5 w-px bg-border opacity-60"
-                    aria-hidden="true"
-                  />
-                  <div className="flex items-center gap-4">
-                    {STATS.map((s) => (
-                      <div key={s.label} className="flex items-center gap-1.5">
-                        <span className="text-sm font-extrabold tabular-nums text-foreground">
-                          {s.value}
-                        </span>
-                        <span className="hidden text-xs font-medium text-muted-foreground md:inline">
-                          {s.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm font-medium text-muted-foreground">
+                {STATS.map((s) => `${s.value} ${s.label}`).join(' · ')}
+              </p>
 
               <h1 className="text-gradient font-heading text-4xl font-bold tracking-tight sm:text-5xl">
                 Mau bikin PRD apa hari ini?
               </h1>
               <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg">
                 PRD GenZ ngubah ide jadi Product Requirements Document yang
-                siap dipake AI coding agent — <span className="font-semibold text-foreground">gratis</span> untuk
+                siap dipake AI coding agent. <span className="font-semibold text-foreground">Gratis</span> untuk
                 mulai, API key kamu sendiri.
               </p>
               <div className="flex justify-center pt-2">
                 <ShimmerButton asChild>
-                  <Link href="/register">Mulai Gratis</Link>
+                  <Link href="/register">Buat PRD Pertama</Link>
                 </ShimmerButton>
               </div>
             </div>
 
-            {/* Mode cards — border-2 tiles, icon chip, hover lift */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Mode cards: beam hanya di Create from Scratch (fitur baru) */}
+            <div className="grid gap-4 sm:grid-cols-3">
               {MODES.map((m) => (
                 <Link key={m.href} href={m.href} className="group cursor-pointer">
-                  <ModeCard beam className="h-full cursor-pointer">
+                  <ModeCard beam={m.beam} className="h-full cursor-pointer">
                     {m.badge && (
                       <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                         {m.badge}
@@ -219,6 +194,20 @@ export default function LandingPage() {
               ))}
             </div>
 
+            {/* BYOK: secondary bar, bukan mode card */}
+            <Link
+              href="/register"
+              className="flex items-center justify-between gap-4 rounded-xl border-2 bg-card px-6 py-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-md"
+            >
+              <span className="flex items-center gap-3">
+                <KeyIcon className="size-5 text-sky-500" />
+                <span className="text-sm font-semibold">BYOK: key AI milikmu sendiri</span>
+              </span>
+              <span className="text-sm text-muted-foreground">
+                OpenAI, Anthropic, Google, atau aggregator apa pun
+              </span>
+            </Link>
+
             <p className="text-center text-sm text-muted-foreground">
               Free plan {FREE_PLAN_LIMIT} PRD/bulan · Pro ${PRO_PRICE}/bulan · Self-host kapan
               saja
@@ -229,16 +218,14 @@ export default function LandingPage() {
         {/* Feature strip */}
         <section className="border-t bg-muted/40 py-16">
           <div className="container">
-            <div className="mb-8">
-              <Marquee className="opacity-80">
-                {['AI-Ready Output', 'Version History', 'Per-Section Generate', 'Share Link', 'Dark Mode'].map(
-                  (f) => (
-                    <Badge key={f} variant="secondary" className="px-3 py-1">
-                      {f}
-                    </Badge>
-                  )
-                )}
-              </Marquee>
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+              {['AI-Ready Output', 'Version History', 'Per-Section Generate', 'Share Link', 'Dark Mode'].map(
+                (f) => (
+                  <Badge key={f} variant="secondary" className="px-3 py-1">
+                    {f}
+                  </Badge>
+                )
+              )}
             </div>
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">
@@ -246,7 +233,7 @@ export default function LandingPage() {
               </h2>
               <p className="mt-3 text-muted-foreground">
                 Output PRD langsung siap di-feed ke Cline, Cursor, Lovable, atau Claude Code.
-                Setiap regenerate tersimpan sebagai versi — diff, compare, restore kapan saja.
+                Setiap regenerate tersimpan sebagai versi: diff, compare, restore kapan saja.
               </p>
             </div>
           </div>
@@ -258,7 +245,7 @@ export default function LandingPage() {
             Mau full kontrol? Self-host.
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Jalanin satu command di infrastrukturmu sendiri — SQLite, tanpa akun,
+            Jalanin satu command di infrastrukturmu sendiri: SQLite, tanpa akun,
             API key nggak pernah keluar dari mesinmu.
           </p>
           <pre className="mx-auto mt-6 w-fit rounded-lg border bg-card px-4 py-3 font-mono text-sm shadow-sm">

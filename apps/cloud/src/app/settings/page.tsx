@@ -57,8 +57,8 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error(data?.error ?? 'Failed to save API key.')
       setMessage(
         data?.connectionOk
-          ? 'Saved — connection test passed.'
-          : 'Saved — but the connection test failed; double-check the key.'
+          ? 'Saved: connection test passed.'
+          : 'Saved, but the connection test failed; double-check the key.'
       )
       setKey('')
       setBaseUrl('')
@@ -95,7 +95,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>AI API Keys</CardTitle>
           <CardDescription>
-            Use your own keys — OpenAI, Anthropic, Google, or any OpenAI-compatible aggregator
+            Use your own keys: OpenAI, Anthropic, Google, or any OpenAI-compatible aggregator
             (OmniRoute, TokenRouter, 9Router) or custom endpoint.
           </CardDescription>
         </CardHeader>

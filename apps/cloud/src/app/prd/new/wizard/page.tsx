@@ -217,7 +217,7 @@ export default function WizardPage() {
               id="idea"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              placeholder="Describe the product you want to buildâ€¦"
+              placeholder="Describe the product you want to build..."
               rows={5}
             />
           </div>
@@ -240,7 +240,7 @@ export default function WizardPage() {
             id="targetUser"
             value={targetUser}
             onChange={(e) => setTargetUser(e.target.value)}
-            placeholder="Who will use this product? e.g. freelance developers in Indonesiaâ€¦"
+            placeholder="Who will use this product? e.g. freelance developers in Indonesia..."
             rows={4}
           />
         </div>
@@ -276,7 +276,7 @@ export default function WizardPage() {
                   className="text-muted-foreground hover:text-destructive"
                   onClick={() => setFeatures((arr) => arr.filter((_, j) => j !== i))}
                 >
-                  Ã—
+                  ×
                 </button>
               </li>
             ))}
@@ -296,8 +296,8 @@ export default function WizardPage() {
           </Label>
           <p className="text-xs text-muted-foreground">
             {currentStepName === 'userStories'
-              ? 'Any preferred flows â€” the AI will expand them into As a / I want / So that stories.'
-              : 'Specific criteria â€” the AI will derive checklist items per feature.'}
+              ? 'Any preferred flows: the AI will expand them into As a / I want / So that stories.'
+              : 'Specific criteria: the AI will derive checklist items per feature.'}
           </p>
           <Textarea
             id={`notes-${currentStepName}`}
@@ -310,8 +310,8 @@ export default function WizardPage() {
             rows={3}
             placeholder={
               currentStepName === 'userStories'
-                ? 'e.g. users can invite team membersâ€¦'
-                : 'e.g. login must support Google SSOâ€¦'
+                ? 'e.g. users can invite team members...'
+                : 'e.g. login must support Google SSO...'
             }
           />
         </div>
@@ -358,7 +358,7 @@ export default function WizardPage() {
               id="project"
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              placeholder="Project ID â€” paste from dashboard, or leave blank"
+              placeholder="Project ID: paste from dashboard, or leave blank"
             />
           </div>
         </div>
@@ -406,16 +406,16 @@ export default function WizardPage() {
           {generating && (
             <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
               <p className="text-xs font-medium text-muted-foreground">
-                Generatingâ€¦ {streamText.length} chars streamed
+                Generating... {streamText.length} chars streamed
               </p>
-              <AIChatBubble role="assistant" content={streamText || 'Contacting AIâ€¦'} streaming />
+              <AIChatBubble role="assistant" content={streamText || 'Contacting AI...'} streaming />
               <Button variant="outline" size="sm" onClick={() => abortRef.current?.abort()}>
                 Cancel
               </Button>
             </div>
           )}
           {result && (
-            <p className="text-sm text-primary">PRD generated â€” redirecting to the PRD pageâ€¦</p>
+            <p className="text-sm text-primary">PRD generated: redirecting to the PRD page...</p>
           )}
           {!configuring && (
             <div className="flex items-center justify-between">
@@ -428,7 +428,7 @@ export default function WizardPage() {
               </Button>
               {lastStep ? (
                 <Button onClick={generate} disabled={generating || idea.trim().length < 3}>
-                  {generating ? 'Generatingâ€¦' : 'Generate PRD'}
+                  {generating ? 'Generating...' : 'Generate PRD'}
                 </Button>
               ) : (
                 <Button onClick={next} disabled={!canNext || generating}>

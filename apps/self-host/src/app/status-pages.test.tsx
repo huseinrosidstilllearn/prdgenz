@@ -18,7 +18,7 @@ afterEach(() => {
 describe('not-found (S2)', () => {
   it('renders 404 with a link to Home', () => {
     render(<NotFound />)
-    expect(screen.getByText('404 — Page not found')).toBeDefined()
+    expect(screen.getByText('404: Page not found')).toBeDefined()
     expect(screen.getByRole('link', { name: 'Back to Home' }).getAttribute('href')).toBe('/')
   })
 })
