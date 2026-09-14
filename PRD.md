@@ -770,10 +770,12 @@ model ApiKey {
 | UI revamp Magic UI × GenZ | ✓ Implemented (1.5.0) | Token violet oklch, font Bricolage Grotesque + Plus Jakarta Sans (next/font), komponen CSS-only ShimmerButton/BorderBeam/DotPattern/Marquee (packages/ui, smoke tests), ModeCard beam prop, rebrand label "Wizard" → "Create from Scratch" (UI copy saja, URL/enum tetap) — superseded oleh 1.5.1/1.5.2 |
 | Rebrand palet Blueprint Steel | ✓ Implemented (1.5.1) | Palet steel blue + drafting cyan (primary oklch 48% 0.13, beam cyan), display font Bricolage → Space Grotesk (body Plus Jakarta Sans tetap); globals.css + tailwind config identik kedua app |
 | Antislop UI pass | ✓ Implemented (1.5.2) | De-slop landing: DotPattern/Marquee/LiveBadge decorative dihapus, beam di-scope ke card Create from Scratch saja, BYOK jadi secondary bar; purge em dash (R-02) + fix mojibake di 4 file; AGENTS.md antislop pointer |
+| Full reskin Mint Blueprint | ✓ Implemented (1.6.0) | Palet teal-slate dark + mint green diekstrak programatik dari logo (oklch, kontras AA kedua mode); BlueprintStage centerpiece (SVG stroke-draw CSS-only) di landing + /prd/new; DESIGN.md sebagai sumber arah visual; border 2px→1px konsisten; ShimmerButton gradient → brand mint ramp; WizardStepper connector active=primary; hapus DotPattern/Marquee; landing rebuild (hapus stats, feature proof dl) |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6.0 | 2026-09-14 | Full reskin: palet teal-slate dark + mint green diekstrak programatik dari logo (oklch, kontras AA light+dark), BlueprintStage centerpiece (SVG stroke-draw CSS-only) di landing + /prd/new, DESIGN.md sebagai source of truth arah visual, landing rebuild (hapus stats line, feature proof dl, single-family chips), border 2px→1px, ShimmerButton gradient→brand mint ramp, WizardStepper connector active=primary, hapus DotPattern/Marquee |
 | 1.5.2 | 2026-09-14 | Antislop UI pass: de-slop landing (hapus DotPattern/Marquee/LiveBadge decorative, beam scoped ke card fitur baru, BYOK jadi secondary bar), purge em dash dari UI copy + docs, fix mojibake 4 file, AGENTS.md antislop pointer |
 | 1.5.1 | 2026-09-14 | Rebrand palet Blueprint Steel: steel blue + drafting cyan, display font Bricolage → Space Grotesk |
 | 1.5.0 | 2026-09-14 | UI revamp: Magic UI aesthetic (shimmer/beam/marquee/dot-pattern), font Bricolage + Plus Jakarta Sans, Wizard → Create from Scratch rebrand |
