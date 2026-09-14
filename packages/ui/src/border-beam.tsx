@@ -17,8 +17,8 @@ export function BorderBeam({
   className,
   duration = 6,
   size = 2,
-  colorFrom = 'oklch(62% 0.13 210)',
-  colorTo = 'oklch(48% 0.13 240)',
+  colorFrom = 'oklch(74% 0.16 160)',
+  colorTo = 'oklch(58% 0.12 168)',
   ...props
 }: BorderBeamProps) {
   return (

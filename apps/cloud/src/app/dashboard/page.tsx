@@ -75,7 +75,7 @@ export default async function DashboardPage() {
         <section className="space-y-4">
           <h2 className="font-heading text-lg font-bold tracking-tight">Recent PRDs</h2>
           {prds.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed p-10 text-center text-muted-foreground">
+            <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
               <p className="mb-4">No PRDs yet.</p>
               <Link
                 href="/prd/new"
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
                 <Link
                   key={prd.id}
                   href={`/prd/${prd.id}`}
-                  className="rounded-xl border-2 bg-card p-5 shadow-sm transition-all duration-150 hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0"
+                  className="rounded-xl border bg-card p-5 shadow-sm transition-all duration-150 hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0"
                 >
                   <p className="mb-1 font-semibold">{truncate(prd.title, 60)}</p>
                   <p className="mb-3 text-xs text-muted-foreground">
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
         <section className="space-y-4">
           <h2 className="font-heading text-lg font-bold tracking-tight">Projects</h2>
           {projects.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed p-10 text-center text-muted-foreground">
+            <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
               No projects yet. Create one to organize your PRDs.
             </div>
           ) : (
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
               {projects.map((p) => (
                 <div
                   key={p.id}
-                  className="rounded-xl border-2 bg-card p-5 shadow-sm"
+                  className="rounded-xl border bg-card p-5 shadow-sm"
                 >
                   <p className="font-semibold">{p.name}</p>
                   {p.description && (

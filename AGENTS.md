@@ -16,6 +16,7 @@
 
 ## Conventions
 - Design tokens live in `apps/{cloud,self-host}/src/app/globals.css` (oklch) — keep both byte-identical
+- Design direction: read `DESIGN.md` first for any UI work (palette, typography, motion dials, forbidden patterns)
 - Fonts via `next/font/google` in both root layouts — keep both apps in sync
 - UI components: `export function` pattern in `packages/ui/src`, smoke test per component (coverage thresholds enforced)
 - Do not rename user-facing labels "Create from Scratch" back; internal identifiers (`WIZARD` enum, `WizardStepper`, wizard URL routes) stay untouched

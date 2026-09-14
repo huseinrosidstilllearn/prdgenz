@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ShimmerButton } from './shimmer-button'
 import { BorderBeam } from './border-beam'
-import { DotPattern } from './dot-pattern'
-import { Marquee } from './marquee'
 
 describe('Magic UI components', () => {
   it('ShimmerButton renders a button with gradient animation class', () => {
@@ -29,24 +27,5 @@ describe('Magic UI components', () => {
     expect(overlay.getAttribute('aria-hidden')).toBe('true')
     expect(overlay.className).toContain('absolute')
     expect(overlay.firstElementChild?.className).toContain('animate-beam')
-  })
-
-  it('DotPattern renders svg with pattern fill', () => {
-    const { container } = render(
-      <DotPattern className="absolute inset-0 text-border" />
-    )
-    const svg = container.querySelector('svg')
-    expect(svg).not.toBeNull()
-    expect(svg?.querySelector('pattern circle')).not.toBeNull()
-  })
-
-  it('Marquee renders children twice for seamless loop', () => {
-    render(
-      <Marquee>
-        <span>item</span>
-      </Marquee>
-    )
-    const items = screen.getAllByText('item')
-    expect(items).toHaveLength(2)
   })
 })

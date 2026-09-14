@@ -66,7 +66,7 @@ export default async function Home() {
         </div>
 
         {prds.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed p-12 text-center">
+          <div className="rounded-xl border border-dashed p-12 text-center">
             <h2 className="font-heading mb-2 text-lg font-bold">Belum ada PRD</h2>
             <p className="mb-5 text-sm text-muted-foreground">
               Ubah ide pertamamu jadi PRD terstruktur.
@@ -81,7 +81,7 @@ export default async function Home() {
               <Link
                 key={prd.id}
                 href={`/prd/${prd.id}`}
-                className="rounded-xl border-2 bg-card p-5 shadow-sm transition-all duration-150 hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0"
+                className="rounded-xl border bg-card p-5 shadow-sm transition-all duration-150 hover:-translate-y-1 hover:border-ring/40 hover:shadow-lg active:translate-y-0"
               >
                 <p className="mb-1 font-semibold">{truncate(prd.title, 60)}</p>
                 <p className="mb-3 text-xs text-muted-foreground">

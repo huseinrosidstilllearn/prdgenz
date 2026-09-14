@@ -8,7 +8,7 @@ export interface ModeCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * ModeCard — action tile: border-2, icon chip, bold heading,
+ * ModeCard — action tile: 1px border, icon chip, bold heading,
  * hover lift + border highlight, optional border beam.
  */
 const ModeCard = React.forwardRef<HTMLDivElement, ModeCardProps>(
@@ -16,7 +16,7 @@ const ModeCard = React.forwardRef<HTMLDivElement, ModeCardProps>(
     <div
       ref={ref}
       className={cn(
-        'group relative flex flex-col justify-start rounded-xl border-2 p-6 text-left',
+        'group relative flex flex-col justify-start rounded-xl border p-6 text-left',
         'bg-card text-card-foreground',
         'transition-all duration-150',
         'hover:-translate-y-1 hover:shadow-lg active:translate-y-0',
@@ -43,23 +43,5 @@ const IconChip = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
   )
 )
 IconChip.displayName = 'IconChip'
-
-/**
- * LiveBadge — pulsing "live" indicator (green dot with ping animation).
- * Mirrors the ngodingpakeai header LIVE pill.
- */
-export function LiveBadge({ label = 'Live' }: { label?: string }) {
-  return (
-    <span className="flex items-center gap-2 py-1 pl-1 pr-1">
-      <span className="relative flex size-2.5">
-        <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 animate-live-ping" />
-        <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
-      </span>
-      <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-        {label}
-      </span>
-    </span>
-  )
-}
 
 export { ModeCard, IconChip }

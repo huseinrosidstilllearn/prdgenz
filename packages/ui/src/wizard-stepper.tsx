@@ -99,7 +99,15 @@ export function WizardStepper({
                 </span>
               )}
             </div>
-            {i < steps.length - 1 && <span className="h-px w-4 bg-border" aria-hidden />}
+            {i < steps.length - 1 && (
+              <span
+                className={cn(
+                  'h-px w-4',
+                  i < currentStep ? 'bg-primary' : 'bg-border'
+                )}
+                aria-hidden
+              />
+            )}
           </li>
         )
       })}

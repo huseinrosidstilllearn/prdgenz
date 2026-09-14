@@ -58,9 +58,6 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
-        'live-ping': {
-          '75%, 100%': { transform: 'scale(2)', opacity: '0' },
-        },
         'caret-blink': {
           '0%, 40%': { opacity: '1' },
           '41%, 100%': { opacity: '0' },
@@ -73,17 +70,11 @@ const config: Config = {
           from: { 'offset-distance': '0%' },
           to: { 'offset-distance': '100%' },
         },
-        marquee: {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(calc(-100% - 1rem))' },
-        },
       },
       animation: {
-        'live-ping': 'live-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
         'caret-blink': 'caret-blink 1.1s steps(1) infinite',
         shimmer: 'shimmer 2s linear infinite',
         beam: 'beam 6s linear infinite',
-        marquee: 'marquee 40s linear infinite',
       },
     },
   },
