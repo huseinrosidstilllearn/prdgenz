@@ -1,21 +1,21 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Bricolage_Grotesque, Plus_Jakarta_Sans } from 'next/font/google'
+import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
-// Brand identity: Bricolage Grotesque display + Plus Jakarta Sans body.
+// Brand identity: Space Grotesk display + Plus Jakarta Sans body.
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-jakarta',
   display: 'swap',
 })
 
-const bricolage = Bricolage_Grotesque({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-bricolage',
+  variable: '--font-space',
   display: 'swap',
 })
 
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${jakarta.variable} ${bricolage.variable} min-h-screen bg-background font-sans antialiased`}
+        className={`${jakarta.variable} ${spaceGrotesk.variable} min-h-screen bg-background font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens — Magic UI × GenZ brand (oklch).
-   Light: warm paper; Dark: deep violet-slate. Primary: electric violet. */
+/* Design tokens — "Blueprint Steel" identity (oklch).
+   Light: warm paper; Dark: graphite slate. Primary: steel blue.
+   Accent: drafting cyan — the spec-sheet vernacular of engineering docs. */
 @layer base {
   :root {
     --background: oklch(93.83% 0.0042 236.499);
@@ -12,45 +13,45 @@
     --card-foreground: oklch(32.11% 0 0);
     --popover: oklch(100% 0 0);
     --popover-foreground: oklch(32.11% 0 0);
-    --primary: oklch(54% 0.22 293);
+    --primary: oklch(48% 0.13 240);
     --primary-foreground: oklch(100% 0 0);
-    --secondary: oklch(96.7% 0.0029 264.542);
-    --secondary-foreground: oklch(44.61% 0.0263 256.802);
+    --secondary: oklch(96.7% 0.0029 240.542);
+    --secondary-foreground: oklch(42% 0.0263 245.802);
     --muted: oklch(98.46% 0.0017 247.839);
-    --muted-foreground: oklch(55.1% 0.0234 264.364);
-    --accent: oklch(91.19% 0.0222 317.817);
-    --accent-foreground: oklch(37.91% 0.1378 293.522);
+    --muted-foreground: oklch(55.1% 0.0234 244.364);
+    --accent: oklch(91.19% 0.0222 215.817);
+    --accent-foreground: oklch(37.91% 0.0978 235.522);
     --destructive: oklch(63.68% 0.2078 25.3313);
     --destructive-foreground: oklch(100% 0 0);
     --border: oklch(90.22% 0.0052 247.882);
-    --input: oklch(97% 0.0029 264.542);
-    --ring: oklch(54% 0.22 293);
+    --input: oklch(97% 0.0029 244.542);
+    --ring: oklch(48% 0.13 240);
     --radius: 0.75rem;
 
     --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-    --font-heading: var(--font-bricolage), var(--font-sans);
+    --font-heading: var(--font-space), var(--font-sans);
   }
 
   .dark {
-    --background: oklch(24% 0.03 285);
+    --background: oklch(23% 0.015 250);
     --foreground: oklch(92.19% 0 0);
-    --card: oklch(29% 0.0301 286.637);
+    --card: oklch(28% 0.018 250);
     --card-foreground: oklch(92.19% 0 0);
-    --popover: oklch(27% 0.0249 285.399);
+    --popover: oklch(26% 0.015 250);
     --popover-foreground: oklch(92.19% 0 0);
-    --primary: oklch(68% 0.19 293);
-    --primary-foreground: oklch(100% 0 0);
-    --secondary: oklch(30.95% 0.0266 286.713);
+    --primary: oklch(72% 0.11 220);
+    --primary-foreground: oklch(18% 0.02 250);
+    --secondary: oklch(30.95% 0.018 250.713);
     --secondary-foreground: oklch(92.19% 0 0);
-    --muted: oklch(30.95% 0.0266 286.713);
+    --muted: oklch(30.95% 0.018 250.713);
     --muted-foreground: oklch(71.55% 0 0);
-    --accent: oklch(33.8% 0.0589 287.587);
-    --accent-foreground: oklch(88.23% 0.0571 293.128);
+    --accent: oklch(33.8% 0.0389 242.587);
+    --accent-foreground: oklch(85.23% 0.0571 220.128);
     --destructive: oklch(63.68% 0.2078 25.3313);
     --destructive-foreground: oklch(100% 0 0);
-    --border: oklch(38.43% 0.0301 287.734);
-    --input: oklch(38.43% 0.0301 287.734);
-    --ring: oklch(68% 0.19 293);
+    --border: oklch(38.43% 0.0201 250.734);
+    --input: oklch(38.43% 0.0201 250.734);
+    --ring: oklch(72% 0.11 220);
   }
 }
 
@@ -62,7 +63,7 @@
     @apply bg-background text-foreground;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  /* Headings use the display font (Bricolage Grotesque). */
+  /* Headings use the display font (Space Grotesk). */
   h1,
   h2,
   h3,
@@ -181,12 +182,12 @@
     animation-play-state: paused;
   }
 
-  /* Gradient text (violet → fuchsia). */
+  /* Gradient text (steel → drafting cyan). */
   .text-gradient {
     background: linear-gradient(
       90deg,
-      oklch(54% 0.22 293),
-      oklch(60% 0.24 323)
+      oklch(42% 0.12 245),
+      oklch(62% 0.13 210)
     );
     -webkit-background-clip: text;
     background-clip: text;

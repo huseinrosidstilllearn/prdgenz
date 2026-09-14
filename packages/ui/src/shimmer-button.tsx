@@ -8,7 +8,7 @@ export interface ShimmerButtonProps
 }
 
 /**
- * ShimmerButton — primary CTA with violet→fuchsia gradient and a
+ * ShimmerButton — primary CTA with steel→cyan gradient and a
  * sweeping highlight (Magic UI style). CSS-only animation.
  */
 const ShimmerButton = React.forwardRef<HTMLButtonElement, ShimmerButtonProps>(
@@ -21,7 +21,7 @@ const ShimmerButton = React.forwardRef<HTMLButtonElement, ShimmerButtonProps>(
           'relative inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-base font-semibold text-white shadow-lg transition-transform duration-150',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           'active:translate-y-px disabled:pointer-events-none disabled:opacity-50',
-          'bg-gradient-to-r from-[oklch(54%_0.22_293)] to-[oklch(60%_0.24_323)]',
+          'bg-gradient-to-r from-[oklch(48%_0.13_240)] to-[oklch(62%_0.13_210)]',
           'animate-shimmer hover:scale-[1.02]',
           className
         )}
