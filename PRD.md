@@ -767,11 +767,15 @@ model ApiKey {
 | Aksesibilitas | ◐ Partial (1.2.0) | aria-label toggle, focus-ring shadcn; WCAG AA audit backlog |
 | DOCX export | ✗ v2 | Sesuai rencana |
 | Deploy cloud (Cloudflare Workers) | ✓ Live 2026-09-13 | https://prdgenz.my.id via OpenNext (cloudflare-node wrapper, nodejs_compat); DB Supabase Postgres via session pooler (IPv4) dengan @prisma/adapter-pg; secrets via wrangler secret; build:cf/deploy:cf scripts; tanpa rilis versi/tag |
-| UI revamp Magic UI × GenZ | ✓ Implemented (1.5.0) | Token violet oklch (primary electric violet, dark violet-slate), font Bricolage Grotesque + Plus Jakarta Sans (next/font), komponen CSS-only ShimmerButton/BorderBeam/DotPattern/Marquee (packages/ui, smoke tests), ModeCard beam prop, rebrand label "Wizard" → "Create from Scratch" (UI copy saja, URL/enum tetap) |
+| UI revamp Magic UI × GenZ | ✓ Implemented (1.5.0) | Token violet oklch, font Bricolage Grotesque + Plus Jakarta Sans (next/font), komponen CSS-only ShimmerButton/BorderBeam/DotPattern/Marquee (packages/ui, smoke tests), ModeCard beam prop, rebrand label "Wizard" → "Create from Scratch" (UI copy saja, URL/enum tetap) — superseded oleh 1.5.1/1.5.2 |
+| Rebrand palet Blueprint Steel | ✓ Implemented (1.5.1) | Palet steel blue + drafting cyan (primary oklch 48% 0.13, beam cyan), display font Bricolage → Space Grotesk (body Plus Jakarta Sans tetap); globals.css + tailwind config identik kedua app |
+| Antislop UI pass | ✓ Implemented (1.5.2) | De-slop landing: DotPattern/Marquee/LiveBadge decorative dihapus, beam di-scope ke card Create from Scratch saja, BYOK jadi secondary bar; purge em dash (R-02) + fix mojibake di 4 file; AGENTS.md antislop pointer |
 
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5.2 | 2026-09-14 | Antislop UI pass: de-slop landing (hapus DotPattern/Marquee/LiveBadge decorative, beam scoped ke card fitur baru, BYOK jadi secondary bar), purge em dash dari UI copy + docs, fix mojibake 4 file, AGENTS.md antislop pointer |
+| 1.5.1 | 2026-09-14 | Rebrand palet Blueprint Steel: steel blue + drafting cyan, display font Bricolage → Space Grotesk |
 | 1.5.0 | 2026-09-14 | UI revamp: Magic UI aesthetic (shimmer/beam/marquee/dot-pattern), font Bricolage + Plus Jakarta Sans, Wizard → Create from Scratch rebrand |
 | 1.4.0 | 2026-09-13 | Per-section generate: dynamic section prompt + merge draft (shared), /api/ai/section SSE route cloud + self-host, SectionRegenerate UI di PRD page, full-PRD-answer unwrap |
 | 1.3.0 | 2026-09-13 | Version diff view: per-section markdown diff, picker from/to, cloud + self-host |
