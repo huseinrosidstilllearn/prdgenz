@@ -66,6 +66,7 @@ const MODES = [
     description:
       'Susun sendiri step-by-step dari ide ke PRD. Atur urutan section, hide yang nggak perlu, generate per-section.',
     icon: WandIcon,
+    chipClass: 'bg-emerald-950/80 text-emerald-400 dark:bg-emerald-400/15',
   },
   {
     href: '/prd/new/chat',
@@ -75,6 +76,7 @@ const MODES = [
     description:
       'Ngobrol dengan AI: dia nanya balik, ingat konteks penuh, PRD jadi natural. Streaming real-time.',
     icon: ChatIcon,
+    chipClass: 'bg-indigo-950/80 text-indigo-400 dark:bg-indigo-400/15',
   },
   {
     href: '/prd/new/oneshot',
@@ -84,6 +86,7 @@ const MODES = [
     description:
       'Paste ide + constraints, langsung keluar PRD lengkap. Cocok untuk draft cepat, regenerate kapan saja.',
     icon: BoltIcon,
+    chipClass: 'bg-amber-950/80 text-amber-500 dark:bg-amber-400/15',
   },
 ]
 
@@ -107,7 +110,7 @@ export default function NewPRDPage() {
                     {m.badge}
                   </span>
                 )}
-                <IconChip className="bg-primary/10 text-primary">
+                <IconChip className={m.chipClass}>
                   <m.icon />
                 </IconChip>
                 <div className="mt-4 space-y-1">

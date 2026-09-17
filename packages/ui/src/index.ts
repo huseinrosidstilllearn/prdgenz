@@ -24,10 +24,11 @@ export { PRDPreview } from './prd-preview'
 export { ThemeToggle } from './theme-toggle'
 export { SectionRegenerate } from './section-regenerate'
 
-// Visual language: brand identity (DESIGN.md)
-export { ModeCard, IconChip } from './mode-card'
-export { BlueprintStage } from './blueprint-stage'
+// Visual language (ngodingpakeai.com style)
+export { ModeCard, IconChip, LiveBadge } from './mode-card'
 
 // Magic UI × GenZ components (v1.5.0)
 export { ShimmerButton, type ShimmerButtonProps } from './shimmer-button'
 export { BorderBeam, type BorderBeamProps } from './border-beam'
+export { DotPattern, type DotPatternProps } from './dot-pattern'
+export { Marquee, type MarqueeProps } from './marquee'
