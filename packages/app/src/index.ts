@@ -15,6 +15,7 @@ export { PRDActions, VersionSidebar, DeletePRDButton, type PRDActionsProps } fro
 export { ExportActions } from './prd/export-actions'
 export { ShareButton } from './prd/share-button'
 export { PRDDocument, type PRDDocumentProps } from './prd/prd-document'
+export { PRDEditForm, type PRDEditFormProps } from './prd/prd-edit-form'
 export { OneShot, type OneShotProps } from './prd/one-shot'
 export { Chat, type ChatMessage } from './prd/chat'
 export { VersionDiffView, type VersionDiffViewProps } from './prd/version-diff'
