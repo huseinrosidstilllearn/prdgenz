@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import { rateLimit } from './rate-limit'
 
 describe('rateLimit (100 req/min per key, PRD §7.2)', () => {
-  beforeEach(() => {
-    // Each test uses a fresh key so the module-level buckets map stays isolated
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('allows the first 100 requests within the window', () => {
@@ -28,11 +28,21 @@ describe('rateLimit (100 req/min per key, PRD §7.2)', () => {
     expect(rateLimit(keyB)).toBe(true)
   })
 
-  it('allows again after the window slides (1ms window edge case)', async () => {
+  it('allows again after the window slides', () => {
+    // Frozen clock. The 5ms window used to be measured against the wall clock,
+    // so on a loaded runner the 100-call loop could itself take longer than the
+    // window; the first timestamps were pruned mid-loop and request 101 came
+    // back allowed. That made this a coin flip rather than a test.
+    vi.useFakeTimers()
+    vi.setSystemTime(1_700_000_000_000)
+
     const key = `t-slide-${Math.random()}`
-    for (let i = 0; i < 100; i++) rateLimit(key, 100, 5) // 5ms window
+    for (let i = 0; i < 100; i++) {
+      expect(rateLimit(key, 100, 5)).toBe(true)
+    }
     expect(rateLimit(key, 100, 5)).toBe(false)
-    await new Promise((r) => setTimeout(r, 20))
+
+    vi.advanceTimersByTime(6)
     expect(rateLimit(key, 100, 5)).toBe(true)
   })
 
