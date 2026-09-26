@@ -20,7 +20,9 @@ test('register creates the account, signs in, and lands on the dashboard', async
   await page.getByRole('button', { name: 'Create account' }).click()
 
   await expect(page).toHaveURL(/\/dashboard/, { timeout: 60_000 })
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByRole('heading', { name: 'Your documents' })).toBeVisible({
+    timeout: 30_000,
+  })
 })
 
 test('a freshly registered user can log out and log back in', async ({ page }) => {

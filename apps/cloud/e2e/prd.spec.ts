@@ -24,7 +24,7 @@ test('custom provider key pointing at the local mock AI can be saved', async ({ 
   await page.locator('#provider').selectOption('custom')
   await page.locator('#apikey').fill('sk-e2e-mock-key-123456')
   await page.locator('#baseurl').fill('http://127.0.0.1:3999/v1')
-  await page.getByRole('button', { name: 'Save & Test Connection' }).click()
+  await page.getByRole('button', { name: 'Save and test connection' }).click()
 
   await expect(page.getByText(/saved/i).first()).toBeVisible({ timeout: 30_000 })
   await expect(page.getByText(/configured keys/i)).toBeVisible()
@@ -44,7 +44,8 @@ test('one-shot generate → PRD page → export MD → share link → anonymous 
 
   await page.goto('/prd/new/oneshot')
   await page.locator('#provider-select').selectOption('custom')
-  await page.getByLabel(/Idea \/ Problem/).fill(
+  // The label is sentence-cased in the UI, so match case-insensitively.
+  await page.getByLabel(/idea \/ problem/i).fill(
     'Aplikasi kasir untuk kedai kopi dengan manajemen menu, transaksi, dan laporan harian.'
   )
   await page.getByLabel(/Save into project/).fill(projectId)
@@ -149,10 +150,10 @@ test('wizard step reorder/toggle configures navigation and AI payload exclusion 
   await expect(page.getByRole('heading', { name: 'Create from Scratch' })).toBeVisible({ timeout: 30_000 })
 
   // Fill the idea so the Next guard passes and the step buttons activate.
-  await page.getByLabel(/Idea \/ Problem Statement/).fill('Aplikasi kasir untuk kedai kopi.')
+  await page.getByLabel(/idea \/ problem statement/i).fill('Aplikasi kasir untuk kedai kopi.')
 
   // Open configure mode: reorder + toggle controls appear.
-  await page.getByRole('button', { name: 'Reorder steps' }).click()
+  await page.getByRole('button', { name: 'Reorder clauses' }).click()
   await expect(page.getByRole('button', { name: 'Hide timeline' })).toBeVisible()
 
   // Hide the timeline step and move features one position up.
