@@ -8,13 +8,30 @@
 - `packages/app` — App shell and every view both apps share (`@prdgenz/app`)
 - `apps/cloud/e2e` — Playwright E2E (needs PostgreSQL on localhost:5432, `E2E_DATABASE_URL`)
 
-## Commands (run in WSL Ubuntu)
+## Commands (run in PowerShell from the repo root)
 - Lint: `pnpm lint`
 - Typecheck: `pnpm typecheck`
 - Unit tests: `pnpm test` / `pnpm test:coverage`
-- E2E: `pnpm e2e` (Windows or WSL with local PostgreSQL)
+- E2E: `pnpm e2e` (needs PostgreSQL on localhost:5432, `E2E_DATABASE_URL`)
 - Prisma client must be generated before typecheck: `pnpm --filter @prdgenz/cloud db:generate`
 - Cloudflare build + deploy: `apps/cloud` → `pnpm build:cf` then `npx wrangler deploy`
+
+## CI is the source of truth for build verification
+Do not try to run `pnpm build` locally to check a change compiles. On Windows
+`next build` fails in file tracing with `EPERM: scandir C:\Users\...` (Windows
+refuses to scan that path). This is a pre-existing environment limit, not a
+code bug, and it reproduces on an untouched checkout.
+
+Push and read the run instead:
+- `gh run list --limit 1` to get the run id
+- `gh run view <id> --json jobs` to see which of build / e2e / docker failed
+- `gh run view --job <jobId> --log-failed` for the log once the run completes
+- `gh api repos/<owner>/<repo>/actions/jobs/<jobId>/logs --allow-escape-sequences`
+  to read a completed job's log while the rest of the run is still going
+
+CI runs on `ubuntu-latest` and is the only place `next build` and the Docker
+image actually get built. Do not use WSL for this: the VM restarts between
+shell invocations here and long builds get killed mid-flight.
 
 ## Conventions
 - **Design tokens have exactly one home: `packages/ui/src/styles/tokens.css`.** Both apps import it. Never copy a token into an app's `globals.css`. The old "keep both globals.css byte-identical" rule is gone: it caused silent drift and is now unnecessary.
