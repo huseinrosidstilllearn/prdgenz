@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import type { PRDSectionDiff } from '@prdgenz/shared'
 import { VersionDiffView } from './version-diff'
 
 vi.mock('@prdgenz/ui', async (importOriginal) => {
@@ -20,8 +21,11 @@ const VERSIONS = [
   { versionNumber: 1, createdAt: new Date('2026-03-02') },
 ]
 
-const DIFF = [
-  { section: 'Summary', kind: 'added' as const, lines: ['a new line'] },
+// The real PRDSectionDiff shape: heading/level/status plus the before and
+// after bodies, rather than a list of line operations.
+const DIFF: PRDSectionDiff[] = [
+  { heading: 'Summary', level: 2, status: 'changed', fromText: 'old', toText: 'new' },
+  { heading: 'Risks', level: 2, status: 'added', toText: 'a new section' },
 ]
 
 describe('VersionDiffView', () => {
