@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, ThemeToggle } from '@prdgenz/ui'
+import { ThemeToggle } from '@prdgenz/ui'
+import { FormSection } from '@prdgenz/app'
 import { AI_PROVIDERS } from '@prdgenz/shared'
 import { configuredProviderIds } from '@/lib/env'
 
@@ -13,79 +14,88 @@ const ENV_NAMES: Record<string, string> = {
   custom: 'CUSTOM_API_KEY (+ CUSTOM_BASE_URL)',
 }
 
+function Code({ children }: { children: string }) {
+  return (
+    <code className="rounded bg-muted px-1 font-mono text-[0.8em]">{children}</code>
+  )
+}
+
 /** Self-host settings: read-only provider status from env (PRD §6.2.2). */
 export default function SettingsPage() {
   const configured = configuredProviderIds()
 
   return (
-    <div className="container max-w-2xl space-y-8 py-10">
-      <div className="flex items-start justify-between gap-3">
+    <div className="mx-auto w-full max-w-2xl px-6 py-10">
+      <header className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Settings</h1>
-          <p className="text-sm text-muted-foreground">
-            Self-hosted keys are configured via environment variables (e.g.{' '}
-            <code className="rounded bg-muted px-1">.env</code> or{' '}
-            <code className="rounded bg-muted px-1">docker-compose.yml</code>).
+          <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+            Instance
+          </p>
+          <h1 className="font-display text-3xl leading-tight">Settings</h1>
+          <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
+            Self-hosted keys are configured via environment variables, in{' '}
+            <Code>.env</Code> or <Code>docker-compose.yml</Code>.
           </p>
         </div>
         <ThemeToggle />
-      </div>
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>AI Providers</CardTitle>
-          <CardDescription>
-            Set the matching environment variable and restart the app to enable a provider.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {AI_PROVIDERS.map((p) => {
-              const ok = configured.includes(p.id)
-              return (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between gap-2 rounded-lg border p-3"
+      <FormSection
+        title="AI providers"
+        description="Set the matching environment variable and restart the app to enable a provider."
+      >
+        <ul className="divide-y border-y">
+          {AI_PROVIDERS.map((p) => {
+            const ok = configured.includes(p.id)
+            return (
+              <li
+                key={p.id}
+                className="flex items-center justify-between gap-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">
+                    {p.name}{' '}
+                    <span className="text-xs font-normal text-muted-foreground">
+                      ({p.type})
+                    </span>
+                  </p>
+                  <p className="mt-0.5 truncate text-muted-foreground">
+                    <Code>{ENV_NAMES[p.id] ?? p.id}</Code>
+                  </p>
+                </div>
+                {/* Status is the only place a semantic colour is allowed here:
+                    it is a real state, not decoration. */}
+                <span
+                  className={
+                    ok
+                      ? 'font-mono text-xs text-primary'
+                      : 'font-mono text-xs text-muted-foreground'
+                  }
                 >
-                  <div>
-                    <p className="text-sm font-medium">
-                      {p.name}{' '}
-                      <span className="text-xs font-normal text-muted-foreground">({p.type})</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      <code className="rounded bg-muted px-1">{ENV_NAMES[p.id] ?? p.id}</code>
-                    </p>
-                  </div>
-                  <Badge variant={ok ? 'default' : 'secondary'}>
-                    {ok ? 'configured' : 'not set'}
-                  </Badge>
-                </li>
-              )
-            })}
-          </ul>
-        </CardContent>
-      </Card>
+                  {ok ? 'configured' : 'not set'}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      </FormSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Storage</CardTitle>
-          <CardDescription>
-            All PRDs live in a local SQLite file. Back it up by copying the mounted{' '}
-            <code className="rounded bg-muted px-1">/data</code> volume.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Database URL is set via <code className="rounded bg-muted px-1">DATABASE_URL</code>.
-          </p>
-        </CardContent>
-      </Card>
+      <FormSection
+        title="Storage"
+        className="mt-10"
+        description="All PRDs live in a local SQLite file. Back it up by copying the mounted /data volume."
+      >
+        <p className="text-sm text-muted-foreground">
+          Database URL is set via <Code>DATABASE_URL</Code>.
+        </p>
+      </FormSection>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="mt-10 text-sm text-muted-foreground">
         <Link href="/" className="underline underline-offset-4">
-          ← Back to your PRDs
+          Back to your PRDs
         </Link>
       </p>
     </div>
   )
 }
+

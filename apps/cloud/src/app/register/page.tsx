@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Button, Input, Label } from '@prdgenz/ui'
+import { AuthShell } from '@prdgenz/app'
 import { registerSchema } from '@prdgenz/shared'
 
 export default function RegisterPage() {
@@ -48,55 +49,56 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <Link href="/" className="text-lg font-bold tracking-tight">
-            <span className="font-heading font-bold tracking-tight">
-              prd<span className="text-primary">genz</span>
-            </span>
-          </Link>
-          <h1 className="font-heading mt-2 text-2xl font-bold tracking-tight">
-            Create your account
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Free plan: 10 PRDs per month, Markdown export
-          </p>
-        </div>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-xl border-2 bg-card p-6 shadow-sm"
-        >
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" placeholder="Your name" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="you@example.com" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Min. 8 characters"
-              required
-            />
-          </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? 'Creating account…' : 'Create account'}
-          </Button>
-        </form>
-        <p className="text-center text-sm text-muted-foreground">
+    <AuthShell
+      title="Create your account"
+      subtitle="Free plan: 10 PRDs per month, Markdown export"
+      footer={
+        <>
           Already have an account?{' '}
           <Link href="/login" className="text-foreground underline underline-offset-4">
             Log in
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            placeholder="Your name"
+            required
+            autoComplete="name"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            autoComplete="email"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Min. 8 characters"
+            required
+            autoComplete="new-password"
+          />
+        </div>
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Creating account…' : 'Create account'}
+        </Button>
+      </form>
+    </AuthShell>
   )
 }

@@ -14,11 +14,12 @@ vi.mock('next/link', () => ({
 describe('not-found (T3)', () => {
   it('renders 404 with links to Dashboard and Landing', () => {
     render(<NotFound />)
-    expect(screen.getByText('404: Page not found')).toBeDefined()
+    expect(screen.getByText('404')).toBeDefined()
+    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeDefined()
     expect(
-      screen.getByRole('link', { name: 'Back to Dashboard' }).getAttribute('href')
+      screen.getByRole('link', { name: 'Back to dashboard' }).getAttribute('href')
     ).toBe('/dashboard')
-    expect(screen.getByRole('link', { name: 'Go to Landing' }).getAttribute('href')).toBe('/')
+    expect(screen.getByRole('link', { name: 'Go to landing' }).getAttribute('href')).toBe('/')
   })
 })
 
