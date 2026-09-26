@@ -16,6 +16,9 @@ COPY pnpm-workspace.yaml package.json ./
 COPY apps/self-host/package.json ./apps/self-host/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
+# packages/app is a workspace dependency of self-host, so its manifest has to be
+# present before pnpm install or the resolver fails on a missing workspace:*.
+COPY packages/app/package.json ./packages/app/package.json
 RUN pnpm install --no-frozen-lockfile --filter @prdgenz/self-host...
 
 # ---- build ---------------------------------------------------------------
@@ -24,6 +27,9 @@ WORKDIR /app
 COPY --from=deps /app ./
 COPY packages/shared ./packages/shared
 COPY packages/ui ./packages/ui
+# Source, not just the manifest: self-host imports shared views from this
+# package, and transpilePackages compiles them from source.
+COPY packages/app ./packages/app
 COPY apps/self-host ./apps/self-host
 ENV NEXT_TELEMETRY_DISABLED=1
 # Relative SQLite URL resolves against apps/self-host/prisma/schema.prisma
