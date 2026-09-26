@@ -103,9 +103,9 @@ test('version diff page renders empty-state after a single generate', async ({ p
   await page.goto(`/prd/${prdId}/diff`)
   await expect(page.getByText('Only one version exists')).toBeVisible({ timeout: 30_000 })
   await expect(
-    page.getByText('Regenerate the PRD to create a new version', { exact: false })
+    page.getByText('Regenerate the document to create a second version', { exact: false })
   ).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Back to PRD' }).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Back to document' }).first()).toBeVisible()
 })
 
 test('per-section regenerate saves a new version (PRD §6.1.1)', async ({ page }) => {
