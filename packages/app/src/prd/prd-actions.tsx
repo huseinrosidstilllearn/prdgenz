@@ -2,52 +2,82 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, ExportMenu, SectionRegenerate, VersionHistory, type ExportFormat, type VersionItem } from '@prdgenz/ui'
+import {
+  Button,
+  SectionRegenerate,
+  VersionHistory,
+  type VersionItem,
+} from '@prdgenz/ui'
 import type { PRDContent } from '@prdgenz/shared'
+import { ExportActions } from './export-actions'
+import { ShareButton } from './share-button'
+
+/** Every clause a user can regenerate on its own. Order matches the PRD. */
+const SECTIONS = [
+  'summary',
+  'problem',
+  'targetUser',
+  'features',
+  'userStories',
+  'acceptanceCriteria',
+  'techStack',
+  'timeline',
+  'risks',
+  'successMetrics',
+  'openQuestions',
+] as const
+
+/**
+ * The wizard persists the chosen provider in localStorage, so per-section
+ * regenerate has to reuse it. Falls back to the default when storage is
+ * unavailable: private mode throws on access, not on getItem returning null.
+ */
+function pickSectionProvider(): string {
+  try {
+    const saved = localStorage.getItem('prdgenz:provider')
+    if (saved) return saved
+  } catch {
+    /* private mode */
+  }
+  return 'openai'
+}
+
+export interface PRDActionsProps {
+  prdId: string
+  title: string
+  content: PRDContent
+  language: string
+  /** Cloud only: mint a public /s/ link. */
+  canShare?: boolean
+  /** Cloud only: rerun the whole PRD as a new version. */
+  canRegenerate?: boolean
+  /** Cloud free tier: PDF is a paid export. */
+  pdfLocked?: boolean
+}
 
 export function PRDActions({
   prdId,
   title,
   content,
-  isPro,
   language,
-}: {
-  prdId: string
-  title: string
-  content: PRDContent
-  isPro: boolean
-  language: string
-}) {
+  canShare = false,
+  canRegenerate = false,
+  pdfLocked = false,
+}: PRDActionsProps) {
   const router = useRouter()
-  const [shareId, setShareId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState<string | null>(null)
   const [sectionBusy, setSectionBusy] = useState<string | null>(null)
   const [sectionNote, setSectionNote] = useState<string | null>(null)
   const [sectionError, setSectionError] = useState<string | null>(null)
 
-  // Wizard context for per-section regenerate: reuse the current PRD content
-  // so the AI has the same product context the original generation had.
+  // Reuse the current PRD as context so a clause rewrite sees the same product
+  // the original generation saw, rather than the bare title.
   const sectionContext = {
     idea: content.summary || title,
     problem: content.problem,
     targetUser: content.targetUser,
     features: content.features.map((f) => f.name),
-  }
-
-  /**
-   * Section regenerate uses the same provider the user picked in the wizard
-   * (persisted in localStorage); defaults to the first provider otherwise.
-   * Kept inline because PRDActions is already the client island for this page.
-   */
-  function pickSectionProvider(): string {
-    try {
-      const saved = localStorage.getItem('prdgenz:provider')
-      if (saved) return saved
-    } catch {
-      /* private mode */
-    }
-    return 'openai'
   }
 
   async function regenerateSection(section: string) {
@@ -100,65 +130,6 @@ export function PRDActions({
     }
   }
 
-  async function onExport(format: ExportFormat) {
-    setNote(null)
-    if (format === 'markdown') {
-      const res = await fetch('/api/export/md', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prdId }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        setNote(data?.error ?? 'Export failed.')
-        return
-      }
-      const blob = await res.blob()
-      downloadBlob(blob, `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.md`)
-    } else if (format === 'pdf') {
-      const res = await fetch('/api/export/pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prdId }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        setNote(data?.error ?? 'Export failed.')
-        return
-      }
-      const html = await res.text()
-      const w = window.open('', '_blank')
-      if (w) {
-        w.document.write(html)
-        w.document.close()
-      }
-    } else {
-      // ai-prompt: build locally from shared template + copy to clipboard
-      const { renderAIReadyPrompt } = await import('@prdgenz/shared')
-      const prompt = renderAIReadyPrompt(content)
-      await navigator.clipboard.writeText(prompt)
-      setNote('AI-ready prompt copied to clipboard.')
-    }
-  }
-
-  async function share() {
-    setBusy(true)
-    setNote(null)
-    try {
-      const res = await fetch(`/api/prd/${prdId}/share`, { method: 'POST' })
-      const data = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(data?.error ?? 'Share failed')
-      setShareId(data.shareId)
-      const url = `${window.location.origin}/s/${data.shareId}`
-      await navigator.clipboard.writeText(url).catch(() => {})
-      setNote(`Share link copied: ${url}`)
-    } catch (e) {
-      setNote((e as Error).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
   async function regenerate() {
     setBusy(true)
     setNote(null)
@@ -184,40 +155,35 @@ export function PRDActions({
   }
 
   return (
-    <div className="space-y-3">
-      <ExportMenu onExport={onExport} />
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" onClick={share} disabled={busy}>
-          {shareId ? 'Copy Share Link' : 'Create Share Link'}
-        </Button>
-        <Button variant="outline" size="sm" onClick={regenerate} disabled={busy}>
-          Regenerate (new version)
-        </Button>
-        {!isPro && (
-          <span className="self-center text-xs text-muted-foreground">
-            PDF export requires Pro
-          </span>
-        )}
-      </div>
+    <div className="space-y-6">
+      <ExportActions
+        prdId={prdId}
+        title={title}
+        content={content}
+        pdfLocked={pdfLocked}
+      />
+
+      {canShare || canRegenerate ? (
+        <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
+          {canShare ? <ShareButton prdId={prdId} /> : null}
+          {canRegenerate ? (
+            <Button variant="outline" size="sm" onClick={regenerate} disabled={busy}>
+              {busy ? 'Regenerating…' : 'Regenerate (new version)'}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+      {note ? <p className="text-xs text-muted-foreground">{note}</p> : null}
+
       <SectionRegenerate
-        sections={['summary', 'problem', 'targetUser', 'features', 'userStories', 'acceptanceCriteria', 'techStack', 'timeline', 'risks', 'successMetrics', 'openQuestions']}
+        sections={SECTIONS}
         onSelect={regenerateSection}
         busy={sectionBusy}
         note={sectionNote}
         error={sectionError}
       />
-      {note && <p className="break-all text-xs text-muted-foreground">{note}</p>}
     </div>
   )
-}
-
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
 }
 
 export function VersionSidebar({
@@ -255,11 +221,73 @@ export function VersionSidebar({
       <VersionHistory
         versions={versions}
         currentVersion={currentVersion}
-        onRestore={(v) => restore(v)}
+        onRestore={restore}
         onDiff={(v) => router.push(`/prd/${prdId}/diff?from=${v}&to=${currentVersion}`)}
       />
-      {busy !== null && <p className="text-xs text-muted-foreground">Restoring v{busy}…</p>}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {busy !== null ? (
+        <p className="text-xs text-muted-foreground">Restoring v{busy}…</p>
+      ) : null}
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
+    </div>
+  )
+}
+
+/**
+ * Two-step inline confirm rather than window.confirm: a blocking dialog is
+ * jarring mid-reading, and it reads as dead code in a review.
+ */
+export function DeletePRDButton({
+  prdId,
+  redirectTo = '/',
+}: {
+  prdId: string
+  redirectTo?: string
+}) {
+  const router = useRouter()
+  const [confirming, setConfirming] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function remove() {
+    setDeleting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/prd/${prdId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        throw new Error(data?.error ?? 'Delete failed')
+      }
+      router.push(redirectTo)
+    } catch (e) {
+      setError((e as Error).message)
+      setDeleting(false)
+      setConfirming(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="destructive"
+          size="sm"
+          disabled={deleting}
+          onClick={() => (confirming ? remove() : setConfirming(true))}
+        >
+          {deleting ? 'Deleting…' : confirming ? 'Confirm delete' : 'Delete PRD'}
+        </Button>
+        {confirming && !deleting ? (
+          <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>
+            Cancel
+          </Button>
+        ) : null}
+      </div>
+      {confirming && !deleting ? (
+        <p className="text-xs text-muted-foreground">
+          Deletes this PRD and every version. This cannot be undone.
+        </p>
+      ) : null}
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   )
 }

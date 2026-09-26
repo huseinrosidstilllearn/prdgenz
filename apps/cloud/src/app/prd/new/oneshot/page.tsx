@@ -12,7 +12,7 @@ import {
   Textarea,
 } from '@prdgenz/ui'
 import type { PRDContent } from '@prdgenz/shared'
-import { useGenerationSetup } from '@/hooks/use-generation-setup'
+import { useGenerationSetup } from '@prdgenz/app'
 
 export default function OneShotPage() {
   const setup = useGenerationSetup()
@@ -114,7 +114,7 @@ export default function OneShotPage() {
               id="idea"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              placeholder="e.g. A web app that lets Indonesian freelance developers generate professional PRDs from raw ideas using their own AI API keys, with Docker-based self-hosting support…"
+              placeholder="e.g. A web app that lets Indonesian freelance developers generate professional PRDs from raw ideas using their own AI API keys, with Docker-based self-hosting supportâ€¦"
               rows={6}
               disabled={generating}
             />
@@ -150,7 +150,7 @@ export default function OneShotPage() {
           {generating && (
             <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
               <p className="text-xs font-medium text-muted-foreground">
-                Generating PRD… {chars} chars streamed
+                Generating PRDâ€¦ {chars} chars streamed
               </p>
               <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words text-xs text-muted-foreground">
                 {streamText.slice(-1500)}
@@ -163,16 +163,16 @@ export default function OneShotPage() {
 
           {result && (
             <div className="rounded-lg border border-primary/40 bg-primary/5 p-4">
-              <p className="font-medium text-primary">✓ {result.title}</p>
+              <p className="font-medium text-primary">âœ“ {result.title}</p>
               <p className="text-sm text-muted-foreground">
-                {result.features.length} features · {result.userStories.length} user stories ·
-                redirecting…
+                {result.features.length} features Â· {result.userStories.length} user stories Â·
+                redirectingâ€¦
               </p>
             </div>
           )}
 
           <Button onClick={generate} disabled={!ready || generating} className="w-full">
-            {generating ? 'Generating…' : 'Generate PRD'}
+            {generating ? 'Generatingâ€¦' : 'Generate PRD'}
           </Button>
         </CardContent>
       </Card>

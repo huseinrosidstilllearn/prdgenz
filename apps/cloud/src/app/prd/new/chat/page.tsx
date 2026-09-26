@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AIChatBubble, Button, Card, CardContent, Textarea } from '@prdgenz/ui'
 import type { PRDContent } from '@prdgenz/shared'
-import { useGenerationSetup } from '@/hooks/use-generation-setup'
+import { useGenerationSetup } from '@prdgenz/app'
 
 interface Msg {
   role: 'user' | 'assistant'
@@ -80,7 +80,7 @@ export default function ChatPage() {
                   await saveChatPRD(history)
                 }
               } catch {
-                /* not a PRD json — keep chatting */
+                /* not a PRD json â€” keep chatting */
               }
             }
           } else if (evt.type === 'error') {
@@ -128,14 +128,14 @@ export default function ChatPage() {
           <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
             {messages.length === 0 && (
               <p className="mt-8 text-center text-sm text-muted-foreground">
-                Start by describing your product idea…
+                Start by describing your product ideaâ€¦
               </p>
             )}
             {messages.map((m, i) => (
               <AIChatBubble key={i} role={m.role} content={m.content} />
             ))}
             {streaming && (
-              <AIChatBubble role="assistant" content={streamText || '…'} streaming />
+              <AIChatBubble role="assistant" content={streamText || 'â€¦'} streaming />
             )}
             <div ref={bottomRef} />
           </div>
@@ -150,7 +150,7 @@ export default function ChatPage() {
                   send()
                 }
               }}
-              placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+              placeholder="Type a messageâ€¦ (Enter to send, Shift+Enter for newline)"
               rows={2}
               disabled={streaming}
             />

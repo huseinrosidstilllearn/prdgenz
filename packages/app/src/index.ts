@@ -9,4 +9,18 @@ export { SpecPanel } from './marketing/spec-panel'
 export { ModeChooser } from './prd/mode-chooser'
 export { PRDList, formatDate, type PRDListItem } from './prd/prd-list'
 export { ProjectList, type ProjectListItem } from './prd/project-list'
+export { PRDActions, VersionSidebar, DeletePRDButton, type PRDActionsProps } from './prd/prd-actions'
+export { ExportActions } from './prd/export-actions'
+export { ShareButton } from './prd/share-button'
+export { PRDDocument, type PRDDocumentProps } from './prd/prd-document'
+
+export { Wizard, type WizardProps } from './wizard/wizard'
+export { useGenerationSetup, type GenerationSetup } from './wizard/use-generation-setup'
+export { useWizardConfig, type WizardConfig } from './wizard/use-wizard-config'
+export { usePRDGeneration, type GenerationRequest } from './wizard/use-prd-generation'
+export {
+  WizardStepFields,
+  EMPTY_WIZARD_VALUES,
+  type WizardValues,
+} from './wizard/wizard-step-fields'
 
