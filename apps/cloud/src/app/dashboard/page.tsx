@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
-import { AppShell, EmptyState, PageHeader, PRDList } from '@prdgenz/app'
+import { AppShell, EmptyState, PageHeader, PRDList, ProjectList } from '@prdgenz/app'
 import { Badge, Button } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT } from '@prdgenz/shared'
 import { authOptions } from '@/lib/auth'
@@ -14,7 +14,12 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   const userId = (session?.user as { id?: string } | undefined)?.id
 
-  const [prds, user] = await Promise.all([
+  const [projects, prds, user] = await Promise.all([
+    prisma.project.findMany({
+      where: { userId: userId! },
+      include: { _count: { select: { prds: true } } },
+      orderBy: { updatedAt: 'desc' },
+    }),
     prisma.pRD.findMany({
       where: { project: { userId: userId! } },
       include: { project: { select: { name: true } } },
@@ -84,9 +89,22 @@ export default async function DashboardPage() {
           <h2 className="text-xl">Projects</h2>
           <CreateProjectButton />
         </div>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          Projects group related PRDs. Every document above belongs to one.
-        </p>
+        {projects.length === 0 ? (
+          <EmptyState
+            title="No projects yet"
+            body="Projects group related PRDs. Every document above belongs to one."
+          />
+        ) : (
+          <ProjectList
+            items={projects.map((project) => ({
+              id: project.id,
+              name: project.name,
+              description: project.description,
+              prdCount: project._count.prds,
+              updatedAt: project.updatedAt.toISOString(),
+            }))}
+          />
+        )}
       </section>
     </AppShell>
   )

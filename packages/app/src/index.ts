@@ -8,4 +8,5 @@ export { SpecPanel } from './marketing/spec-panel'
 
 export { ModeChooser } from './prd/mode-chooser'
 export { PRDList, formatDate, type PRDListItem } from './prd/prd-list'
+export { ProjectList, type ProjectListItem } from './prd/project-list'
 
