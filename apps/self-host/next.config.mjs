@@ -6,7 +6,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@prdgenz/shared', '@prdgenz/ui'],
+  transpilePackages: ['@prdgenz/app', '@prdgenz/shared', '@prdgenz/ui'],
   output: 'standalone',
   experimental: {
     // pnpm monorepo: keep file tracing inside the workspace (avoids EPERM on

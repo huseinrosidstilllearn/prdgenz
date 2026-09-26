@@ -3,7 +3,7 @@
  */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@prdgenz/shared', '@prdgenz/ui'],
+  transpilePackages: ['@prdgenz/app', '@prdgenz/shared', '@prdgenz/ui'],
   serverExternalPackages: ['@prisma/client', '.prisma/client', 'pg'],
 }
 

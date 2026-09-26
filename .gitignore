@@ -54,3 +54,4 @@ blob-report/
 
 # Turbo
 .turbo/
+.dev.vars

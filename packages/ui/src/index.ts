@@ -13,7 +13,7 @@ export { Textarea, type TextareaProps } from './textarea'
 export { Badge, badgeVariants, type BadgeProps } from './badge'
 export { cn } from './lib/utils'
 
-// PRD GenZ custom components (PRD §9.3)
+// PRD GenZ product components (PRD §9.3)
 export { WizardStepper } from './wizard-stepper'
 export { AIChatBubble } from './ai-chat-bubble'
 export { VersionHistory, type VersionItem } from './version-history'
@@ -22,13 +22,6 @@ export { ExportMenu, type ExportFormat } from './export-menu'
 export { ProviderSelector } from './provider-selector'
 export { PRDPreview } from './prd-preview'
 export { ThemeToggle } from './theme-toggle'
+export { ThemeProvider, useTheme } from './theme-provider'
 export { SectionRegenerate } from './section-regenerate'
 
-// Visual language (ngodingpakeai.com style)
-export { ModeCard, IconChip, LiveBadge } from './mode-card'
-
-// Magic UI × GenZ components (v1.5.0)
-export { ShimmerButton, type ShimmerButtonProps } from './shimmer-button'
-export { BorderBeam, type BorderBeamProps } from './border-beam'
-export { DotPattern, type DotPatternProps } from './dot-pattern'
-export { Marquee, type MarqueeProps } from './marquee'

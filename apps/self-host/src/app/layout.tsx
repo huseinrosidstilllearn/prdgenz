@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google'
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from '@prdgenz/ui'
+import { fontVariables } from '@prdgenz/ui/fonts'
 import './globals.css'
 
 // Private single-user instance (PRD §8.5.2) — never index user PRD data.
@@ -26,34 +26,13 @@ export const metadata: Metadata = {
   },
 }
 
-// Brand identity: Space Grotesk display + Plus Jakarta Sans body.
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-jakarta',
-  display: 'swap',
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space',
-  display: 'swap',
-})
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${jakarta.variable} ${spaceGrotesk.variable} min-h-screen bg-background font-sans antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+      <body className={`${fontVariables} min-h-screen antialiased`}>
+        <ThemeProvider defaultTheme="system">{children}</ThemeProvider>
       </body>
     </html>
   )
 }
+

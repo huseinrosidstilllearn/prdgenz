@@ -1,17 +1,12 @@
 {
-  "name": "@prdgenz/ui",
+  "name": "@prdgenz/app",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./fonts": "./src/fonts.ts",
-    "./tailwind-preset": "./tailwind-preset.ts",
-    "./src/styles/*": "./src/styles/*"
-  },
   "scripts": {
+    "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -19,27 +14,22 @@
   },
   "dependencies": {
     "@prdgenz/shared": "workspace:*",
-    "@radix-ui/react-slot": "^1.1.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
-    "next": "^15.0.0",
-    "tailwind-merge": "^2.3.0"
+    "@prdgenz/ui": "workspace:*"
   },
   "peerDependencies": {
-    "react": "^18.3.0"
+    "next": "^15.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "2.1.9",
     "jsdom": "^25.0.1",
-    "react": "^18.3.0",
     "typescript": "^5.5.4",
     "vitest": "^2.1.9"
   }
