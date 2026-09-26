@@ -30,6 +30,16 @@ test('custom provider key pointing at the local mock AI can be saved', async ({ 
   await expect(page.getByText(/configured keys/i)).toBeVisible()
 })
 
+test('a PRD that does not exist answers 404, not 200 (regression)', async ({ page }) => {
+  // A root loading.tsx wraps every route in a Suspense boundary, which makes
+  // Next flush the shell with a 200 before the page resolves. notFound() then
+  // cannot change the status, so a missing document looked like a blank 200.
+  // The full-screen spinner also contradicted the direction in DESIGN.md, so
+  // the boundary was removed; this guards the status code.
+  const response = await page.goto('/prd/this-id-does-not-exist')
+  expect(response?.status()).toBe(404)
+})
+
 test('one-shot generate → PRD page → export MD → share link → anonymous view', async ({
   page,
   browser,

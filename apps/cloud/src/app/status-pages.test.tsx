@@ -2,7 +2,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import NotFound from './not-found'
-import Loading from './loading'
 import ErrorPage from './error'
 
 vi.mock('next/link', () => ({
@@ -20,13 +19,6 @@ describe('not-found (T3)', () => {
       screen.getByRole('link', { name: 'Back to dashboard' }).getAttribute('href')
     ).toBe('/dashboard')
     expect(screen.getByRole('link', { name: 'Go to landing' }).getAttribute('href')).toBe('/')
-  })
-})
-
-describe('loading (T3)', () => {
-  it('renders an accessible loading spinner', () => {
-    render(<Loading />)
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeDefined()
   })
 })
 

@@ -2,7 +2,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import NotFound from './not-found'
-import Loading from './loading'
 import ErrorPage from './error'
 
 vi.mock('next/link', () => ({
@@ -21,13 +20,6 @@ describe('not-found (S2)', () => {
     expect(screen.getByText('404')).toBeDefined()
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeDefined()
     expect(screen.getByRole('link', { name: 'Back to your PRDs' }).getAttribute('href')).toBe('/')
-  })
-})
-
-describe('loading (S2)', () => {
-  it('renders an accessible loading spinner', () => {
-    render(<Loading />)
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeDefined()
   })
 })
 
