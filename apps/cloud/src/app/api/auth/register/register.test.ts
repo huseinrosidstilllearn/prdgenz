@@ -66,4 +66,32 @@ describe('POST /api/auth/register (PRD §10.1)', () => {
     )
     expect(res.status).toBe(500)
   })
+
+  // Two requests for the same email can both pass the findUnique check, so the
+  // unique index is what actually decides. Losing that race used to surface as
+  // a 500 that looked like a server fault on an entirely ordinary action.
+  it('returns 409 when the unique index rejects a concurrent duplicate', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+    vi.mocked(prisma.user.create).mockRejectedValue(
+      Object.assign(new Error('Unique constraint failed on the fields: (`email`)'), {
+        code: 'P2002',
+      })
+    )
+    const res = await register(
+      makeReq({ email: 'race@example.com', name: 'Race', password: 'Test1234!' })
+    )
+    expect(res.status).toBe(409)
+    expect((await res.json()).error).toBe('Email already registered')
+  })
+
+  it('still reports an unrelated create failure as a 500', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+    vi.mocked(prisma.user.create).mockRejectedValue(
+      Object.assign(new Error('connection reset'), { code: 'P1001' })
+    )
+    const res = await register(
+      makeReq({ email: 'y@example.com', name: 'Y', password: 'Test1234!' })
+    )
+    expect(res.status).toBe(500)
+  })
 })
