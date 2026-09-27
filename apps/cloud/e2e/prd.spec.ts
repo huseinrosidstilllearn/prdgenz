@@ -151,6 +151,55 @@ test('per-section regenerate saves a new version (PRD §6.1.1)', async ({ page }
   expect(versionData.versions?.map((v: { versionNumber: number }) => v.versionNumber)).toContain(2)
 })
 
+test('version diff page renders a real comparison once two versions exist', async ({ page }) => {
+  // The regen test above saved v2, so this is the first time the diff page is
+  // reached with something to compare. Until now only its empty state was
+  // covered, which left the whole comparison path (pair resolution, the
+  // version pickers, and the per-section renderer) unexercised.
+  const prds = await (
+    await page.request.get('/api/prd', { headers: { 'Content-Type': 'application/json' } })
+  ).json()
+  const prdId = prds.prds?.find((p: { title: string }) => p.title === 'Kasir Kopi Kita')?.id
+  expect(prdId).toBeTruthy()
+
+  // Reach the page the way a user does: the Diff button on v1 in the sidebar.
+  await page.goto(`/prd/${prdId}`)
+  await page.getByRole('button', { name: 'Diff' }).first().click()
+
+  // It carries the pair in the query string, so the URL stays shareable.
+  await expect(page).toHaveURL(new RegExp(`/prd/${prdId}/diff\\?from=1&to=2`))
+
+  // The empty state must be gone now that there is something to compare.
+  // Waiting on the heading first: asserting a count of 0 before the comparison
+  // has rendered would pass against the empty state too.
+  await expect(page.getByRole('heading', { name: 'Compare versions' })).toBeVisible({
+    timeout: 30_000,
+  })
+  await expect(page.getByText('Only one version exists')).toHaveCount(0)
+
+  // Both versions are offered in both pickers, and the resolved pair is
+  // preselected rather than left at the browser's first-option default.
+  await expect(page.getByRole('option')).toHaveCount(4)
+  await expect(page.locator('#from')).toHaveValue('1')
+  await expect(page.locator('#to')).toHaveValue('2')
+
+  // The comparison itself renders. The mock provider replays the same fixture
+  // for every call, so the two versions are byte-identical and every section
+  // reports "No changes" — that is the honest result here. What matters is
+  // that the page compared them and said so, instead of rendering an empty
+  // shell or silently falling back to the one-version branch.
+  const comparison = await page.locator('.spec-rule').innerText()
+  expect(comparison).toContain('Comparing')
+  expect(comparison).toContain('v1')
+  expect(comparison).toContain('v2')
+  expect(await page.locator('.spec-rule section').count()).toBeGreaterThan(0)
+
+  // Explicit pairs in the URL win over the default resolution.
+  await page.goto(`/prd/${prdId}/diff?from=1&to=2`)
+  await expect(page.locator('#from')).toHaveValue('1')
+  await expect(page.locator('#to')).toHaveValue('2')
+})
+
 test('wizard step reorder/toggle configures navigation and AI payload exclusion (PRD §6.1.1)', async ({
   page,
 }) => {
