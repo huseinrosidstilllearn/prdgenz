@@ -755,7 +755,7 @@ model ApiKey {
 | Share link password + expiry | ✓ Implemented | bcrypt sharePasswordHash, shareExpiresAt, cookie gate /api/share/[shareId]/auth |
 | Free plan 10 PRD/30 hari + 1 project | ✓ Implemented | assertCreateAllowed + assertProjectCreateAllowed |
 | API key encryption (AES-256-GCM) | ✓ Implemented | ENCRYPTION_KEY 64-hex; guard placeholder key di production |
-| SSRF guard customBaseUrl | ✓ Implemented | isSafeExternalUrl (literal IP privat/loopback diblok; DNS rebinding belum) |
+| SSRF guard customBaseUrl | ✓ Implemented | isSafeExternalUrl: RFC1918 + link-local + CGNAT + reserved diblok; opt-in `ALLOW_PRIVATE_AI_HOSTS=1` agar self-host memakai LLM lokal. DNS rebinding tidak ditutup di kode (cloud Worker andalkan flag `global_fetch_strictly_public`) |
 | Export MD/PDF | ✓ Implemented | PDF via print-HTML, title di-escape (anti HTML-injection) |
 | i18n UI (next-intl) | ✗ Backlog | Hanya output dokumen ID/EN yang ada |
 | Version diff view | ✓ Implemented (1.3.0) | diffPRDVersions (shared) + VersionDiff (ui); halaman /prd/[id]/diff di cloud+self-host; entry dari tombol Diff di version history |
