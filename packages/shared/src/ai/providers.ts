@@ -53,6 +53,42 @@ export interface AIRequest {
   /** Override base URL for custom OpenAI-compatible endpoints. */
   customBaseUrl?: string
   signal?: AbortSignal
+  /**
+   * Deadline for the whole call, in milliseconds. Defaults to
+   * AI_REQUEST_TIMEOUT_MS. A provider that accepts the connection and then
+   * never answers would otherwise hold the request open indefinitely, since
+   * no caller in this codebase passed a signal of its own.
+   */
+  timeoutMs?: number
+}
+
+/**
+ * Default ceiling on a single AI call. Long enough for a full PRD generation
+ * from a slow model, short enough that a hung provider surfaces as an error the
+ * user can retry rather than a request that never returns.
+ */
+const AI_REQUEST_TIMEOUT_MS = 120_000
+
+/**
+ * Combine the caller's signal with a timeout. Returns the composed signal and a
+ * cleanup function that must run once the request settles — without it the
+ * timer keeps the process/isolate alive.
+ */
+function withTimeout(
+  timeoutMs: number,
+  external?: AbortSignal
+): { signal: AbortSignal; done: () => void } {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  const onAbort = () => controller.abort()
+  external?.addEventListener('abort', onAbort, { once: true })
+  return {
+    signal: controller.signal,
+    done: () => {
+      clearTimeout(timer)
+      external?.removeEventListener('abort', onAbort)
+    },
+  }
 }
 
 interface BuiltRequest {
@@ -166,18 +202,32 @@ async function describeError(res: Response): Promise<string> {
 /** Non-streaming completion. Returns the full text content. */
 export async function callAI(req: AIRequest): Promise<string> {
   const { url, headers, body, protocol } = buildRequest(req, false)
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-    signal: req.signal,
-  })
-  if (!res.ok) throw new Error(await describeError(res))
+  const { signal, done } = withTimeout(req.timeoutMs ?? AI_REQUEST_TIMEOUT_MS, req.signal)
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal,
+    })
+    if (!res.ok) throw new Error(await describeError(res))
 
-  if (isEventStream(res)) return await drainSseAsText(res, protocol)
+    if (isEventStream(res)) return await drainSseAsText(res, protocol)
 
-  const json = await res.json()
-  return extractFullText(protocol, json)
+    const json = await res.json()
+    return extractFullText(protocol, json)
+  } catch (err) {
+    // Distinguish our deadline from a caller-initiated cancel, so the user sees
+    // "the provider stopped responding" rather than a bare AbortError.
+    if (signal.aborted && !req.signal?.aborted) {
+      throw new Error(
+        `AI provider did not respond within ${req.timeoutMs ?? AI_REQUEST_TIMEOUT_MS}ms`
+      )
+    }
+    throw err
+  } finally {
+    done()
+  }
 }
 
 function isEventStream(res: Response): boolean {
@@ -221,16 +271,32 @@ async function* parseSSE(res: Response): AsyncGenerator<ProviderEvent> {
 /** Streaming completion (PRD §6.2.4). Yields text deltas token by token. */
 export async function* callAIStream(req: AIRequest): AsyncGenerator<string> {
   const { url, headers, body, protocol } = buildRequest(req, true)
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-    signal: req.signal,
-  })
-  if (!res.ok) throw new Error(await describeError(res))
-  for await (const evt of parseSSE(res)) {
-    const delta = extractStreamDelta(protocol, evt)
-    if (delta) yield delta
+  const { signal, done } = withTimeout(req.timeoutMs ?? AI_REQUEST_TIMEOUT_MS, req.signal)
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal,
+    })
+    if (!res.ok) throw new Error(await describeError(res))
+    for await (const evt of parseSSE(res)) {
+      const delta = extractStreamDelta(protocol, evt)
+      if (delta) yield delta
+    }
+    // Reaching here means the stream ended on its own; the timeout should not
+    // fire afterwards and report a healthy request as timed out.
+  } catch (err) {
+    if (signal.aborted && !req.signal?.aborted) {
+      throw new Error(
+        `AI provider did not respond within ${req.timeoutMs ?? AI_REQUEST_TIMEOUT_MS}ms`
+      )
+    }
+    throw err
+  } finally {
+    // Covers the normal end, a throw, and a consumer breaking out of the loop
+    // early — all of which must clear the timer or the handle stays alive.
+    done()
   }
 }
 

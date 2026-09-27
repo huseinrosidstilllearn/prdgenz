@@ -374,3 +374,81 @@ describe('testProviderConnection (PRD §6.2.2)', () => {
     expect(await testProviderConnection('openai', 'sk-any')).toBe(false)
   })
 })
+
+// Without a deadline, a provider that accepts the connection and then goes
+// quiet holds the request open forever — nothing in this codebase passed a
+// signal of its own. Fake timers keep the test instant.
+describe('AI request timeout', () => {
+  const req = {
+    provider: 'openai',
+    apiKey: 'sk-test',
+    systemPrompt: 'SYS',
+    userPrompt: 'USER',
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.useRealTimers()
+  })
+
+  /** A fetch that never settles, and rejects if the signal aborts. */
+  function hangingFetch() {
+    return vi.fn(
+      (_url: string, init: { signal?: AbortSignal }) =>
+        new Promise<Response>((_resolve, reject) => {
+          init.signal?.addEventListener('abort', () =>
+            reject(new DOMException('The operation was aborted.', 'AbortError'))
+          )
+        })
+    )
+  }
+
+  it('callAI gives up once the deadline passes', async () => {
+    vi.stubGlobal('fetch', hangingFetch())
+    vi.useFakeTimers()
+    // Attach the assertion before advancing: the rejection happens during the
+    // tick, and a promise with no handler by then counts as an unhandled
+    // rejection rather than a test failure.
+    const assertion = expect(callAI({ ...req, timeoutMs: 5_000 })).rejects.toThrow(
+      /did not respond within 5000ms/
+    )
+    await vi.advanceTimersByTimeAsync(5_001)
+    await assertion
+  })
+
+  it('callAIStream gives up once the deadline passes', async () => {
+    vi.stubGlobal('fetch', hangingFetch())
+    vi.useFakeTimers()
+    const run = async () => {
+      for await (const _ of callAIStream({ ...req, timeoutMs: 5_000 })) {
+        /* never yields */
+      }
+    }
+    const assertion = expect(run()).rejects.toThrow(/did not respond within 5000ms/)
+    await vi.advanceTimersByTimeAsync(5_001)
+    await assertion
+  })
+
+  it('does not fire when the provider answers in time', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ choices: [{ message: { content: 'FAST' } }] }), {
+            status: 200,
+          })
+      )
+    )
+    vi.useFakeTimers()
+    await expect(callAI({ ...req, timeoutMs: 5_000 })).resolves.toBe('FAST')
+  })
+
+  it('a caller-initiated cancel is reported as an abort, not a timeout', async () => {
+    vi.stubGlobal('fetch', hangingFetch())
+    const controller = new AbortController()
+    const p = callAI({ ...req, signal: controller.signal, timeoutMs: 60_000 })
+    controller.abort()
+    // The message must not claim a timeout the caller did not cause.
+    await expect(p).rejects.not.toThrow(/did not respond/)
+  })
+})
