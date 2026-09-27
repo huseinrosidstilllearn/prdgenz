@@ -180,4 +180,35 @@ describe('isSafeExternalUrl (SSRF guard, non-production carve-out)', () => {
     expect(isSafeExternalUrl('http://127.0.0.1:3999/v1')).toBe(true)
     expect(isSafeExternalUrl('ftp://example.com/file')).toBe(false)
   })
+
+  // Locked in as a regression guard. The WHATWG URL parser rewrites each of
+  // these to 127.0.0.1 before the guard sees them, so they were never the hole;
+  // these assert the guard keeps holding if that normalisation ever changes.
+  it('production: blocks non-canonical IPv4 spellings of loopback', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('http://2130706433/v1')).toBe(false) // decimal
+    expect(isSafeExternalUrl('http://0x7f000001/v1')).toBe(false) // hex
+    expect(isSafeExternalUrl('http://127.1/v1')).toBe(false) // short form
+    expect(isSafeExternalUrl('http://0177.0.0.1/v1')).toBe(false) // octal
+    expect(isSafeExternalUrl('http://127.0.0.01/v1')).toBe(false) // leading zero
+  })
+
+  // The real gap: the guard covered RFC1918 and link-local, and stopped there.
+  // Carrier-grade NAT and the reserved range above it were reported as safe.
+  it('production: blocks private ranges beyond RFC1918', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('http://100.64.0.1/v1')).toBe(false) // CGNAT
+    expect(isSafeExternalUrl('http://100.127.255.254/v1')).toBe(false)
+    expect(isSafeExternalUrl('http://224.0.0.1/v1')).toBe(false) // multicast/reserved
+    expect(isSafeExternalUrl('http://255.255.255.255/v1')).toBe(false)
+    expect(isSafeExternalUrl('http://999.999.999.999/v1')).toBe(false) // not an address
+  })
+
+  it('production: still allows genuinely public addresses', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isSafeExternalUrl('https://8.8.8.8/v1')).toBe(true)
+    expect(isSafeExternalUrl('https://100.63.255.255/v1')).toBe(true) // just below CGNAT
+    expect(isSafeExternalUrl('https://100.128.0.1/v1')).toBe(true) // just above
+    expect(isSafeExternalUrl('https://172.32.0.1/v1')).toBe(true) // just above 172.16/12
+  })
 })

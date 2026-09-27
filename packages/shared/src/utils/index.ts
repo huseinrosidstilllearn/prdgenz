@@ -143,14 +143,29 @@ export function isSafeExternalUrl(raw: string): boolean {
   const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
   if (host === 'localhost' || host.endsWith('.localhost')) return false
 
+  // Defence in depth against non-canonical IPv4 spellings. The WHATWG URL
+  // parser already rewrites these (2130706433, 0x7f000001, 0177.0.0.1 and
+  // 127.1 all arrive here as "127.0.0.1"), so the dotted-quad test below would
+  // catch them anyway. Kept as an explicit refusal in case a future parser
+  // stops normalising, rather than relying on that behaviour holding.
+  if (/^\d+$/.test(host)) return false
+  if (/^0x[0-9a-f]+$/i.test(host)) return false
+
   const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host)
   if (ipv4) {
-    const a = Number(ipv4[1])
-    const b = Number(ipv4[2])
-    if (a === 10 || a === 127 || a === 0) return false
+    const parts = ipv4.slice(1).map(Number)
+    // A leading zero means an octal-looking form the resolver may interpret
+    // differently from us; refuse rather than guess.
+    if (ipv4.slice(1).some((p) => p.length > 1 && p.startsWith('0'))) return false
+    if (parts.some((n) => !Number.isInteger(n) || n > 255)) return false
+    const [a, b] = parts
+    if (a === 0 || a === 10 || a === 127) return false
     if (a === 169 && b === 254) return false
     if (a === 172 && b >= 16 && b <= 31) return false
     if (a === 192 && b === 168) return false
+    // Carrier-grade NAT (100.64.0.0/10) and the 224.0.0.0/4 multicast range.
+    if (a === 100 && b >= 64 && b <= 127) return false
+    if (a >= 224) return false
     return true
   }
 
