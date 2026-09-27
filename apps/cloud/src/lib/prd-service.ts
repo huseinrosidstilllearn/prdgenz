@@ -100,7 +100,33 @@ export async function createPRDFromContent(
   })
 }
 
-/** Append a new version to an existing PRD (regenerate / restore). */
+/**
+ * Prisma's error code for a unique-index violation.
+ * Only the code is matched, not the message: Prisma reworded these between
+ * versions and matching text would silently stop catching them.
+ */
+const PRISMA_UNIQUE_VIOLATION = 'P2002'
+
+function isUniqueViolation(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { code?: unknown }).code === PRISMA_UNIQUE_VIOLATION
+  )
+}
+
+/**
+ * Append a new version to an existing PRD (regenerate / restore).
+ *
+ * The version number is allocated inside the transaction rather than derived
+ * from the currentVersion read above it. Two regenerates can be in flight at
+ * once (double-click, or a section regen racing a full one); both would read
+ * the same currentVersion and pick the same number, and the
+ * @@unique([prdId, versionNumber]) index would reject the loser. Taking the
+ * max inside the transaction does not fully serialise the two either, so a
+ * collision is still reported as a 409 the caller can retry rather than a 500
+ * that reads like a server fault.
+ */
 export async function appendPRDVersion(
   userId: string,
   prdId: string,
@@ -110,39 +136,75 @@ export async function appendPRDVersion(
   const prd = await assertPRDOwnership(userId, prdId)
   const lang = language ?? (prd.language as Language)
   const contentMd = markdownFor(content, lang)
-  const versionNumber = prd.currentVersion + 1
-  const [version] = await prisma.$transaction([
-    prisma.pRDVersion.create({
-      data: { prdId, versionNumber, content: content as unknown as object, contentMd },
-    }),
-    prisma.pRD.update({
-      where: { id: prdId },
-      data: { title: content.title, language: lang, currentVersion: versionNumber },
-    }),
-  ])
-  return version
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const latest = await tx.pRDVersion.aggregate({
+        where: { prdId },
+        _max: { versionNumber: true },
+      })
+      const versionNumber = (latest._max.versionNumber ?? 0) + 1
+
+      const version = await tx.pRDVersion.create({
+        data: { prdId, versionNumber, content: content as unknown as object, contentMd },
+      })
+      await tx.pRD.update({
+        where: { id: prdId },
+        data: { title: content.title, language: lang, currentVersion: versionNumber },
+      })
+      return version
+    })
+  } catch (err) {
+    if (isUniqueViolation(err)) {
+      throw new ServiceError(
+        'Another regeneration just finished. Try again to save this version.',
+        409
+      )
+    }
+    throw err
+  }
 }
 
 /** Restore an old version as a NEW version (non-destructive, PRD §6.6). */
 export async function restoreVersion(userId: string, prdId: string, vid: number) {
-  const prd = await assertPRDOwnership(userId, prdId)
+  // Ownership is what the read is for; the row itself is no longer needed now
+  // that the version number is allocated from the database inside the write.
+  await assertPRDOwnership(userId, prdId)
   const old = await prisma.pRDVersion.findFirst({
     where: { prdId, versionNumber: vid },
   })
   if (!old) throw new ServiceError('Version not found', 404)
-  const versionNumber = prd.currentVersion + 1
-  const [version] = await prisma.$transaction([
-    prisma.pRDVersion.create({
-      data: {
-        prdId,
-        versionNumber,
-        content: old.content as object,
-        contentMd: old.contentMd,
-      },
-    }),
-    prisma.pRD.update({ where: { id: prdId }, data: { currentVersion: versionNumber } }),
-  ])
-  return version
+
+  // Same reasoning as appendPRDVersion: allocate inside the transaction so a
+  // concurrent regenerate cannot hand us the same number.
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const latest = await tx.pRDVersion.aggregate({
+        where: { prdId },
+        _max: { versionNumber: true },
+      })
+      const versionNumber = (latest._max.versionNumber ?? 0) + 1
+
+      const version = await tx.pRDVersion.create({
+        data: {
+          prdId,
+          versionNumber,
+          content: old.content as object,
+          contentMd: old.contentMd,
+        },
+      })
+      await tx.pRD.update({ where: { id: prdId }, data: { currentVersion: versionNumber } })
+      return version
+    })
+  } catch (err) {
+    if (isUniqueViolation(err)) {
+      throw new ServiceError(
+        'Another regeneration just finished. Try again to restore this version.',
+        409
+      )
+    }
+    throw err
+  }
 }
 
 /** Current version row of a PRD (or null when never generated). */
