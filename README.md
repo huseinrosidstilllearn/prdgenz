@@ -88,6 +88,23 @@ docker compose up -d       # app on http://localhost:3000
 
 Data (SQLite) persists in the `prdgenz-data` volume.
 
+### Using a local model server
+
+To point the self-hosted app at Ollama, LM Studio, or a vLLM on your own
+network, set `CUSTOM_BASE_URL` **and** `ALLOW_PRIVATE_AI_HOSTS=1` in `.env`:
+
+```bash
+CUSTOM_BASE_URL="http://host.docker.internal:11434/v1"
+CUSTOM_API_KEY="ollama"
+ALLOW_PRIVATE_AI_HOSTS="1"
+```
+
+The image runs as production, so the SSRF guard blocks private addresses by
+default. `ALLOW_PRIVATE_AI_HOSTS` is the explicit opt-out for that — it assumes
+you control the network and no untrusted person can submit a base URL. Inside
+Docker, `127.0.0.1` refers to the container, so use `host.docker.internal` (or
+the host's LAN IP) rather than `localhost`.
+
 ## Cloud Deploy
 
 Deploy the `apps/cloud` directory to Vercel, Railway, or Render.

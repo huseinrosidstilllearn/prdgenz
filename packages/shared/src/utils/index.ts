@@ -118,14 +118,36 @@ export function truncate(text: string, max = 120): string {
 }
 
 /**
- * SSRF guard for user-supplied provider base URLs (cloud only).
- * In production: rejects loopback, private, link-local and unique-local
- * literals plus `localhost`. Outside production (dev/test) loopback/private
- * are allowed so local AI mocks (E2E) and local LLMs work — malformed URLs
- * and non-http(s) protocols are still rejected in all environments.
- * This blocks the common literal-IP SSRF probes but NOT DNS
- * rebinding (a public hostname resolving to a private IP) — callers handling
- * untrusted URLs should also pin/validate the resolved address.
+ * Whether the deployment opts in to private provider base URLs.
+ *
+ * The self-host Docker image runs with NODE_ENV=production, so the SSRF block
+ * applied to it unchanged — which broke the single most common self-host setup
+ * there is: pointing CUSTOM_BASE_URL at a local Ollama or LM Studio. Setting
+ * this to "1" is an explicit acknowledgement that the operator owns the network
+ * and has no untrusted users to SSRF. It is deliberately not a default: on the
+ * cloud app, where the input comes from any signed-up user, it stays off.
+ */
+function privateBaseUrlsAllowed(): boolean {
+  return process.env.ALLOW_PRIVATE_AI_HOSTS === '1'
+}
+
+/**
+ * SSRF guard for user-supplied provider base URLs.
+ *
+ * Rejects loopback, private, link-local, unique-local and reserved literals,
+ * plus `localhost`. Non-canonical IPv4 spellings are rejected rather than
+ * assumed, since the WHATWG parser currently normalises them and relying on
+ * that is fragile.
+ *
+ * Two situations lift the private-IP restriction:
+ *  - outside production, so local AI mocks (E2E) and local LLMs work;
+ *  - when ALLOW_PRIVATE_AI_HOSTS=1, which is how the self-host image can reach
+ *    a local model server despite running as production.
+ *
+ * Malformed URLs and non-http(s) protocols are rejected in every environment.
+ * This does NOT block DNS rebinding (a public hostname that resolves to a
+ * private address); on Cloudflare that is additionally covered by the
+ * `global_fetch_strictly_public` compatibility flag set in wrangler.jsonc.
  */
 export function isSafeExternalUrl(raw: string): boolean {
   let url: URL
@@ -136,9 +158,7 @@ export function isSafeExternalUrl(raw: string): boolean {
   }
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return false
 
-  // Dev/test only: allow loopback/private so local AI mocks (E2E) and local
-  // LLMs work. Production keeps the full SSRF block.
-  if (process.env.NODE_ENV !== 'production') return true
+  if (process.env.NODE_ENV !== 'production' || privateBaseUrlsAllowed()) return true
 
   const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
   if (host === 'localhost' || host.endsWith('.localhost')) return false

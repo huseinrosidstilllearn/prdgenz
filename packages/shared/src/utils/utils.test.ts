@@ -133,7 +133,7 @@ describe('formatDate', () => {
 
 describe('isSafeExternalUrl (SSRF guard, non-production carve-out)', () => {
   const savedEnv: Record<string, string | undefined> = {}
-  const keysToSave = ['NODE_ENV']
+  const keysToSave = ['NODE_ENV', 'ALLOW_PRIVATE_AI_HOSTS']
 
   beforeEach(() => {
     for (const k of keysToSave) savedEnv[k] = process.env[k]
@@ -210,5 +210,44 @@ describe('isSafeExternalUrl (SSRF guard, non-production carve-out)', () => {
     expect(isSafeExternalUrl('https://100.63.255.255/v1')).toBe(true) // just below CGNAT
     expect(isSafeExternalUrl('https://100.128.0.1/v1')).toBe(true) // just above
     expect(isSafeExternalUrl('https://172.32.0.1/v1')).toBe(true) // just above 172.16/12
+  })
+
+  // The self-host image runs as production, so pointing CUSTOM_BASE_URL at a
+  // local Ollama was rejected outright. The opt-in is what makes that work.
+  describe('ALLOW_PRIVATE_AI_HOSTS opt-in', () => {
+    beforeEach(() => {
+      vi.stubEnv('NODE_ENV', 'production')
+    })
+
+    it('lets a production self-host reach a local model server', () => {
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', '1')
+      expect(isSafeExternalUrl('http://host.docker.internal:11434/v1')).toBe(true)
+      expect(isSafeExternalUrl('http://127.0.0.1:11434/v1')).toBe(true)
+      expect(isSafeExternalUrl('http://192.168.1.50:1234/v1')).toBe(true)
+    })
+
+    it('still rejects malformed and non-http(s) URLs when opted in', () => {
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', '1')
+      // The opt-in is about private IPs, not about relaxing the URL check.
+      expect(isSafeExternalUrl('not-a-url')).toBe(false)
+      expect(isSafeExternalUrl('ftp://192.168.1.50/file')).toBe(false)
+      expect(isSafeExternalUrl('file:///etc/passwd')).toBe(false)
+    })
+
+    it('keeps the guard on by default — the opt-in must be explicit', () => {
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', undefined)
+      expect(isSafeExternalUrl('http://127.0.0.1:11434/v1')).toBe(false)
+      // Any value other than the exact "1" is not consent.
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', 'true')
+      expect(isSafeExternalUrl('http://127.0.0.1:11434/v1')).toBe(false)
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', '0')
+      expect(isSafeExternalUrl('http://127.0.0.1:11434/v1')).toBe(false)
+    })
+
+    it('does not apply outside production, which was already permissive', () => {
+      vi.stubEnv('NODE_ENV', 'development')
+      vi.stubEnv('ALLOW_PRIVATE_AI_HOSTS', undefined)
+      expect(isSafeExternalUrl('http://127.0.0.1:11434/v1')).toBe(true)
+    })
   })
 })

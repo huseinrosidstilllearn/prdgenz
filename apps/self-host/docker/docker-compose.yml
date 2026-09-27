@@ -27,6 +27,10 @@ services:
       AI_DEFAULT_PROVIDER: ${AI_DEFAULT_PROVIDER:-openai}
       AI_DEFAULT_MODEL: ${AI_DEFAULT_MODEL:-}
       AI_DEFAULT_LANGUAGE: ${AI_DEFAULT_LANGUAGE:-EN}
+      # Set to 1 in .env to point CUSTOM_BASE_URL at a local model server
+      # (Ollama/LM Studio/vLLM). The image runs as production, so the SSRF
+      # guard blocks private addresses unless this is explicitly enabled.
+      ALLOW_PRIVATE_AI_HOSTS: ${ALLOW_PRIVATE_AI_HOSTS:-}
     volumes:
       - prdgenz-data:/data
 
