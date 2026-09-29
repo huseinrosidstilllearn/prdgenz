@@ -358,6 +358,32 @@ describe('testProviderConnection (PRD §6.2.2)', () => {
     expect(init.headers.Authorization).toBe('Bearer sk-good')
   })
 
+  // This backs the "Save and test connection" button. With no deadline, a
+  // provider that accepted the connection and then went quiet left that button
+  // spinning forever instead of reporting that the key could not be checked.
+  it('gives up when the provider never answers', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        (_url: string, init: { signal?: AbortSignal }) =>
+          new Promise<Response>((_resolve, reject) => {
+            init.signal?.addEventListener('abort', () =>
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            )
+          })
+      )
+    )
+    vi.useFakeTimers()
+    // Attach first: a rejection with nothing listening is an unhandled
+    // rejection, not a test failure.
+    const assertion = expect(
+      testProviderConnection('openai', 'sk-hang', undefined, 5_000)
+    ).resolves.toBe(false)
+    await vi.advanceTimersByTimeAsync(5_001)
+    await assertion
+    vi.useRealTimers()
+  })
+
   it('returns false on non-2xx or network errors', async () => {
     vi.stubGlobal(
       'fetch',

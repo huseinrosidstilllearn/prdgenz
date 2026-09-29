@@ -311,12 +311,21 @@ export function listProviders(configuredProviderIds: string[] = []): AIProviderI
   }))
 }
 
-/** Validate an API key by hitting the provider's models endpoint (PRD §6.2.2). */
+/**
+ * Validate an API key by hitting the provider's models endpoint (PRD §6.2.2).
+ *
+ * Runs under the same deadline as the generation calls. This backs the
+ * "Save and test connection" button, so a provider that accepts the connection
+ * and then goes quiet would otherwise leave that button spinning forever
+ * instead of reporting that the key could not be verified.
+ */
 export async function testProviderConnection(
   providerId: string,
   apiKey: string,
-  customBaseUrl?: string
+  customBaseUrl?: string,
+  timeoutMs: number = AI_REQUEST_TIMEOUT_MS
 ): Promise<boolean> {
+  const { signal, done } = withTimeout(timeoutMs)
   try {
     const base = resolveBaseUrl(providerId, customBaseUrl)
     const protocol = getProtocol(providerId)
@@ -326,10 +335,12 @@ export async function testProviderConnection(
         : protocol === 'google'
           ? { 'x-goog-api-key': apiKey }
           : { Authorization: `Bearer ${apiKey}` }
-    const res = await fetch(`${base}/models`, { headers })
+    const res = await fetch(`${base}/models`, { headers, signal })
     return res.ok
   } catch {
     return false
+  } finally {
+    done()
   }
 }
 
