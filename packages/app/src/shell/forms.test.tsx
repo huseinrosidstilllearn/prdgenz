@@ -22,8 +22,9 @@ describe('AuthShell', () => {
         <span />
       </AuthShell>
     )
-    // One paragraph for the subtitle, none for a footer.
-    expect(container.querySelectorAll('p')).toHaveLength(1)
+    // The subtitle paragraph inside <main>, none for a footer. The brand
+    // panel carries its own paragraphs; scope to the form column.
+    expect(container.querySelector('main')?.querySelectorAll('p')).toHaveLength(1)
   })
 })
 

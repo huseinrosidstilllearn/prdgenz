@@ -11,6 +11,12 @@ spesifikasi yang bisa dibaca, bukan dashboard SaaS yang dipindai. Referensi
 vernakulernya: lembar gambar teknik, dokumen Requirements, dan tipografi
 buku teknis. Bukan gradien ungu, bukan grid kartu berbayang.
 
+Eksekusi mengikuti standar galeri referensi (Godly, Dark Mode Design,
+Minimal Gallery): display serif berskala besar di landing, section
+berirama lewat latar berselang-seling, artefak produk sebagai hero visual,
+dan auth split-screen — panel merek gelap berisi motif dokumen, form
+sendirian di atas kertas.
+
 ## Typography
 
 | Peran | Font | Alasan |
@@ -50,7 +56,15 @@ sungguhan yang butuh. Kartu bukan tile yang melayang: daftar PRD adalah
 
 Layout aplikasi: **rail tipis 13rem + satu kolom baca `max-w-3xl`**. Tidak ada
 sidebar berisi stat, tidak ada baris kartu statistik, tidak ada feed aktivitas
-palsu.
+palsu. Landing dan auth memakai kontainer `max-w-6xl` / split-screen.
+
+Aturan motif: `spec-rule` hanya dipakai di dalam konteks dokumen (SpecPanel,
+daftar bernomor landing, reader PRD). Jangan dibunteli ke form telanjang —
+garis tanpa dokumen di sekitarnya terlihat seperti bug.
+
+Auth: split-screen `lg:grid-cols-[1.1fr_1fr]` — panel kiri `bg-foreground
+text-background` (ter-inversi otomatis di dark mode), berisi wordmark,
+display heading, dan daftar klausa bernomor. Form di kanan tanpa kartu.
 
 ## Signature: margin rule
 

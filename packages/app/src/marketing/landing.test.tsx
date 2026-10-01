@@ -22,10 +22,12 @@ describe('Landing', () => {
 
   it('quotes the real plan limits rather than invented numbers', () => {
     renderLanding({ signedIn: false })
+    // The hero stamp reads "Free · 10 PRDs/mo · Pro $9/mo · BYOK".
     expect(
-      screen.getByText(new RegExp(`${FREE_PLAN_LIMIT} PRDs a month`))
+      screen.getByText(
+        new RegExp(`Free . ${FREE_PLAN_LIMIT} PRDs/mo . Pro \\$${PRO_PRICE}/mo . BYOK`)
+      )
     ).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(`Pro is \\$${PRO_PRICE}`))).toBeInTheDocument()
   })
 
   it('lists the three ways in as an ordered list', () => {
