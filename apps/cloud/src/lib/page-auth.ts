@@ -16,6 +16,10 @@ import { assertProdSecrets } from './api-auth'
  * This is also the stronger place to enforce auth: a server component runs
  * before the page renders, so it cannot be bypassed the way edge middleware can.
  *
+ * Every layout that calls this must `export const dynamic = 'force-dynamic'`:
+ * during a static prerender the guard would run at build time, where
+ * assertProdSecrets fails because CI has no secrets.
+ *
  * Returns the authenticated user id, or redirects to /login when signed out.
  */
 export async function requirePageUser(): Promise<string> {
