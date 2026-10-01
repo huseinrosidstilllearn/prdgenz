@@ -1,0 +1,9 @@
+{
+  "name": "pg-cloudflare",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Vendored copy of pg-cloudflare@1.4.0 (MIT) with the `cloudflare:sockets` specifier made non-literal so esbuild treats it as an external runtime builtin instead of trying to bundle it.",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.ts"
+}

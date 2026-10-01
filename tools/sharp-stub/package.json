@@ -1,0 +1,8 @@
+{
+  "name": "sharp",
+  "version": "0.35.4",
+  "private": true,
+  "description": "Platform stub for sharp. Cloudflare Workers cannot load native .node modules, so the real sharp can never run there. This project renders no <Image> components and sets images.unoptimized, so the image optimizer is never invoked at runtime.",
+  "main": "index.js",
+  "types": "index.d.ts"
+}
