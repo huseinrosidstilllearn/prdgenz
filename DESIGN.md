@@ -90,6 +90,26 @@ pesan sukses ("Save changes" → "Saved"). Tidak ada em dash di copy UI.
 - Komponen dekoratif yang tidak punya fungsi: `DotPattern`, `Marquee`,
   `ShimmerButton`, `BorderBeam`, `LiveBadge`. Sudah dihapus; jangan dikembalikan.
 
+## Accessibility (WCAG AA)
+
+Diverifikasi dengan script, bukan mata: `node scripts/a11y-contrast-check.mjs`
+(menghitung semua pairing token per tema, oklch → sRGB → rasio WCAG).
+
+- **Teks 4.5:1** — semua pairing teks lulus di light dan dark (terendah
+  `--rule-foreground` 4.66:1). Pairing baru wajib dihitung dulu.
+- **Non-teks 3:1 (1.4.11)** — hanya untuk boundary yang mengidentifikasi
+  komponen: input/textarea/select, tombol outline, focus ring. Karena itu
+  `--border-strong` dan `--input` dijaga ≥ 3:1 (light 3.10:1, dark 3.48:1).
+- **Pengecualian dekoratif**: `--border` (garis rambut kartu) dan `--rule`
+  (margin rule) sengaja di bawah 3:1 — keduanya tidak membawa informasi, dan
+  1.4.11 mengecualikan elemen dekoratif murni. Jangan pakai `--border` untuk
+  input atau tombol.
+- **Status dinamis** diumumkan: `role="status"` untuk progress/hasil
+  (Generating, Saved), `role="alert"` untuk error.
+- **Skip link** "Skip to content" adalah elemen focusable pertama di landing
+  dan app shell, menuju `#main-content`.
+- Status tidak pernah hanya warna: tiap sinyal sukses/error punya teks.
+
 ## Di mana authoritative file berada
 
 | Hal | File |

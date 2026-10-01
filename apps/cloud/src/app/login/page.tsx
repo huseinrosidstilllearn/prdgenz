@@ -1,53 +1,53 @@
-'use client'
+"use client";
 
-import { Suspense, useState } from 'react'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn } from 'next-auth/react'
-import { Button, Input, Label } from '@prdgenz/ui'
-import { AuthShell } from '@prdgenz/app'
-import { loginSchema } from '@prdgenz/shared'
-import { safeCallbackUrl } from '@/lib/redirect'
+import { Suspense, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { Button, Input, Label } from "@prdgenz/ui";
+import { AuthShell } from "@prdgenz/app";
+import { loginSchema } from "@prdgenz/shared";
+import { safeCallbackUrl } from "@/lib/redirect";
 
 export default function LoginPage() {
   return (
     <Suspense>
       <LoginForm />
     </Suspense>
-  )
+  );
 }
 
 function LoginForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-    const form = new FormData(e.currentTarget)
+    e.preventDefault();
+    setError(null);
+    const form = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
-      email: form.get('email'),
-      password: form.get('password'),
-    })
+      email: form.get("email"),
+      password: form.get("password"),
+    });
     if (!parsed.success) {
-      setError('Enter a valid email and password.')
-      return
+      setError("Enter a valid email and password.");
+      return;
     }
-    setLoading(true)
-    const res = await signIn('credentials', {
+    setLoading(true);
+    const res = await signIn("credentials", {
       email: parsed.data.email,
       password: parsed.data.password,
       redirect: false,
-    })
-    setLoading(false)
+    });
+    setLoading(false);
     if (res?.error) {
-      setError('Invalid email or password.')
-      return
+      setError("Invalid email or password.");
+      return;
     }
-    router.push(safeCallbackUrl(searchParams.get('callbackUrl')))
-    router.refresh()
+    router.push(safeCallbackUrl(searchParams.get("callbackUrl")));
+    router.refresh();
   }
 
   return (
@@ -56,8 +56,11 @@ function LoginForm() {
       subtitle="Log in to your account"
       footer={
         <>
-          No account?{' '}
-          <Link href="/register" className="text-foreground underline underline-offset-4">
+          No account?{" "}
+          <Link
+            href="/register"
+            className="text-foreground underline underline-offset-4"
+          >
             Register
           </Link>
         </>
@@ -85,12 +88,15 @@ function LoginForm() {
             autoComplete="current-password"
           />
         </div>
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Logging in…' : 'Log in'}
+          {loading ? "Logging in…" : "Log in"}
         </Button>
       </form>
     </AuthShell>
-  )
+  );
 }
-

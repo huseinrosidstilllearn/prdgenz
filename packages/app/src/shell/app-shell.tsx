@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react'
-import Link from 'next/link'
-import { ThemeToggle, cn } from '@prdgenz/ui'
-import { Wordmark } from './wordmark'
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { ThemeToggle, cn } from "@prdgenz/ui";
+import { Wordmark } from "./wordmark";
 
 export interface NavItem {
-  href: string
-  label: string
+  href: string;
+  label: string;
   /** Matches nested routes too, so /prd/abc keeps "PRDs" lit. */
-  active?: boolean
+  active?: boolean;
 }
 
 /**
@@ -20,16 +20,23 @@ export function AppShell({
   children,
   railExtra,
   headerExtra,
-  maxWidth = '3xl',
+  maxWidth = "3xl",
 }: {
-  nav: NavItem[]
-  children: ReactNode
-  railExtra?: ReactNode
-  headerExtra?: ReactNode
-  maxWidth?: '2xl' | '3xl' | '4xl' | 'full'
+  nav: NavItem[];
+  children: ReactNode;
+  railExtra?: ReactNode;
+  headerExtra?: ReactNode;
+  maxWidth?: "2xl" | "3xl" | "4xl" | "full";
 }) {
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[13rem_minmax(0,1fr)]">
+      {/* First focusable element on every app page: keyboard users skip the rail. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       {/* Rail: wordmark and navigation only. */}
       <aside className="hidden border-r bg-surface-sunken lg:flex lg:flex-col">
         <div className="flex h-14 items-center border-b px-5">
@@ -40,12 +47,12 @@ export function AppShell({
             <Link
               key={item.href}
               href={item.href}
-              aria-current={item.active ? 'page' : undefined}
+              aria-current={item.active ? "page" : undefined}
               className={cn(
-                'flex items-center rounded-md px-2.5 py-1.5 text-sm transition-colors duration-[120ms]',
+                "flex items-center rounded-md px-2.5 py-1.5 text-sm transition-colors duration-[120ms]",
                 item.active
-                  ? 'bg-primary-soft font-medium text-primary-soft-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                  ? "bg-primary-soft font-medium text-primary-soft-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
             >
               {item.label}
@@ -71,12 +78,12 @@ export function AppShell({
               <Link
                 key={item.href}
                 href={item.href}
-                aria-current={item.active ? 'page' : undefined}
+                aria-current={item.active ? "page" : undefined}
                 className={cn(
-                  'rounded-md px-2.5 py-1.5 transition-colors',
+                  "rounded-md px-2.5 py-1.5 transition-colors",
                   item.active
-                    ? 'bg-primary-soft font-medium text-primary-soft-foreground'
-                    : 'text-muted-foreground'
+                    ? "bg-primary-soft font-medium text-primary-soft-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {item.label}
@@ -90,17 +97,18 @@ export function AppShell({
         </header>
 
         <main
+          id="main-content"
           className={cn(
-            'flex-1 px-4 py-8 sm:px-6 sm:py-10',
-            maxWidth === 'full' ? '' : 'mx-auto w-full',
-            maxWidth === '2xl' && 'max-w-2xl',
-            maxWidth === '3xl' && 'max-w-3xl',
-            maxWidth === '4xl' && 'max-w-4xl'
+            "flex-1 px-4 py-8 sm:px-6 sm:py-10",
+            maxWidth === "full" ? "" : "mx-auto w-full",
+            maxWidth === "2xl" && "max-w-2xl",
+            maxWidth === "3xl" && "max-w-3xl",
+            maxWidth === "4xl" && "max-w-4xl",
           )}
         >
           {children}
         </main>
       </div>
     </div>
-  )
+  );
 }

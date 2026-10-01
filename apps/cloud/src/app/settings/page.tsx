@@ -1,87 +1,90 @@
-'use client'
+"use client";
 
-import { useCallback, useEffect, useState } from 'react'
-import { Button, Input, Label } from '@prdgenz/ui'
-import { FormSection } from '@prdgenz/app'
-import { AI_PROVIDERS, testProviderConnection } from '@prdgenz/shared'
+import { useCallback, useEffect, useState } from "react";
+import { Button, Input, Label } from "@prdgenz/ui";
+import { FormSection } from "@prdgenz/app";
+import { AI_PROVIDERS, testProviderConnection } from "@prdgenz/shared";
 
-const PROVIDER_IDS: string[] = AI_PROVIDERS.map((p) => p.id as string)
+const PROVIDER_IDS: string[] = AI_PROVIDERS.map((p) => p.id as string);
 
 interface MaskedKey {
-  id: string
-  provider: string
-  maskedKey: string
-  baseUrl?: string | null
-  updatedAt: string
+  id: string;
+  provider: string;
+  maskedKey: string;
+  baseUrl?: string | null;
+  updatedAt: string;
 }
 
 export default function SettingsPage() {
-  const [keys, setKeys] = useState<MaskedKey[]>([])
-  const [loading, setLoading] = useState(true)
-  const [provider, setProvider] = useState<string>(PROVIDER_IDS[0])
-  const [key, setKey] = useState('')
-  const [baseUrl, setBaseUrl] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [keys, setKeys] = useState<MaskedKey[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [provider, setProvider] = useState<string>(PROVIDER_IDS[0]);
+  const [key, setKey] = useState("");
+  const [baseUrl, setBaseUrl] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/settings/apikey')
-    const data = await res.json().catch(() => null)
-    setKeys(data?.apiKeys ?? [])
-    setLoading(false)
-  }, [])
+    const res = await fetch("/api/settings/apikey");
+    const data = await res.json().catch(() => null);
+    setKeys(data?.apiKeys ?? []);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    load()
-  }, [load])
+    load();
+  }, [load]);
 
   async function save() {
-    setError(null)
-    setMessage(null)
+    setError(null);
+    setMessage(null);
     if (key.trim().length < 8) {
-      setError('API key must be at least 8 characters.')
-      return
+      setError("API key must be at least 8 characters.");
+      return;
     }
-    setSaving(true)
+    setSaving(true);
     try {
-      const res = await fetch('/api/settings/apikey', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/settings/apikey", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           provider,
           key: key.trim(),
           customBaseUrl: baseUrl.trim() ? baseUrl.trim() : undefined,
         }),
-      })
-      const data = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(data?.error ?? 'Failed to save API key.')
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error ?? "Failed to save API key.");
       setMessage(
         data?.connectionOk
-          ? 'Saved: connection test passed.'
-          : 'Saved, but the connection test failed; double-check the key.'
-      )
-      setKey('')
-      setBaseUrl('')
-      await load()
+          ? "Saved: connection test passed."
+          : "Saved, but the connection test failed; double-check the key.",
+      );
+      setKey("");
+      setBaseUrl("");
+      await load();
     } catch (e) {
-      setError((e as Error).message)
+      setError((e as Error).message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function remove(providerId: string) {
-    setError(null)
-    const res = await fetch(`/api/settings/apikey?provider=${encodeURIComponent(providerId)}`, {
-      method: 'DELETE',
-    })
-    if (!res.ok) setError('Failed to delete key.')
-    else setMessage(`Removed ${providerId} key.`)
-    await load()
+    setError(null);
+    const res = await fetch(
+      `/api/settings/apikey?provider=${encodeURIComponent(providerId)}`,
+      {
+        method: "DELETE",
+      },
+    );
+    if (!res.ok) setError("Failed to delete key.");
+    else setMessage(`Removed ${providerId} key.`);
+    await load();
   }
 
-  const selectedNeedsBaseUrl = provider === 'custom'
+  const selectedNeedsBaseUrl = provider === "custom";
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-10">
@@ -141,7 +144,9 @@ export default function SettingsPage() {
         ) : null}
         {baseUrl && !selectedNeedsBaseUrl ? (
           <div className="grid gap-2">
-            <Label htmlFor="baseurl-override">Custom base URL override (optional)</Label>
+            <Label htmlFor="baseurl-override">
+              Custom base URL override (optional)
+            </Label>
             <Input
               id="baseurl-override"
               value={baseUrl}
@@ -152,17 +157,27 @@ export default function SettingsPage() {
         ) : null}
 
         <Button onClick={save} disabled={saving}>
-          {saving ? 'Saving…' : 'Save and test connection'}
+          {saving ? "Saving…" : "Save and test connection"}
         </Button>
-        {message ? <p className="text-sm text-primary">{message}</p> : null}
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {message ? (
+          <p role="status" className="text-sm text-primary">
+            {message}
+          </p>
+        ) : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
       </FormSection>
 
       <FormSection title="Configured keys" className="mt-10">
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : keys.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No keys configured yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No keys configured yet.
+          </p>
         ) : (
           <ul className="divide-y border-y">
             {keys.map((k) => (
@@ -174,7 +189,7 @@ export default function SettingsPage() {
                   <p className="text-sm font-medium capitalize">{k.provider}</p>
                   <p className="truncate font-mono text-xs text-muted-foreground">
                     {k.maskedKey}
-                    {k.baseUrl ? ` · ${k.baseUrl}` : ''}
+                    {k.baseUrl ? ` · ${k.baseUrl}` : ""}
                   </p>
                 </div>
                 <Button
@@ -190,6 +205,5 @@ export default function SettingsPage() {
         )}
       </FormSection>
     </div>
-  )
+  );
 }
-

@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { AIChatBubble, Button, WizardStepper } from '@prdgenz/ui'
-import { useGenerationSetup } from './use-generation-setup'
-import { useWizardConfig } from './use-wizard-config'
-import { usePRDGeneration } from './use-prd-generation'
+import { useState } from "react";
+import { AIChatBubble, Button, WizardStepper } from "@prdgenz/ui";
+import { useGenerationSetup } from "./use-generation-setup";
+import { useWizardConfig } from "./use-wizard-config";
+import { usePRDGeneration } from "./use-prd-generation";
 import {
   EMPTY_WIZARD_VALUES,
   WizardStepFields,
   type WizardValues,
-} from './wizard-step-fields'
+} from "./wizard-step-fields";
 
 export interface WizardProps {
   /** Cloud-only project picker, rendered on the last step. */
-  projectId?: string
-  onProjectIdChange?: (id: string) => void
-  title?: string
+  projectId?: string;
+  onProjectIdChange?: (id: string) => void;
+  title?: string;
 }
 
 /** Human labels for the raw step identifiers persisted in localStorage. */
 const STEP_LABELS: Record<string, string> = {
-  idea: 'Idea',
-  targetUser: 'Target user',
-  features: 'Features',
-  userStories: 'User stories',
-  acceptanceCriteria: 'Acceptance criteria',
-  techStack: 'Tech stack',
-  timeline: 'Timeline',
-  outputFormat: 'Output format',
-}
+  idea: "Idea",
+  targetUser: "Target user",
+  features: "Features",
+  userStories: "User stories",
+  acceptanceCriteria: "Acceptance criteria",
+  techStack: "Tech stack",
+  timeline: "Timeline",
+  outputFormat: "Output format",
+};
 
 function label(step: string) {
-  return STEP_LABELS[step] ?? step
+  return STEP_LABELS[step] ?? step;
 }
 
 /**
@@ -41,43 +41,48 @@ function label(step: string) {
  * the active clause in the margin, not as a card wizard with a progress bar.
  */
 export function Wizard({
-  projectId = '',
+  projectId = "",
   onProjectIdChange,
-  title = 'Create from Scratch',
+  title = "Create from Scratch",
 }: WizardProps) {
-  const setup = useGenerationSetup()
-  const [currentStepName, setCurrentStepName] = useState('idea')
-  const [configuring, setConfiguring] = useState(false)
-  const [values, setValues] = useState<WizardValues>(EMPTY_WIZARD_VALUES)
+  const setup = useGenerationSetup();
+  const [currentStepName, setCurrentStepName] = useState("idea");
+  const [configuring, setConfiguring] = useState(false);
+  const [values, setValues] = useState<WizardValues>(EMPTY_WIZARD_VALUES);
   const { stepOrder, hiddenSteps, visibleSteps, moveStep, toggleStep } =
-    useWizardConfig(currentStepName)
+    useWizardConfig(currentStepName);
   const { generating, streamText, result, error, generate, cancel } =
-    usePRDGeneration()
+    usePRDGeneration();
 
-  function onChange<K extends keyof WizardValues>(key: K, value: WizardValues[K]) {
-    setValues((v) => ({ ...v, [key]: value }))
+  function onChange<K extends keyof WizardValues>(
+    key: K,
+    value: WizardValues[K],
+  ) {
+    setValues((v) => ({ ...v, [key]: value }));
   }
 
-  const lastStep = visibleSteps[visibleSteps.length - 1] === currentStepName
+  const lastStep = visibleSteps[visibleSteps.length - 1] === currentStepName;
   // The idea clause is the only required one, so only it can gate Next.
-  const canNext = currentStepName !== 'idea' || values.idea.trim().length >= 3
+  const canNext = currentStepName !== "idea" || values.idea.trim().length >= 3;
 
   function go(offset: 1 | -1) {
-    const i = visibleSteps.indexOf(currentStepName)
-    const target = visibleSteps[Math.min(visibleSteps.length - 1, Math.max(0, i + offset))]
-    if (target) setCurrentStepName(target)
+    const i = visibleSteps.indexOf(currentStepName);
+    const target =
+      visibleSteps[Math.min(visibleSteps.length - 1, Math.max(0, i + offset))];
+    if (target) setCurrentStepName(target);
   }
 
   function onToggleStep(step: string) {
-    const next = toggleStep(step)
-    if (next) setCurrentStepName(next)
+    const next = toggleStep(step);
+    if (next) setCurrentStepName(next);
   }
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-10">
       <header className="mb-8">
         <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">
-          Clause {visibleSteps.indexOf(currentStepName) + 1} of {visibleSteps.length}
+          Clause {visibleSteps.indexOf(currentStepName) + 1} of{" "}
+          {visibleSteps.length}
         </p>
         <h1 className="font-display text-3xl leading-tight">{title}</h1>
       </header>
@@ -120,16 +125,23 @@ export function Wizard({
             }
           />
 
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {error ? (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
 
           {generating ? (
             <div className="space-y-3 border p-4">
-              <p className="font-mono text-xs text-muted-foreground">
+              <p
+                role="status"
+                className="font-mono text-xs text-muted-foreground"
+              >
                 Generating… {streamText.length} chars streamed
               </p>
               <AIChatBubble
                 role="assistant"
-                content={streamText || 'Contacting the model…'}
+                content={streamText || "Contacting the model…"}
                 streaming
               />
               <Button variant="outline" size="sm" onClick={cancel}>
@@ -147,16 +159,16 @@ export function Wizard({
       <div className="mt-8 flex items-center justify-between gap-4 border-t pt-6">
         {configuring ? (
           <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">
-            Reorder clauses with the arrows, or hide optional ones. Hidden clauses
-            are skipped during navigation and left out of the model input. The
-            idea clause stays first and is always required.
+            Reorder clauses with the arrows, or hide optional ones. Hidden
+            clauses are skipped during navigation and left out of the model
+            input. The idea clause stays first and is always required.
           </p>
         ) : (
           <>
             <Button
               variant="outline"
               onClick={() => go(-1)}
-              disabled={currentStepName === 'idea' || generating}
+              disabled={currentStepName === "idea" || generating}
             >
               Back
             </Button>
@@ -177,7 +189,7 @@ export function Wizard({
                       values.acceptanceCriteria,
                     ]
                       .filter(Boolean)
-                      .join('\n\n'),
+                      .join("\n\n"),
                     targetUser: values.targetUser,
                     features: values.features,
                     techStack: values.techStack,
@@ -188,7 +200,7 @@ export function Wizard({
                 }
                 disabled={generating || values.idea.trim().length < 3}
               >
-                {generating ? 'Generating…' : 'Generate PRD'}
+                {generating ? "Generating…" : "Generate PRD"}
               </Button>
             ) : (
               <Button onClick={() => go(1)} disabled={!canNext || generating}>
@@ -203,9 +215,9 @@ export function Wizard({
           onClick={() => setConfiguring((c) => !c)}
           disabled={generating}
         >
-          {configuring ? 'Done' : 'Reorder clauses'}
+          {configuring ? "Done" : "Reorder clauses"}
         </Button>
       </div>
     </div>
-  )
+  );
 }

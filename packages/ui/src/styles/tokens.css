@@ -16,10 +16,13 @@
   --surface-sunken: oklch(96.4% 0.004 250);
   --surface-raised: oklch(100% 0 0);
 
-  /* Hairlines replace borders and shadows. */
+  /* Hairlines replace borders and shadows. --border is decorative (card
+     hairlines, the margin rule) and is exempt from WCAG 1.4.11. Anything that
+     must identify a component — input outlines, outline-button boundaries —
+     uses --border-strong, held at >= 3:1 against background and card (AA). */
   --border: oklch(89% 0.006 250);
-  --border-strong: oklch(82% 0.008 250);
-  --input: oklch(100% 0 0);
+  --border-strong: oklch(65% 0.008 250);
+  --input: oklch(65% 0.008 250);
 
   /* The one accent. */
   --primary: oklch(50% 0.11 168);
@@ -65,8 +68,8 @@
   --surface-raised: oklch(24% 0.014 250);
 
   --border: oklch(30% 0.013 250);
-  --border-strong: oklch(38% 0.014 250);
-  --input: oklch(21% 0.013 250);
+  --border-strong: oklch(52% 0.014 250);
+  --input: oklch(52% 0.014 250);
 
   --primary: oklch(80% 0.14 162);
   --primary-foreground: oklch(18% 0.03 168);

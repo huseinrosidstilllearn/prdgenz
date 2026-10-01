@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button, Input, Label } from '@prdgenz/ui'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button, Input, Label } from "@prdgenz/ui";
 
 export function CreateProjectButton() {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function create() {
     if (!name.trim()) {
-      setError('Project name is required.')
-      return
+      setError("Project name is required.");
+      return;
     }
-    setLoading(true)
-    setError(null)
-    const res = await fetch('/api/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    setLoading(true);
+    setError(null);
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: name.trim() }),
-    })
-    setLoading(false)
+    });
+    setLoading(false);
     if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      setError(data?.error ?? 'Failed to create project.')
-      return
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? "Failed to create project.");
+      return;
     }
-    setOpen(false)
-    setName('')
-    router.refresh()
+    setOpen(false);
+    setName("");
+    router.refresh();
   }
 
   return (
@@ -49,21 +49,29 @@ export function CreateProjectButton() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Mobile App Revamp"
                 autoFocus
-                onKeyDown={(e) => e.key === 'Enter' && create()}
+                onKeyDown={(e) => e.key === "Enter" && create()}
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+              <Button
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={loading}
+              >
                 Cancel
               </Button>
               <Button onClick={create} disabled={loading}>
-                {loading ? 'Creating…' : 'Create'}
+                {loading ? "Creating…" : "Create"}
               </Button>
             </div>
           </div>
         </div>
       )}
     </>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button, Label, Textarea } from '@prdgenz/ui'
-import type { PRDContent } from '@prdgenz/shared'
-import { useGenerationSetup } from '../wizard/use-generation-setup'
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button, Label, Textarea } from "@prdgenz/ui";
+import type { PRDContent } from "@prdgenz/shared";
+import { useGenerationSetup } from "../wizard/use-generation-setup";
 
-const MIN_IDEA_LENGTH = 10
+const MIN_IDEA_LENGTH = 10;
 
 export interface OneShotProps {
   /** Cloud-only project picker. */
-  projectId?: string
-  onProjectIdChange?: (id: string) => void
+  projectId?: string;
+  onProjectIdChange?: (id: string) => void;
 }
 
 /**
@@ -19,76 +19,76 @@ export interface OneShotProps {
  * than a chat bubble, because nothing is being said yet: the model is
  * writing the file.
  */
-export function OneShot({ projectId = '', onProjectIdChange }: OneShotProps) {
-  const router = useRouter()
-  const setup = useGenerationSetup()
-  const [idea, setIdea] = useState('')
-  const [constraints, setConstraints] = useState('')
-  const [generating, setGenerating] = useState(false)
-  const [streamText, setStreamText] = useState('')
-  const [result, setResult] = useState<PRDContent | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const abortRef = useRef<AbortController | null>(null)
+export function OneShot({ projectId = "", onProjectIdChange }: OneShotProps) {
+  const router = useRouter();
+  const setup = useGenerationSetup();
+  const [idea, setIdea] = useState("");
+  const [constraints, setConstraints] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [streamText, setStreamText] = useState("");
+  const [result, setResult] = useState<PRDContent | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const ready = idea.trim().length >= MIN_IDEA_LENGTH
+  const ready = idea.trim().length >= MIN_IDEA_LENGTH;
 
   async function generate() {
-    if (!ready) return
-    setError(null)
-    setResult(null)
-    setStreamText('')
-    setGenerating(true)
-    const abort = new AbortController()
-    abortRef.current = abort
+    if (!ready) return;
+    setError(null);
+    setResult(null);
+    setStreamText("");
+    setGenerating(true);
+    const abort = new AbortController();
+    abortRef.current = abort;
     try {
-      const res = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         signal: abort.signal,
         body: JSON.stringify({
           language: setup.language,
-          mode: 'ONESHOT',
+          mode: "ONESHOT",
           provider: setup.provider,
           model: setup.model,
           projectId: projectId || undefined,
           input: { idea, constraints: constraints || undefined },
         }),
-      })
+      });
       if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.error ?? 'Generation failed')
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Generation failed");
       }
-      const reader = res.body!.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
       for (;;) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const parts = buffer.split('\n\n')
-        buffer = parts.pop() ?? ''
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() ?? "";
         for (const part of parts) {
-          const line = part.trim()
-          if (!line.startsWith('data:')) continue
-          const evt = JSON.parse(line.slice(5).trim())
-          if (evt.type === 'delta') {
-            setStreamText((t) => t + evt.text)
-          } else if (evt.type === 'done') {
-            setResult(evt.content as PRDContent)
-            setStreamText('')
+          const line = part.trim();
+          if (!line.startsWith("data:")) continue;
+          const evt = JSON.parse(line.slice(5).trim());
+          if (evt.type === "delta") {
+            setStreamText((t) => t + evt.text);
+          } else if (evt.type === "done") {
+            setResult(evt.content as PRDContent);
+            setStreamText("");
             if (evt.saved?.prdId) {
               // Deferred so the finished state paints before the swap.
-              setTimeout(() => router.push(`/prd/${evt.saved.prdId}`), 900)
+              setTimeout(() => router.push(`/prd/${evt.saved.prdId}`), 900);
             }
-          } else if (evt.type === 'error') {
-            throw new Error(evt.error)
+          } else if (evt.type === "error") {
+            throw new Error(evt.error);
           }
         }
       }
     } catch (e) {
-      if ((e as Error).name !== 'AbortError') setError((e as Error).message)
+      if ((e as Error).name !== "AbortError") setError((e as Error).message);
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
   }
 
@@ -148,7 +148,11 @@ export function OneShot({ projectId = '', onProjectIdChange }: OneShotProps) {
           </div>
         ) : null}
 
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
 
         {generating ? (
           <div className="space-y-2 border p-4">
@@ -158,7 +162,11 @@ export function OneShot({ projectId = '', onProjectIdChange }: OneShotProps) {
             <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words font-mono text-xs text-muted-foreground">
               {streamText.slice(-1500)}
             </pre>
-            <Button variant="outline" size="sm" onClick={() => abortRef.current?.abort()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => abortRef.current?.abort()}
+            >
               Cancel
             </Button>
           </div>
@@ -168,16 +176,20 @@ export function OneShot({ projectId = '', onProjectIdChange }: OneShotProps) {
           <div className="border-l-2 border-primary pl-4">
             <p className="font-medium text-primary">{result.title}</p>
             <p className="text-sm text-muted-foreground">
-              {result.features.length} features · {result.userStories.length} user stories ·
-              opening…
+              {result.features.length} features · {result.userStories.length}{" "}
+              user stories · opening…
             </p>
           </div>
         ) : null}
 
-        <Button onClick={generate} disabled={!ready || generating} className="w-full">
-          {generating ? 'Generating…' : 'Generate PRD'}
+        <Button
+          onClick={generate}
+          disabled={!ready || generating}
+          className="w-full"
+        >
+          {generating ? "Generating…" : "Generate PRD"}
         </Button>
       </div>
     </div>
-  )
+  );
 }

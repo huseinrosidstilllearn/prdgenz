@@ -764,7 +764,7 @@ model ApiKey {
 | Coverage thresholds | ✓ Implemented (1.1.1) | @vitest/coverage-v8 per package, threshold dikalibrasi dari baseline; `pnpm test:coverage` enforce di CI |
 | Playwright smoke E2E (cloud) | ✓ Implemented (1.1.1) | 5 test: register/login/project/key/generate→export→share; mock AI 127.0.0.1:3999; job CI `e2e` + Postgres service; E2E user PRO |
 | Dark mode + SEO + error pages | ✓ Cloud + Self-Host (1.2.1) | next-themes (system default + toggle), error/global-error/not-found/loading; cloud: metadataBase/OG/robots/sitemap; self-host: noindex robots (private instance), favicon, manifest |
-| Aksesibilitas | ◐ Partial (1.2.0) | aria-label toggle, focus-ring shadcn; WCAG AA audit backlog |
+| Aksesibilitas | ✓ Implemented (1.5.3) | Audit WCAG AA (antislop-human): semua pairing teks ≥4.5:1 terverifikasi script (terendah 4.66:1); non-text 3:1 untuk input/tombol/focus ring via --border-strong ≥3:1 (light 3.10:1, dark 3.48:1); --border/--rule dekoratif dikecualikan 1.4.11; skip link "Skip to content" di landing + app shell; role=status/alert untuk semua pesan async; zoom 200% tanpa overflow (terverifikasi browser); kontras checker: scripts/a11y-contrast-check.mjs |
 | DOCX export | ✗ v2 | Sesuai rencana |
 | Deploy cloud (Cloudflare Workers) | ✓ Live 2026-09-13 | https://prdgenz.my.id via OpenNext (cloudflare-node wrapper, nodejs_compat); DB Supabase Postgres via session pooler (IPv4) dengan @prisma/adapter-pg; secrets via wrangler secret; build:cf/deploy:cf scripts; tanpa rilis versi/tag |
 | UI revamp Magic UI × GenZ | ✓ Implemented (1.5.0) | Token violet oklch, font Bricolage Grotesque + Plus Jakarta Sans (next/font), komponen CSS-only ShimmerButton/BorderBeam/DotPattern/Marquee (packages/ui, smoke tests), ModeCard beam prop, rebrand label "Wizard" → "Create from Scratch" (UI copy saja, URL/enum tetap) — superseded oleh 1.5.1/1.5.2 |
@@ -774,6 +774,7 @@ model ApiKey {
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5.3 | 2026-10-01 | Aksesibilitas WCAG AA: non-text contrast (input/tombol/focus ring ≥3:1, light+dark), skip link di landing + app shell, role=status/alert untuk pesan async, kontras checker script, tailwind content globs menambahkan packages/app (utility layout kini terkompilasi) |
 | 1.5.2 | 2026-09-14 | Antislop UI pass: de-slop landing (hapus DotPattern/Marquee/LiveBadge decorative, beam scoped ke card fitur baru, BYOK jadi secondary bar), purge em dash dari UI copy + docs, fix mojibake 4 file, AGENTS.md antislop pointer |
 | 1.5.1 | 2026-09-14 | Rebrand palet Blueprint Steel: steel blue + drafting cyan, display font Bricolage → Space Grotesk |
 | 1.5.0 | 2026-09-14 | UI revamp: Magic UI aesthetic (shimmer/beam/marquee/dot-pattern), font Bricolage + Plus Jakarta Sans, Wizard → Create from Scratch rebrand |

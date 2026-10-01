@@ -1,51 +1,51 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
-import { Button, Input, Label } from '@prdgenz/ui'
-import { AuthShell } from '@prdgenz/app'
-import { registerSchema } from '@prdgenz/shared'
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { Button, Input, Label } from "@prdgenz/ui";
+import { AuthShell } from "@prdgenz/app";
+import { registerSchema } from "@prdgenz/shared";
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-    const form = new FormData(e.currentTarget)
+    e.preventDefault();
+    setError(null);
+    const form = new FormData(e.currentTarget);
     const parsed = registerSchema.safeParse({
-      email: form.get('email'),
-      name: form.get('name'),
-      password: form.get('password'),
-    })
+      email: form.get("email"),
+      name: form.get("name"),
+      password: form.get("password"),
+    });
     if (!parsed.success) {
-      const issues = parsed.error.issues
-      setError(issues[0]?.message ?? 'Please check your input.')
-      return
+      const issues = parsed.error.issues;
+      setError(issues[0]?.message ?? "Please check your input.");
+      return;
     }
-    setLoading(true)
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    setLoading(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(parsed.data),
-    })
+    });
     if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      setLoading(false)
-      setError(data?.error ?? 'Registration failed.')
-      return
+      const data = await res.json().catch(() => null);
+      setLoading(false);
+      setError(data?.error ?? "Registration failed.");
+      return;
     }
-    await signIn('credentials', {
+    await signIn("credentials", {
       email: parsed.data.email,
       password: parsed.data.password,
       redirect: false,
-    })
-    router.push('/dashboard')
-    router.refresh()
+    });
+    router.push("/dashboard");
+    router.refresh();
   }
 
   return (
@@ -54,8 +54,11 @@ export default function RegisterPage() {
       subtitle="Free plan: 10 PRDs per month, Markdown export"
       footer={
         <>
-          Already have an account?{' '}
-          <Link href="/login" className="text-foreground underline underline-offset-4">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-foreground underline underline-offset-4"
+          >
             Log in
           </Link>
         </>
@@ -94,11 +97,15 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
         </div>
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Creating account…' : 'Create account'}
+          {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>
     </AuthShell>
-  )
+  );
 }

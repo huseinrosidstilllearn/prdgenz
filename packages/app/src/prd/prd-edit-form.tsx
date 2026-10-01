@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button, Input, Label } from '@prdgenz/ui'
-import { DeletePRDButton } from './prd-actions'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button, Input, Label } from "@prdgenz/ui";
+import { DeletePRDButton } from "./prd-actions";
 
 export interface PRDEditFormProps {
-  prdId: string
-  initialTitle: string
-  initialLanguage: string
+  prdId: string;
+  initialTitle: string;
+  initialLanguage: string;
   /** Cloud only: self-host has no delete affordance on this screen. */
-  canDelete?: boolean
-  redirectTo: string
+  canDelete?: boolean;
+  redirectTo: string;
 }
 
 /**
@@ -29,35 +29,37 @@ export function PRDEditForm({
   canDelete = false,
   redirectTo,
 }: PRDEditFormProps) {
-  const router = useRouter()
-  const [title, setTitle] = useState(initialTitle)
-  const [language, setLanguage] = useState(initialLanguage === 'ID' ? 'ID' : 'EN')
-  const [saving, setSaving] = useState(false)
-  const [note, setNote] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [title, setTitle] = useState(initialTitle);
+  const [language, setLanguage] = useState(
+    initialLanguage === "ID" ? "ID" : "EN",
+  );
+  const [saving, setSaving] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const dirty = title !== initialTitle || language !== initialLanguage
+  const dirty = title !== initialTitle || language !== initialLanguage;
 
   async function save() {
-    setSaving(true)
-    setError(null)
-    setNote(null)
+    setSaving(true);
+    setError(null);
+    setNote(null);
     try {
       const res = await fetch(`/api/prd/${prdId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, language }),
-      })
+      });
       if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.error ?? 'Save failed')
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Save failed");
       }
-      setNote('Saved.')
-      router.refresh()
+      setNote("Saved.");
+      router.refresh();
     } catch (e) {
-      setError((e as Error).message)
+      setError((e as Error).message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -85,7 +87,7 @@ export function PRDEditForm({
           <select
             id="lang"
             value={language}
-            onChange={(e) => setLanguage(e.target.value as 'EN' | 'ID')}
+            onChange={(e) => setLanguage(e.target.value as "EN" | "ID")}
             className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="EN">English</option>
@@ -96,14 +98,24 @@ export function PRDEditForm({
           </p>
         </div>
 
-        {note ? <p className="text-sm text-primary">{note}</p> : null}
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {note ? (
+          <p role="status" className="text-sm text-primary">
+            {note}
+          </p>
+        ) : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
 
         <div className="flex items-center justify-between gap-4 border-t pt-4">
           <Button onClick={save} disabled={saving || !title.trim() || !dirty}>
-            {saving ? 'Saving…' : dirty ? 'Save' : 'No changes'}
+            {saving ? "Saving…" : dirty ? "Save" : "No changes"}
           </Button>
-          {canDelete ? <DeletePRDButton prdId={prdId} redirectTo={redirectTo} /> : null}
+          {canDelete ? (
+            <DeletePRDButton prdId={prdId} redirectTo={redirectTo} />
+          ) : null}
         </div>
       </div>
 
@@ -113,5 +125,5 @@ export function PRDEditForm({
         One-Shot. Every change is kept as a version you can restore.
       </p>
     </div>
-  )
+  );
 }

@@ -1,60 +1,66 @@
-import Link from 'next/link'
-import { FREE_PLAN_LIMIT, PRO_PRICE } from '@prdgenz/shared'
-import { Badge, Button } from '@prdgenz/ui'
-import { Wordmark } from '../shell/wordmark'
-import { SpecPanel } from './spec-panel'
+import Link from "next/link";
+import { FREE_PLAN_LIMIT, PRO_PRICE } from "@prdgenz/shared";
+import { Badge, Button } from "@prdgenz/ui";
+import { Wordmark } from "../shell/wordmark";
+import { SpecPanel } from "./spec-panel";
 
 /**
  * The clauses the AI actually writes, numbered the way the output is numbered.
  * Nothing here is invented: this mirrors the real PRD section list.
  */
 const HERO_CLAUSES = [
-  { number: '01', title: 'Problem', lines: 12 },
-  { number: '02', title: 'Target user', lines: 10 },
-  { number: '03', title: 'Features', lines: 13 },
-  { number: '04', title: 'Acceptance criteria', lines: 11 },
-  { number: '05', title: 'Out of scope', lines: 8 },
-]
+  { number: "01", title: "Problem", lines: 12 },
+  { number: "02", title: "Target user", lines: 10 },
+  { number: "03", title: "Features", lines: 13 },
+  { number: "04", title: "Acceptance criteria", lines: 11 },
+  { number: "05", title: "Out of scope", lines: 8 },
+];
 
 /** Three different workflows, so they read as a list of choices rather than
  *  three identical feature tiles. The numbering carries real order. */
 const WAYS_IN = [
   {
-    number: '01',
-    title: 'Create from Scratch',
-    body: 'Work through the sections one at a time. Reorder them, hide the ones you do not need, and regenerate any single section without losing the rest.',
-    href: '/prd/new/wizard',
+    number: "01",
+    title: "Create from Scratch",
+    body: "Work through the sections one at a time. Reorder them, hide the ones you do not need, and regenerate any single section without losing the rest.",
+    href: "/prd/new/wizard",
   },
   {
-    number: '02',
-    title: 'Chat',
-    body: 'Describe the product in conversation. The model asks for what is missing and remembers the whole thread, so the PRD comes out the way you explained it.',
-    href: '/prd/new/chat',
+    number: "02",
+    title: "Chat",
+    body: "Describe the product in conversation. The model asks for what is missing and remembers the whole thread, so the PRD comes out the way you explained it.",
+    href: "/prd/new/chat",
   },
   {
-    number: '03',
-    title: 'One-Shot',
-    body: 'Paste an idea and its constraints. Get a complete draft in one pass, then regenerate whenever the direction changes.',
-    href: '/prd/new/oneshot',
+    number: "03",
+    title: "One-Shot",
+    body: "Paste an idea and its constraints. Get a complete draft in one pass, then regenerate whenever the direction changes.",
+    href: "/prd/new/oneshot",
   },
-]
-
+];
 
 export function Landing({
   signedIn,
   isSelfHost,
 }: {
-  signedIn: boolean
-  isSelfHost?: boolean
+  signedIn: boolean;
+  isSelfHost?: boolean;
 }) {
-  const primaryHref = signedIn ? '/prd/new' : '/register'
-  const primaryLabel = signedIn ? 'New PRD' : 'Create an account'
+  const primaryHref = signedIn ? "/prd/new" : "/register";
+  const primaryLabel = signedIn ? "New PRD" : "Create an account";
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* First focusable element on the landing page: keyboard users skip the nav. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       <header className="border-b">
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-4 px-6">
-          <Wordmark suffix={isSelfHost ? 'self-hosted' : undefined} />
+          <Wordmark suffix={isSelfHost ? "self-hosted" : undefined} />
           <nav className="ml-auto flex items-center gap-1 text-sm">
             <Link
               href="/pricing"
@@ -91,7 +97,7 @@ export function Landing({
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Hero: asymmetric, and the right column holds the real artefact. */}
         <section className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
           <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -117,15 +123,14 @@ export function Landing({
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
-                Free plan covers {FREE_PLAN_LIMIT} PRDs a month. Pro is ${PRO_PRICE}.
-                Bring your own API key either way.
+                Free plan covers {FREE_PLAN_LIMIT} PRDs a month. Pro is $
+                {PRO_PRICE}. Bring your own API key either way.
               </p>
             </div>
 
             <SpecPanel clauses={HERO_CLAUSES} activeIndex={2} />
           </div>
         </section>
-
 
         {/* Three ways in: a numbered list, because the numbering carries real
             order. These are ways to work, not filler features. */}
@@ -167,7 +172,6 @@ export function Landing({
           </div>
         </section>
 
-
         {/* Proof: version history is a real capability, so show it working
             instead of claiming it in a badge. */}
         <section className="mx-auto w-full max-w-5xl px-6 py-16">
@@ -180,9 +184,9 @@ export function Landing({
                 Change your mind as often as you need
               </h2>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Each regeneration writes a new version instead of overwriting the
-                old one. Compare any two, read the diff line by line, and restore
-                whichever revision was better.
+                Each regeneration writes a new version instead of overwriting
+                the old one. Compare any two, read the diff line by line, and
+                restore whichever revision was better.
               </p>
             </div>
 
@@ -217,7 +221,6 @@ export function Landing({
           </div>
         </section>
 
-
         {/* Self-host note, only where it is true. */}
         {!isSelfHost ? (
           <section className="border-t bg-surface-sunken">
@@ -243,19 +246,31 @@ export function Landing({
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>PRD GenZ, MIT licensed</span>
           <div className="flex gap-4">
-            <Link href="/pricing" className="transition-colors hover:text-foreground">
+            <Link
+              href="/pricing"
+              className="transition-colors hover:text-foreground"
+            >
               Pricing
             </Link>
             {signedIn ? (
-              <Link href="/settings" className="transition-colors hover:text-foreground">
+              <Link
+                href="/settings"
+                className="transition-colors hover:text-foreground"
+              >
                 Settings
               </Link>
             ) : (
               <>
-                <Link href="/login" className="transition-colors hover:text-foreground">
+                <Link
+                  href="/login"
+                  className="transition-colors hover:text-foreground"
+                >
                   Log in
                 </Link>
-                <Link href="/register" className="transition-colors hover:text-foreground">
+                <Link
+                  href="/register"
+                  className="transition-colors hover:text-foreground"
+                >
                   Register
                 </Link>
               </>
@@ -264,6 +279,5 @@ export function Landing({
         </div>
       </footer>
     </div>
-  )
+  );
 }
-
