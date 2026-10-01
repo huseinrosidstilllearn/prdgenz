@@ -14,13 +14,31 @@
 - Unit tests: `pnpm test` / `pnpm test:coverage`
 - E2E: `pnpm e2e` (needs PostgreSQL on localhost:5432, `E2E_DATABASE_URL`)
 - Prisma client must be generated before typecheck: `pnpm --filter @prdgenz/cloud db:generate`
-- Cloudflare build + deploy: `apps/cloud` → `pnpm build:cf` then `npx wrangler deploy`
+- Cloudflare deploy: `pnpm --filter @prdgenz/cloud run deploy:cf` (build → patch-worker → strip-dotenv → deploy)
+
+## Cloudflare Workers deploy pipeline
+Config lives in `apps/cloud/wrangler.toml` (worker entry, ASSETS binding, `CF_WORKERS`,
+the prdgenz.my.id custom domain). Two post-build scripts patch the OpenNext output;
+both run inside `build:cf` / `deploy:cf`:
+- `scripts/patch-worker.mjs` — rewrites next-server's `getMiddlewareManifest()` to
+  return null. Its raw `require(middlewareManifestPath)` cannot be resolved by esbuild
+  and 500s every request on workerd (opennextjs-cloudflare #1232/#1380). The script
+  fails the build loudly if the pattern disappears in a next/adapter upgrade.
+- `scripts/strip-dotenv.mjs` — deletes .env files from the build output so secrets
+  never ship inside the Worker artifact.
+
+Auth for pages lives in server layouts (`src/lib/page-auth.ts`), not middleware: the
+adapter disables Node middleware on Workers. Any layout calling `requirePageUser()`
+must also `export const dynamic = 'force-dynamic'` — otherwise the build prerenders
+the route and `assertProdSecrets` kills the build in CI, which has no secrets.
+
+The Workers build runs fine on Windows, but fails with `EPERM` removing `.open-next`
+if a previous `wrangler dev` is still around — kill `workerd.exe`/`esbuild.exe` first.
 
 ## CI is the source of truth for build verification
-Do not try to run `pnpm build` locally to check a change compiles. On Windows
-`next build` fails in file tracing with `EPERM: scandir C:\Users\...` (Windows
-refuses to scan that path). This is a pre-existing environment limit, not a
-code bug, and it reproduces on an untouched checkout.
+Do not use `pnpm build` locally to check a change compiles — CI (ubuntu-latest) is
+the only place the full build matrix and the Docker image get built. The cloud app's
+Workers build (`pnpm --filter @prdgenz/cloud build:cf`) does work on Windows.
 
 Push and read the run instead:
 - `gh run list --limit 1` to get the run id
