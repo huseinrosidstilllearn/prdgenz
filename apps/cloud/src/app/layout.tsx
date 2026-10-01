@@ -42,8 +42,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${fontVariables} min-h-screen antialiased`}>
+    // fontVariables lives on <html>: tokens.css resolves --font-sans at :root,
+    // so the next/font variables must exist on the same element or the whole
+    // chain computes invalid and every font falls back to Times.
+    <html lang="en" suppressHydrationWarning className={fontVariables}>
+      <body className="min-h-screen antialiased">
         <ThemeProvider defaultTheme="system">{children}</ThemeProvider>
       </body>
     </html>

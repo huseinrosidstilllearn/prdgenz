@@ -1,29 +1,22 @@
-import {
-  IBM_Plex_Mono,
-  Instrument_Sans,
-  Instrument_Serif,
-} from 'next/font/google'
+import { IBM_Plex_Mono, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google'
 
 /**
  * Typography for PRD GenZ — one definition, both apps.
  *
- * Instrument Serif is the masthead: this product writes documents, and a
- * document has a serif head. It is deliberately not the usual SaaS sans.
- * Instrument Sans carries the interface at small sizes.
- * IBM Plex Mono marks clause numbers, version stamps, and code, and gives
- * the spec-sheet vernacular its texture.
+ * Space Grotesk is the display face: technical and geometric, it reads like
+ * drafting typography rather than a book head. Plus Jakarta Sans carries the
+ * interface at small sizes. IBM Plex Mono marks clause numbers, version
+ * stamps, and code, and gives the spec-sheet vernacular its texture.
  */
-export const instrumentSans = Instrument_Sans({
+export const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-instrument-sans',
+  variable: '--font-plus-jakarta',
   display: 'swap',
 })
 
-export const instrumentSerif = Instrument_Serif({
+export const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
+  variable: '--font-space-grotesk',
   display: 'swap',
 })
 
@@ -36,7 +29,7 @@ export const ibmPlexMono = IBM_Plex_Mono({
 
 /** Class list to drop on <html> or <body>. */
 export const fontVariables = [
-  instrumentSans.variable,
-  instrumentSerif.variable,
+  plusJakartaSans.variable,
+  spaceGrotesk.variable,
   ibmPlexMono.variable,
 ].join(' ')

@@ -21,8 +21,8 @@ sendirian di atas kertas.
 
 | Peran | Font | Alasan |
 |---|---|---|
-| Display / masthead | **Instrument Serif** | Produk ini menulis dokumen, dan dokumen punya kepala serif. Langsung tidak terbaca sebagai SaaS generik. |
-| Body / UI | **Instrument Sans** | Satu superfamily, tenang, kuat di ukuran kecil. |
+| Display / heading | **Space Grotesk** | Teknis dan geometris: terbaca seperti tipografi drafting, bukan kepala buku. Kepala landing tetap kuat tanpa kesan dated. |
+| Body / UI | **Plus Jakarta Sans** | Modern SaaS, tenang, kuat di ukuran kecil. |
 | Mono / label / nomor clause | **IBM Plex Mono** | Heritage dokumen teknik. Dipakai untuk `01.1`, stempel versi, dan kode. |
 
 Definisi ada di `packages/ui/src/fonts.ts`, diimpor lewat `@prdgenz/ui/fonts`.
