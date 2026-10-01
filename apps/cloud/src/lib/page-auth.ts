@@ -6,15 +6,13 @@ import { assertProdSecrets } from './api-auth'
 /**
  * Page-level auth guard. Replaces `src/middleware.ts`.
  *
- * Why this exists instead of middleware: the Cloudflare Workers runtime has no
- * filesystem, so a middleware build makes Next try to `require()` its
- * middleware-manifest.json at request time. esbuild cannot bundle that require
- * statically, and its runtime fallback throws
- * "Dynamic require of ... is not supported", 500-ing every request.
- * Without `src/middleware.ts` there is no manifest to load.
- *
- * This is also the stronger place to enforce auth: a server component runs
+ * Auth lives in server layouts because the Cloudflare adapter does not support
+ * Node middleware on Workers ("patched by open next" disables loadNodeMiddleware),
+ * and a server component is the stronger place to enforce auth anyway: it runs
  * before the page renders, so it cannot be bypassed the way edge middleware can.
+ * (The "Dynamic require of middleware-manifest.json" 500s that once motivated
+ * this move come from next-server itself, not from user middleware —
+ * scripts/patch-worker.mjs handles that call site after every build.)
  *
  * Every layout that calls this must `export const dynamic = 'force-dynamic'`:
  * during a static prerender the guard would run at build time, where
