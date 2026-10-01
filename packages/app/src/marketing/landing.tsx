@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { FREE_PLAN_LIMIT, PRO_PRICE } from "@prdgenz/shared";
+import {
+  AI_PROVIDERS,
+  EXPORT_FORMATS,
+  FREE_PLAN_LIMIT,
+  LANGUAGES,
+  PRD_SECTIONS,
+  PRD_SECTIONS_OPTIONAL,
+  PRO_PRICE,
+} from "@prdgenz/shared";
 import { Badge, Button } from "@prdgenz/ui";
 import { Wordmark } from "../shell/wordmark";
 import { SpecPanel } from "./spec-panel";
@@ -36,6 +44,76 @@ const WAYS_IN = [
     title: "One-Shot",
     body: "Paste an idea and its constraints. Get a complete draft in one pass, then regenerate whenever the direction changes.",
     href: "/prd/new/oneshot",
+  },
+];
+
+/** Every tile names a capability that ships. No aspirational roadmap. */
+const FEATURES = [
+  {
+    index: "F-01",
+    title: "Version history and diff",
+    body: "Every regeneration writes a new revision. Compare any two side by side and restore the one you liked.",
+  },
+  {
+    index: "F-02",
+    title: "Share links with a password",
+    body: "Publish a read-only link, gate it with a password, and set it to expire when the review is over.",
+  },
+  {
+    index: "F-03",
+    title: "Per-section regeneration",
+    body: "Do not like one clause? Rewrite it alone. The rest of the document keeps its wording and its number.",
+  },
+  {
+    index: "F-04",
+    title: "Export where work happens",
+    body: `Markdown for the repo, print-ready PDF for review, or an AI prompt that hands the spec to your coding agent. ${EXPORT_FORMATS.length} formats.`,
+  },
+  {
+    index: "F-05",
+    title: "Two output languages",
+    body: `Draft the same document in English or Bahasa Indonesia. ${LANGUAGES.length} languages, one click.`,
+  },
+  {
+    index: "F-06",
+    title: "Your key, encrypted",
+    body: "Provider keys are stored with AES-256-GCM encryption and are used only for your own generations.",
+  },
+];
+
+/** Numbers pulled from the shared constants, so the page cannot drift. */
+const STATS = [
+  {
+    value: `${PRD_SECTIONS.length}+${PRD_SECTIONS_OPTIONAL.length}`,
+    label: "numbered sections in every PRD",
+  },
+  {
+    value: String(AI_PROVIDERS.length),
+    label: "AI providers, bring your own key",
+  },
+  {
+    value: String(EXPORT_FORMATS.length),
+    label: "export formats per document",
+  },
+  { value: String(LANGUAGES.length), label: "output languages, EN and ID" },
+];
+
+const FAQ = [
+  {
+    q: "Do I need my own AI provider key?",
+    a: "Yes. PRD GenZ is bring-your-own-key: you paste a key from OpenAI, Anthropic, Google, or an aggregator, and generation is billed by your provider, not by us. Keys are encrypted at rest with AES-256-GCM.",
+  },
+  {
+    q: "What does the free plan include?",
+    a: `${FREE_PLAN_LIMIT} PRDs a month and one project, with all three drafting modes and every export format. Pro removes the monthly limit for $${PRO_PRICE} a month.`,
+  },
+  {
+    q: "Can I run it without an account?",
+    a: "Yes, self-host it. One compose file, SQLite, no sign-up. Your documents and your API key never leave the machine.",
+  },
+  {
+    q: "What does the output look like?",
+    a: "A numbered document: problem, target user, features, user stories, acceptance criteria, tech stack, and timeline, with risks and success metrics optional. The hero panel above is the shape of it.",
   },
 ];
 
@@ -98,10 +176,10 @@ export function Landing({
       </header>
 
       <main id="main-content" className="flex-1">
-        {/* Hero: the accent gets one band of soft wash to anchor the page, and
-            the right column holds the real artefact mid-generation. */}
-        <section className="border-b bg-[color-mix(in_oklab,var(--primary-soft)_45%,var(--background))]">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+        {/* Hero: the accent band carries the drafting-paper grid, and the right
+            column holds the real artefact mid-generation. */}
+        <section className="border-b bg-[color-mix(in_oklab,var(--primary-soft)_45%,var(--background))] bg-blueprint-faint">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
             <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
               <div className="space-y-7">
                 <p className="flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
@@ -138,6 +216,86 @@ export function Landing({
           </div>
         </section>
 
+        {/* Provider strip: the real roster from the shared constants. */}
+        <section className="border-b">
+          <div className="mx-auto w-full max-w-6xl px-6 py-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
+              <p className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                Works with your key
+              </p>
+              <ul className="flex flex-wrap items-center gap-2">
+                {AI_PROVIDERS.map((provider) => (
+                  <li
+                    key={provider.id}
+                    className="rounded-md border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground"
+                  >
+                    {provider.name}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs leading-relaxed text-muted-foreground sm:ml-auto sm:max-w-52">
+                OpenAI-compatible endpoints supported, including local models.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works: three passes, each numbered the way the output is. */}
+        <section className="border-b bg-surface-sunken">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20">
+            <div className="max-w-prose space-y-3">
+              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                How it works
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl">
+                Rough idea in, numbered spec out
+              </h2>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                Three passes, the same way an engineer would write it.
+              </p>
+            </div>
+
+            <ol className="mt-12 grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  step: "01",
+                  title: "Describe the product",
+                  body: `Talk, paste, or fill the wizard. ${WAYS_IN.length} drafting modes, whichever fits how you think.`,
+                },
+                {
+                  step: "02",
+                  title: "The model drafts it",
+                  body: `A numbered document comes back: ${PRD_SECTIONS.length} sections, plus ${PRD_SECTIONS_OPTIONAL.length} optional ones like risks and success metrics.`,
+                },
+                {
+                  step: "03",
+                  title: "Diff, regenerate, share",
+                  body: "Rewrite any section alone, compare revisions line by line, and hand reviewers a passworded link that expires.",
+                },
+              ].map((pass) => (
+                <li
+                  key={pass.step}
+                  className="relative overflow-hidden rounded-lg border bg-card p-6"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="font-display absolute -top-3 right-4 text-6xl text-primary/15"
+                  >
+                    {pass.step}
+                  </span>
+                  <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-primary">
+                    Pass {pass.step}
+                  </p>
+                  <h3 className="mt-3 text-xl leading-snug">{pass.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {pass.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
         {/* Three ways in: the signature margin rule carries the numbering, the
             way it does inside a real PRD. */}
         <section className="border-b">
@@ -157,10 +315,7 @@ export function Landing({
 
             <ol className="mt-12">
               {WAYS_IN.map((way) => (
-                <li
-                  key={way.number}
-                  className="spec-rule border-t first:border-t-0"
-                >
+                <li key={way.number} className="spec-rule border-t first:border-t-0">
                   <Link
                     href={way.href}
                     className="group flex flex-col gap-2 py-8 transition-colors duration-[120ms] sm:flex-row sm:items-baseline sm:gap-10"
@@ -181,6 +336,42 @@ export function Landing({
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        {/* Feature grid: every tile is a shipped capability. */}
+        <section className="border-b">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div className="max-w-prose space-y-3">
+                <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                  What you get
+                </p>
+                <h2 className="font-display text-3xl sm:text-4xl">
+                  Built like a document tool, not a chat toy
+                </h2>
+              </div>
+              <Button asChild variant="outline">
+                <Link href="/pricing">Compare the plans</Link>
+              </Button>
+            </div>
+
+            <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map((feature) => (
+                <li
+                  key={feature.index}
+                  className="group rounded-lg border bg-card p-6 transition-colors duration-[120ms] hover:border-primary"
+                >
+                  <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground transition-colors duration-[120ms] group-hover:text-primary">
+                    {feature.index}
+                  </p>
+                  <h3 className="mt-3 text-lg leading-snug">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {feature.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -255,6 +446,56 @@ export function Landing({
           </div>
         </section>
 
+        {/* Stats: every figure derives from the shared constants. */}
+        <section className="border-b">
+          <div className="mx-auto w-full max-w-6xl px-6 py-14">
+            <dl className="grid gap-8 text-center sm:grid-cols-4">
+              {STATS.map((stat) => (
+                <div key={stat.label} className="space-y-1.5">
+                  <dd className="font-display text-4xl tabular-nums text-primary sm:text-5xl">
+                    {stat.value}
+                  </dd>
+                  <dt className="text-sm leading-snug text-muted-foreground">
+                    {stat.label}
+                  </dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        {/* FAQ: native details elements, keyboard and screen reader free. */}
+        <section className="border-b bg-surface-sunken">
+          <div className="mx-auto w-full max-w-3xl px-6 py-20">
+            <div className="space-y-3">
+              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                FAQ
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl">
+                The questions that come up first
+              </h2>
+            </div>
+            <div className="mt-10">
+              {FAQ.map((item) => (
+                <details key={item.q} className="group border-t last:border-b">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-lg font-medium transition-colors duration-[120ms] hover:text-primary [&::-webkit-details-marker]:hidden">
+                    {item.q}
+                    <span
+                      aria-hidden="true"
+                      className="shrink-0 font-mono text-xl text-muted-foreground transition-transform duration-[120ms] group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="max-w-prose pb-6 text-sm leading-relaxed text-muted-foreground">
+                    {item.a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Self-host note, only where it is true. */}
         {!isSelfHost ? (
           <section>
@@ -299,6 +540,36 @@ export function Landing({
             </div>
           </section>
         ) : null}
+
+        {/* Closing CTA: the same accent band the page opened with. */}
+        <section className="border-t bg-[color-mix(in_oklab,var(--primary-soft)_45%,var(--background))] bg-blueprint-faint">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20 text-center">
+            <div className="mx-auto max-w-2xl space-y-6">
+              <h2 className="font-display text-4xl sm:text-5xl">
+                Your next spec is one paragraph away
+              </h2>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                Describe what you want to build. Get back a numbered PRD your
+                team and your agents can actually run.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Button asChild size="lg">
+                  <Link href={primaryHref}>{primaryLabel}</Link>
+                </Button>
+                {!isSelfHost ? (
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/pricing">See the plans</Link>
+                  </Button>
+                ) : null}
+              </div>
+              <p className="font-mono text-xs text-muted-foreground">
+                {isSelfHost
+                  ? "Running locally · your data never leaves this machine"
+                  : `Free plan · ${FREE_PLAN_LIMIT} PRDs a month · no card required`}
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="border-t">

@@ -66,6 +66,14 @@ Auth: split-screen `lg:grid-cols-[1.1fr_1fr]` — panel kiri `bg-foreground
 text-background` (ter-inversi otomatis di dark mode), berisi wordmark,
 display heading, dan daftar klausa bernomor. Form di kanan tanpa kartu.
 
+Landing full (urutan section): hero band tint → strip provider (roster
+nyata dari `AI_PROVIDERS`) → how-it-works 3 pass → three ways (margin
+rule) → feature grid → diff card → stats band (angka dari constants) →
+FAQ (`<details>` native) → self-host → CTA penutup. Tekstur: utility
+`.bg-blueprint` / `.bg-blueprint-faint` (grid kertas drafting, satu-satunya
+tekstur yang diizinkan; terdefinisi di `tailwind-plugins.ts`). Semua angka
+di landing wajib berasal dari `@prdgenz/shared`, bukan hardcode.
+
 ## Signature: margin rule
 
 Garis vertikal rambut di tepi kiri permukaan dokumen, dengan nomor clause

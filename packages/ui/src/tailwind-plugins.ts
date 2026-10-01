@@ -1,4 +1,4 @@
-import plugin from 'tailwindcss/plugin'
+import plugin from "tailwindcss/plugin";
 
 /**
  * The base layer and the design system's few utilities, injected as a
@@ -19,79 +19,96 @@ const KEYFRAMES = `
   from { opacity: 0.35; }
   to { opacity: 1; }
 }
-`
+`;
 
-export const baseStyles = plugin(({ addBase, addComponents, addUtilities, theme }) => {
-  addBase({
-    '*': { borderColor: theme('colors.border') },
-    html: { WebkitTextSizeAdjust: '100%' },
-    body: {
-      backgroundColor: theme('colors.background'),
-      color: theme('colors.foreground'),
-      fontFamily: theme('fontFamily.sans'),
-      fontFeatureSettings: "'cv02', 'cv03', 'cv04'",
-      WebkitFontSmoothing: 'antialiased',
-    },
-    // A document has a serif head.
-    'h1, h2, h3, h4, h5, h6': {
-      fontFamily: theme('fontFamily.display'),
-      fontWeight: '400',
-      letterSpacing: '-0.015em',
-    },
-    // Numbers sitting in columns must line up.
-    'code, kbd, pre, samp': {
-      fontFamily: theme('fontFamily.mono'),
-      fontFeatureSettings: "'tnum'",
-    },
-  })
-
-  // The margin rule: a hairline down the left edge of a document surface, with
-  // clause numbers hung off it. Appears in the hero, the reader, and the diff.
-  // It is structure, not decoration.
-  addComponents({
-    '.spec-rule': {
-      position: 'relative',
-      paddingLeft: '3.25rem',
-      '&::before': {
-        content: "''",
-        position: 'absolute',
-        left: '2.25rem',
-        top: '0.25rem',
-        bottom: '0.25rem',
-        width: '1px',
-        backgroundColor: theme('colors.rule.DEFAULT'),
+export const baseStyles = plugin(
+  ({ addBase, addComponents, addUtilities, theme }) => {
+    addBase({
+      "*": { borderColor: theme("colors.border") },
+      html: { WebkitTextSizeAdjust: "100%" },
+      body: {
+        backgroundColor: theme("colors.background"),
+        color: theme("colors.foreground"),
+        fontFamily: theme("fontFamily.sans"),
+        fontFeatureSettings: "'cv02', 'cv03', 'cv04'",
+        WebkitFontSmoothing: "antialiased",
       },
-      '@screen sm': {
-        paddingLeft: '4.5rem',
-        '&::before': { left: '3.25rem' },
+      // A document has a serif head.
+      "h1, h2, h3, h4, h5, h6": {
+        fontFamily: theme("fontFamily.display"),
+        fontWeight: "400",
+        letterSpacing: "-0.015em",
       },
-    },
-    '.clause-number': {
-      position: 'absolute',
-      left: '0',
-      width: '1.75rem',
-      textAlign: 'right',
-      fontFamily: theme('fontFamily.mono'),
-      fontSize: '0.6875rem',
-      lineHeight: '1.7rem',
-      color: theme('colors.rule.foreground'),
-      fontVariantNumeric: 'tabular-nums',
-      '@screen sm': { width: '2.75rem' },
-      // The clause currently being written.
-      '&[data-active="true"]': { color: theme('colors.primary.DEFAULT') },
-    },
-  })
+      // Numbers sitting in columns must line up.
+      "code, kbd, pre, samp": {
+        fontFamily: theme("fontFamily.mono"),
+        fontFeatureSettings: "'tnum'",
+      },
+    });
 
-  addUtilities({
-    '.animate-caret': {
-      animation: 'caret-blink 1.1s steps(1) infinite',
-    },
-    // One-shot: a clause that just finished generating settles into place.
-    '.animate-clause-in': {
-      animation: 'clause-in 220ms ease-out both',
-    },
-    '.tabular': { fontVariantNumeric: 'tabular-nums' },
-  })
-})
+    // The margin rule: a hairline down the left edge of a document surface, with
+    // clause numbers hung off it. Appears in the hero, the reader, and the diff.
+    // It is structure, not decoration.
+    addComponents({
+      ".spec-rule": {
+        position: "relative",
+        paddingLeft: "3.25rem",
+        "&::before": {
+          content: "''",
+          position: "absolute",
+          left: "2.25rem",
+          top: "0.25rem",
+          bottom: "0.25rem",
+          width: "1px",
+          backgroundColor: theme("colors.rule.DEFAULT"),
+        },
+        "@screen sm": {
+          paddingLeft: "4.5rem",
+          "&::before": { left: "3.25rem" },
+        },
+      },
+      ".clause-number": {
+        position: "absolute",
+        left: "0",
+        width: "1.75rem",
+        textAlign: "right",
+        fontFamily: theme("fontFamily.mono"),
+        fontSize: "0.6875rem",
+        lineHeight: "1.7rem",
+        color: theme("colors.rule.foreground"),
+        fontVariantNumeric: "tabular-nums",
+        "@screen sm": { width: "2.75rem" },
+        // The clause currently being written.
+        '&[data-active="true"]': { color: theme("colors.primary.DEFAULT") },
+      },
+      // Drafting-paper grid: the faint hairline lattice of a technical drawing
+      // sheet. Texture that reports what the product makes, sized to the 1px
+      // border language. Layer it under a section's own background color.
+      ".bg-blueprint": {
+        backgroundImage:
+          `linear-gradient(to right, color-mix(in oklab, ${theme("colors.border")} 100%, transparent) 1px, transparent 1px),` +
+          `linear-gradient(to bottom, color-mix(in oklab, ${theme("colors.border")} 100%, transparent) 1px, transparent 1px)`,
+        backgroundSize: "2.5rem 2.5rem",
+      },
+      ".bg-blueprint-faint": {
+        backgroundImage:
+          `linear-gradient(to right, color-mix(in oklab, ${theme("colors.border")} 50%, transparent) 1px, transparent 1px),` +
+          `linear-gradient(to bottom, color-mix(in oklab, ${theme("colors.border")} 50%, transparent) 1px, transparent 1px)`,
+        backgroundSize: "2.5rem 2.5rem",
+      },
+    });
 
-export { KEYFRAMES }
+    addUtilities({
+      ".animate-caret": {
+        animation: "caret-blink 1.1s steps(1) infinite",
+      },
+      // One-shot: a clause that just finished generating settles into place.
+      ".animate-clause-in": {
+        animation: "clause-in 220ms ease-out both",
+      },
+      ".tabular": { fontVariantNumeric: "tabular-nums" },
+    });
+  },
+);
+
+export { KEYFRAMES };

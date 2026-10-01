@@ -774,6 +774,7 @@ model ApiKey {
 ### 17.4 Changelog
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5.6 | 2026-10-01 | Landing diperluas agar lebih ramai (semua konten dari data nyata): strip provider AI, how-it-works 3 pass, feature grid 6 kapabilitas, stats band dari constants, FAQ native details, CTA penutup dengan tint + grid blueprint (utility .bg-blueprint); three ways dipertahankan |
 | 1.5.5 | 2026-10-01 | Typography: Space Grotesk (display) + Plus Jakarta Sans (body), IBM Plex Mono tetap; FIX root-cause: fontVariables dipindah ke <html> — sebelumnya variabel next/font hidup di <body> sementara --font-sans di-resolve di :root, sehingga seluruh situs jatuh ke Times New Roman sejak rebrand font |
 | 1.5.4 | 2026-10-01 | Redesign eksekusi visual (arah referensi: Godly, Dark Mode Design, shadcn blocks): landing — hero band tint accent, display serif text-5xl/6xl, SpecPanel streaming dengan stempel versi, workflows pakai margin rule motif, terminal card self-host, footer 3 kolom; auth — split-screen panel merek inversi + form bersih (rule line yang menembus form dihapus); test disesuaikan |
 | 1.5.3 | 2026-10-01 | Aksesibilitas WCAG AA: non-text contrast (input/tombol/focus ring ≥3:1, light+dark), skip link di landing + app shell, role=status/alert untuk pesan async, kontras checker script, tailwind content globs menambahkan packages/app (utility layout kini terkompilasi) |
