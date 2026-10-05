@@ -104,7 +104,7 @@ export function OneShot({ projectId = "", onProjectIdChange }: OneShotProps) {
         </p>
       </header>
 
-      <div className="spec-rule space-y-6 pl-6">
+      <div className="generation-panel space-y-6">
         {setup.config}
 
         <div className="space-y-2">

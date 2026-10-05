@@ -97,7 +97,7 @@ export function Wizard({
         hiddenSteps={hiddenSteps}
       />
 
-      <div className="spec-rule mt-8 pl-6">
+      <div className="generation-panel mt-8">
         <h2 className="mb-5 text-lg font-medium">{label(currentStepName)}</h2>
 
         <div className="space-y-6">

@@ -84,9 +84,7 @@ export function AuthShell({
 }
 
 /**
- * A titled block of settings. Replaces the stacked Cards: one hairline panel
- * per group, so the page reads as a form with sections rather than a set of
- * floating boxes.
+ * A settings group with its own heading, explanation, and controls.
  */
 export function FormSection({
   title,
@@ -100,8 +98,8 @@ export function FormSection({
   className?: string;
 }) {
   return (
-    <section className={className}>
-      <h2 className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+    <section className={`workspace-form-section ${className ?? ""}`}>
+      <h2 className="text-lg font-medium tracking-tight">
         {title}
       </h2>
       {description ? (

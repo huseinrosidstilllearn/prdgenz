@@ -41,12 +41,12 @@ const MODES = [
 
 export function ModeChooser() {
   return (
-    <div className="mx-auto w-full">
+    <div className="mode-chooser mx-auto w-full">
       <header className="space-y-3">
         <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
           New document
         </p>
-        <h1 className="text-3xl sm:text-4xl">How do you want to start?</h1>
+        <h1 className="text-3xl font-medium tracking-tight sm:text-5xl">How do you want to start?</h1>
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
           Choose how to turn your idea into requirements. You can edit and save
           versions of the document afterwards.
@@ -65,7 +65,7 @@ export function ModeChooser() {
 
       <ol className="mt-7 grid gap-4 lg:grid-cols-3">
         {MODES.map((mode) => (
-          <li key={mode.number} className="rounded-xl border bg-card">
+          <li key={mode.number} className="mode-choice rounded-xl border bg-card">
             <Link
               href={mode.href}
               className="group flex h-full flex-col gap-5 rounded-xl p-6 transition-colors duration-[120ms] hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -95,7 +95,7 @@ export function ModeChooser() {
                   <Icon name="arrow" />
                 </p>
               </div>
-              <div className="mt-auto rounded-lg border bg-surface-sunken p-4">
+              <div className="mode-example mt-auto rounded-lg border bg-surface-sunken p-4">
                 <p className="mb-2 font-mono text-[0.6875rem] text-muted-foreground">
                   Example starting point
                 </p>

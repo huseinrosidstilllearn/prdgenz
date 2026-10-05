@@ -39,7 +39,7 @@ export function AppShell({
         Skip to content
       </a>
       {/* Rail: wordmark and navigation only. */}
-      <aside className="sticky top-0 hidden h-screen border-r bg-card lg:flex lg:flex-col">
+      <aside className="workspace-rail sticky top-0 hidden h-screen border-r bg-card lg:flex lg:flex-col">
         <div className="flex h-20 items-center border-b px-5">
           <Wordmark />
         </div>
@@ -74,9 +74,9 @@ export function AppShell({
         ) : null}
       </aside>
 
-      <div className="flex min-w-0 flex-col">
+      <div className="workspace-body flex min-w-0 flex-col">
         {/* Compact bar: the same destinations, reachable without the rail. */}
-        <header className="flex flex-wrap items-center gap-x-3 border-b bg-card px-4 sm:px-8">
+        <header className="workspace-topbar flex flex-wrap items-center gap-x-3 border-b bg-card px-4 sm:px-8">
           <Wordmark className="lg:hidden" />
           <p className="hidden py-4 text-sm text-muted-foreground lg:block">
             Workspace <span aria-hidden="true" className="mx-2">/</span>
@@ -112,11 +112,11 @@ export function AppShell({
         <main
           id="main-content"
           className={cn(
-            "flex-1 px-4 py-8 sm:px-6 sm:py-10",
+            "workspace-main flex-1 px-4 py-8 sm:px-6 sm:py-10",
             maxWidth === "full" ? "" : "mx-auto w-full",
             maxWidth === "2xl" && "max-w-2xl",
             maxWidth === "3xl" && "max-w-3xl",
-            maxWidth === "4xl" && "max-w-4xl",
+            maxWidth === "4xl" && "max-w-[1184px]",
           )}
         >
           {children}

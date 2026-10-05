@@ -26,7 +26,7 @@ function formatDate(iso: string) {
  */
 export function PRDList({ items }: { items: PRDListItem[] }) {
   return (
-    <ul className="divide-y overflow-hidden rounded-lg border bg-card">
+    <ul className="workspace-document-list divide-y overflow-hidden rounded-lg border bg-card">
       {items.map((prd) => (
         <li key={prd.id}>
           <Link

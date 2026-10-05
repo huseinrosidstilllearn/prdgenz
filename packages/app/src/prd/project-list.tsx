@@ -22,7 +22,7 @@ function formatDate(iso: string) {
  */
 export function ProjectList({ items }: { items: ProjectListItem[] }) {
   return (
-    <ul className="divide-y rounded-lg border bg-card">
+    <ul className="workspace-project-list divide-y rounded-lg border bg-card">
       {items.map((project) => (
         <li
           key={project.id}
