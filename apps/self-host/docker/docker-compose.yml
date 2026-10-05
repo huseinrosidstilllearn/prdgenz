@@ -7,7 +7,7 @@
 services:
   prdgenz:
     build:
-      context: ../..
+      context: ../../..
       dockerfile: apps/self-host/docker/Dockerfile
     image: prdgenz-self-host:latest
     container_name: prdgenz-self-host

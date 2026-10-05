@@ -30,12 +30,14 @@ Panduan lengkap memakai PRD GenZ: versi cloud (SaaS, multi-user) dan self-host (
 
 Dua bahasa output PRD: **ID** (Bahasa Indonesia) dan **EN** (English).
 
+Langganan Free/Pro hanya berlaku untuk cloud. Self-host gratis, tanpa akun atau langganan PRD GenZ; export PDF dan version history/restore tersedia secara lokal. Biaya provider AI berbayar mengikuti API key yang Anda gunakan.
+
 ---
 
 ## 2. Cloud: Mulai Cepat
 
 1. Buka aplikasi, klik **Register**, buat akun (email + password).
-   - Akun baru otomatis **Free**: 10 PRD / 30 hari, export Markdown, 1 project.
+   - Akun baru otomatis **Free**: 10 PRD / 30 hari, export Markdown, 1 project, share link, version history dan restore.
 2. Login → masuk **Dashboard**.
 3. Buat **Project** baru (mis. "Aplikasi Kasir").
 4. Buka **Settings** → tambahkan API key provider AI Anda (lihat [BYOK](#byok-bring-your-own-key)).
@@ -46,7 +48,7 @@ Dua bahasa output PRD: **ID** (Bahasa Indonesia) dan **EN** (English).
 
 - Cloud: masukkan key per provider di halaman **Settings**. Satu key per provider; ganti kapan saja; connection test otomatis jalan saat menyimpan.
 - Key tidak pernah dikirim ke pihak lain: hanya dipakai langsung ke endpoint provider saat generate.
-- Plan **Pro** ($9/bulan): PRD unlimited, export PDF, share link, unlimited projects.
+- Plan **Pro** (rencana $9/bulan): PRD unlimited, export PDF, unlimited projects. Upgrade berbayar belum tersedia; registrasi membuat akun Free. Share link, version history dan restore tersedia di Free maupun Pro.
 
 ---
 
@@ -69,8 +71,8 @@ Bercakap-cakap dengan AI. AI akan bertanya klarifikasi singkat; ketik "generate"
 
 - **Export Markdown**: semua plan, dari halaman PRD.
 - **Export PDF**: Pro only; membuka dokumen cetak rapi → gunakan *Save as PDF* browser.
-- **Share link**: Pro only; menghasilkan URL publik *view-only* (`/s/...`) yang bisa dibuka tanpa login. Bisa di-revoke kapan saja.
-- **Version history**: setiap PRD menyimpan semua versinya. Klik **Restore** pada versi lama untuk menjadikannya versi terbaru (versi lama tetap ada, tidak destruktif).
+- **Share link**: Free dan Pro; menghasilkan URL publik *view-only* (`/s/...`) yang bisa dibuka tanpa login. Bisa di-revoke kapan saja.
+- **Version history**: Free dan Pro; setiap PRD menyimpan semua versinya. Klik **Restore** pada versi lama untuk menjadikannya versi terbaru (versi lama tetap ada, tidak destruktif).
 
 ---
 
