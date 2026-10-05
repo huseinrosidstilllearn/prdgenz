@@ -16,8 +16,8 @@ export default function PricingPage() {
     {
       name: 'Pro',
       price: `$${PRO_PRICE}`,
-      cadence: 'per month',
-      cta: { href: '/register', label: 'Go Pro' },
+      cadence: 'per month (planned)',
+      cta: null,
       highlight: true,
     },
   ]
@@ -28,9 +28,9 @@ export default function PricingPage() {
     { label: 'Projects', values: ['1', 'Unlimited'] },
     { label: 'Generation modes', values: ['All three', 'All three'] },
     { label: 'Your own API key', values: ['Yes', 'Yes'] },
-    { label: 'Version history and restore', values: ['', 'Yes'] },
+    { label: 'Version history and restore', values: ['Yes', 'Yes'] },
     { label: 'PDF export', values: ['', 'Yes'] },
-    { label: 'Share links', values: ['', 'View only'] },
+    { label: 'Share links', values: ['View only', 'View only'] },
   ]
 
   return (
@@ -59,7 +59,7 @@ export default function PricingPage() {
               Pricing
             </p>
             <h1 className="text-4xl leading-tight sm:text-5xl">
-              Start free. Upgrade when you need more.
+              Start with the Free plan.
             </h1>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Both plans bring your own API key, so you are never billed for
@@ -120,13 +120,19 @@ export default function PricingPage() {
                 <td />
                 {plans.map((plan) => (
                   <td key={plan.name} className="py-4 align-top">
-                    <Button
-                      asChild
-                      className="w-full"
-                      variant={plan.highlight ? 'default' : 'outline'}
-                    >
-                      <Link href={plan.cta.href}>{plan.cta.label}</Link>
-                    </Button>
+                    {plan.cta ? (
+                      <Button
+                        asChild
+                        className="w-full"
+                        variant={plan.highlight ? 'default' : 'outline'}
+                      >
+                        <Link href={plan.cta.href}>{plan.cta.label}</Link>
+                      </Button>
+                    ) : (
+                      <p className="text-muted-foreground">
+                        Pro upgrades are not available yet.
+                      </p>
+                    )}
                   </td>
                 ))}
               </tr>

@@ -7,7 +7,7 @@
 services:
   prdgenz:
     build:
-      context: ../..
+      context: ../../..
       dockerfile: apps/self-host/docker/Dockerfile
     image: prdgenz-self-host:latest
     container_name: prdgenz-self-host
@@ -21,7 +21,7 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       OMNIROUTE_API_KEY: ${OMNIROUTE_API_KEY:-}
       TOKENROUTER_API_KEY: ${TOKENROUTER_API_KEY:-}
-      9ROUTER_API_KEY: ${9ROUTER_API_KEY:-}
+      9ROUTER_API_KEY: ${NINEROUTER_API_KEY:-}
       CUSTOM_API_KEY: ${CUSTOM_API_KEY:-}
       CUSTOM_BASE_URL: ${CUSTOM_BASE_URL:-}
       AI_DEFAULT_PROVIDER: ${AI_DEFAULT_PROVIDER:-openai}

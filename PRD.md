@@ -700,8 +700,8 @@ model ApiKey {
 
 | Plan | Price | Features |
 |------|-------|----------|
-| **Free** | $0 | 10 PRD/bulan, Markdown export, 1 project |
-| **Pro** | $9/bulan | Unlimited PRD, PDF export, share link, unlimited projects |
+| **Free** | $0 | 10 PRD/30 hari, Markdown export, 1 project, share link, version history dan restore |
+| **Pro** | $9/bulan | Unlimited PRD, PDF export, unlimited projects, share link, version history dan restore |
 
 ---
 

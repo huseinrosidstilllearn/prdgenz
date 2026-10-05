@@ -101,12 +101,51 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
+      - name: Resolve and validate Compose build paths
+        id: compose
+        run: |
+          docker compose -f apps/self-host/docker/docker-compose.yml config --format json > "$RUNNER_TEMP/prdgenz-compose.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          config = json.loads((Path(os.environ['RUNNER_TEMP']) / 'prdgenz-compose.json').read_text())
+          build = config['services']['prdgenz']['build']
+          context = Path(build['context']).resolve()
+          dockerfile = (context / build['dockerfile']).resolve()
+          if not dockerfile.is_file():
+              raise SystemExit(f'Compose Dockerfile does not exist: {dockerfile}')
+          if not (context / 'pnpm-workspace.yaml').is_file():
+              raise SystemExit(f'Compose build context is not the monorepo root: {context}')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'context={context}\ndockerfile={dockerfile}\n')
+          PY
+
       - name: Build self-host image (dry run)
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./apps/self-host/docker/Dockerfile
+          context: ${{ steps.compose.outputs.context }}
+          file: ${{ steps.compose.outputs.dockerfile }}
           push: false
-          tags: prdgenz-self-host:ci
+          load: true
+          tags: prdgenz-self-host:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Smoke test Compose startup and SQLite persistence
+        timeout-minutes: 4
+        run: |
+          docker compose -f apps/self-host/docker/docker-compose.yml up -d --no-build
+          python3 scripts/self-host-smoke.py create "$RUNNER_TEMP/prdgenz-self-host-smoke.json"
+          docker compose -f apps/self-host/docker/docker-compose.yml down
+          docker compose -f apps/self-host/docker/docker-compose.yml up -d --no-build
+          python3 scripts/self-host-smoke.py verify "$RUNNER_TEMP/prdgenz-self-host-smoke.json"
+
+      - name: Container logs on failure
+        if: failure()
+        run: docker compose -f apps/self-host/docker/docker-compose.yml logs --no-color
+
+      - name: Clean up smoke test containers and volumes
+        if: always()
+        run: docker compose -f apps/self-host/docker/docker-compose.yml down --volumes

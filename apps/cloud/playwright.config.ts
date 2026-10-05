@@ -29,7 +29,7 @@ export default defineConfig({
   projects: [
     {
       name: 'anonymous',
-      testMatch: /auth\.spec\.ts/,
+      testMatch: /(auth|free-plan)\.spec\.ts/,
     },
     {
       name: 'authenticated',
