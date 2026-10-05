@@ -140,7 +140,7 @@ docker build -f apps/self-host/docker/Dockerfile -t prdgenz-self-host .
 | `GOOGLE_API_KEY` | - | Key Google AI Studio |
 | `OMNIROUTE_API_KEY` | - | Key OmniRoute |
 | `TOKENROUTER_API_KEY` | - | Key TokenRouter |
-| `9ROUTER_API_KEY` | - | Key 9Router |
+| `9ROUTER_API_KEY` | - | Key 9Router untuk dev Node. Docker Compose memakai `NINEROUTER_API_KEY` di `.env`, lalu memetakannya ke nama ini di container. |
 | `CUSTOM_API_KEY` + `CUSTOM_BASE_URL` | - | Endpoint custom OpenAI-compatible (keduanya harus terisi) |
 | `AI_DEFAULT_PROVIDER` | - | Default: `openai`: dipakai kalau user belum memilih |
 | `AI_DEFAULT_MODEL` | - | Default model (kosong = model pertama provider) |
