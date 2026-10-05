@@ -9,6 +9,7 @@ export { Landing } from './marketing/landing'
 export { SpecPanel } from './marketing/spec-panel'
 
 export { ModeChooser } from './prd/mode-chooser'
+export { WorkspaceStart } from './prd/workspace-start'
 export { PRDList, formatDate, type PRDListItem } from './prd/prd-list'
 export { ProjectList, type ProjectListItem } from './prd/project-list'
 export { PRDActions, VersionSidebar, DeletePRDButton, type PRDActionsProps } from './prd/prd-actions'

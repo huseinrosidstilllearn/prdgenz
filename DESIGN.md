@@ -58,6 +58,16 @@ Layout aplikasi: **rail tipis 13rem + satu kolom baca `max-w-3xl`**. Tidak ada
 sidebar berisi stat, tidak ada baris kartu statistik, tidak ada feed aktivitas
 palsu. Landing dan auth memakai kontainer `max-w-6xl` / split-screen.
 
+Dashboard dan pemilihan mode memakai `max-w-4xl`: ruang tambahan dipakai untuk
+panduan awal berdampingan dengan contoh PRD yang berlabel, atau contoh input
+berdampingan dengan pilihan mode. Form dan reader tetap satu kolom sempit.
+Empty dashboard menunjukkan setup dari kondisi akun, bukan angka aktivitas.
+Ikon navigasi mewakili dokumen, aksi tambah, dan pengaturan. Pada mobile,
+navigasi berada pada baris tersendiri agar wordmark dan kontrol tidak bertabrakan.
+ENERGY 2 / RHYTHM 2 / MOTION 1: skala judul dan permukaan dokumen memberi
+hierarki; tidak ada animasi dekoratif. Contoh PRD memakai isi yang bisa dibaca,
+bukan skeleton yang terlihat seperti dokumen sedang diproses.
+
 Aturan motif: `spec-rule` hanya dipakai di dalam konteks dokumen (SpecPanel,
 daftar bernomor landing, reader PRD). Jangan dibunteli ke form telanjang —
 garis tanpa dokumen di sekitarnya terlihat seperti bug.

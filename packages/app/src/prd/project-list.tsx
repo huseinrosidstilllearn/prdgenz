@@ -22,11 +22,11 @@ function formatDate(iso: string) {
  */
 export function ProjectList({ items }: { items: ProjectListItem[] }) {
   return (
-    <ul className="divide-y border-y">
+    <ul className="divide-y rounded-lg border bg-card">
       {items.map((project) => (
         <li
           key={project.id}
-          className="flex items-baseline justify-between gap-6 py-4"
+          className="flex flex-wrap items-baseline justify-between gap-3 px-5 py-4"
         >
           <div className="min-w-0">
             <p className="truncate font-medium">{project.name}</p>

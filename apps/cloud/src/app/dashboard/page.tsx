@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
-import { AppShell, EmptyState, PageHeader, PRDList, ProjectList } from '@prdgenz/app'
+import { AppShell, EmptyState, PageHeader, PRDList, ProjectList, WorkspaceStart } from '@prdgenz/app'
 import { Badge, Button } from '@prdgenz/ui'
 import { FREE_PLAN_LIMIT } from '@prdgenz/shared'
 import { authOptions } from '@/lib/auth'
@@ -28,7 +28,7 @@ export default async function DashboardPage() {
     }),
     prisma.user.findUnique({
       where: { id: userId! },
-      select: { role: true, name: true },
+      select: { role: true, name: true, _count: { select: { apiKeys: true } } },
     }),
   ])
 
@@ -36,6 +36,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell
+      maxWidth="4xl"
       nav={[
         { href: '/dashboard', label: 'PRDs', active: true },
         { href: '/prd/new', label: 'New PRD' },
@@ -61,15 +62,7 @@ export default async function DashboardPage() {
       />
 
       {prds.length === 0 ? (
-        <EmptyState
-          title="No PRDs yet"
-          body="Start from a rough idea and the model will draft the problem, users, features, and acceptance criteria around it."
-          action={
-            <Button asChild>
-              <Link href="/prd/new">Create your first PRD</Link>
-            </Button>
-          }
-        />
+        <WorkspaceStart providerConfigured={Boolean(user?._count.apiKeys)} hasProject={projects.length > 0} />
       ) : (
         <PRDList
           items={prds.map((prd) => ({
@@ -84,15 +77,18 @@ export default async function DashboardPage() {
         />
       )}
 
-      <section className="mt-12">
+      <section id="projects" className="mt-10 scroll-mt-6">
         <div className="mb-4 flex items-center justify-between gap-4">
-          <h2 className="text-xl">Projects</h2>
+          <div>
+            <h2 className="text-xl">Projects</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Keep related product decisions in one place.</p>
+          </div>
           <CreateProjectButton />
         </div>
         {projects.length === 0 ? (
           <EmptyState
             title="No projects yet"
-            body="Projects group related PRDs. Every document above belongs to one."
+            body="Create a project for the product you are planning. You will choose it when you write your first PRD."
           />
         ) : (
           <ProjectList
@@ -109,4 +105,3 @@ export default async function DashboardPage() {
     </AppShell>
   )
 }
-

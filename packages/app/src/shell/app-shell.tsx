@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ThemeToggle, cn } from "@prdgenz/ui";
 import { Wordmark } from "./wordmark";
+import { NavIcon } from "./nav-icon";
 
 export interface NavItem {
   href: string;
@@ -38,27 +39,34 @@ export function AppShell({
         Skip to content
       </a>
       {/* Rail: wordmark and navigation only. */}
-      <aside className="hidden border-r bg-surface-sunken lg:flex lg:flex-col">
+      <aside className="sticky top-0 hidden h-screen border-r bg-surface-sunken lg:flex lg:flex-col">
         <div className="flex h-14 items-center border-b px-5">
           <Wordmark />
         </div>
-        <nav className="flex-1 space-y-0.5 p-3" aria-label="Main">
+        <nav className="flex-1 space-y-1 p-3 pt-6" aria-label="Main">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "flex items-center rounded-md px-2.5 py-1.5 text-sm transition-colors duration-[120ms]",
-                item.active
-                  ? "bg-primary-soft font-medium text-primary-soft-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                "flex min-h-11 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                item.href === '/prd/new'
+                  ? "bg-primary font-medium text-primary-foreground hover:bg-primary/90"
+                  : item.active
+                    ? "bg-accent font-medium text-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
             >
+              <NavIcon href={item.href} />
               {item.label}
             </Link>
           ))}
         </nav>
+        <div className="px-5 pb-6 text-xs leading-relaxed text-muted-foreground">
+          <p className="mb-1 font-medium text-foreground">A place for product decisions.</p>
+          <p>Draft, refine, and keep your requirements together.</p>
+        </div>
         {railExtra ? (
           <div className="border-t p-3 text-xs text-muted-foreground">
             {railExtra}
@@ -68,10 +76,14 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-col">
         {/* Compact bar: the same destinations, reachable without the rail. */}
-        <header className="flex h-14 items-center gap-3 border-b px-4 sm:px-6">
+        <header className="flex flex-wrap items-center gap-x-3 border-b px-4 sm:px-6">
           <Wordmark className="lg:hidden" />
+          <p className="hidden py-4 text-sm text-muted-foreground lg:block">
+            Workspace <span aria-hidden="true" className="mx-2">/</span>
+            <span className="text-foreground">{nav.find((item) => item.active)?.label ?? 'PRDs'}</span>
+          </p>
           <nav
-            className="flex flex-1 items-center gap-1 text-sm lg:hidden"
+            className="order-last -mx-1 flex w-full items-center gap-1 border-t py-2 text-sm lg:hidden"
             aria-label="Main"
           >
             {nav.map((item) => (
@@ -80,17 +92,18 @@ export function AppShell({
                 href={item.href}
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
-                  "rounded-md px-2.5 py-1.5 transition-colors",
+                  "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md px-2 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   item.active
-                    ? "bg-primary-soft font-medium text-primary-soft-foreground"
+                    ? "bg-accent font-medium text-foreground"
                     : "text-muted-foreground",
                 )}
               >
+                <NavIcon href={item.href} />
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex min-h-14 items-center gap-2">
             {headerExtra}
             <ThemeToggle />
           </div>

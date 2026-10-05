@@ -26,12 +26,12 @@ function formatDate(iso: string) {
  */
 export function PRDList({ items }: { items: PRDListItem[] }) {
   return (
-    <ul className="divide-y border-y">
+    <ul className="divide-y overflow-hidden rounded-lg border bg-card">
       {items.map((prd) => (
         <li key={prd.id}>
           <Link
             href={`/prd/${prd.id}`}
-            className="group flex flex-col gap-2 py-5 transition-colors duration-[120ms] sm:flex-row sm:items-baseline sm:gap-6"
+            className="group flex flex-col gap-2 px-5 py-5 transition-colors duration-[120ms] hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:flex-row sm:items-baseline sm:gap-6"
           >
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className="truncate font-medium group-hover:text-primary">
@@ -56,4 +56,3 @@ export function PRDList({ items }: { items: PRDListItem[] }) {
 }
 
 export { formatDate }
-

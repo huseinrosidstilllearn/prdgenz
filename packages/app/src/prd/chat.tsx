@@ -129,7 +129,7 @@ export function Chat() {
     }
   }
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col px-6 py-10">
+    <div className="mx-auto flex w-full max-w-3xl flex-col">
       <header className="mb-6 space-y-4">
         <div>
           <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">

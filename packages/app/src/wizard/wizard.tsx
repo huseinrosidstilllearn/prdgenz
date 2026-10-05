@@ -78,7 +78,7 @@ export function Wizard({
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
+    <div className="mx-auto w-full max-w-3xl">
       <header className="mb-8">
         <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">
           Clause {visibleSteps.indexOf(currentStepName) + 1} of{" "}
