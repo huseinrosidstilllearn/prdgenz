@@ -1,4 +1,5 @@
 export { AppShell, type NavItem } from './shell/app-shell'
+export { WorkspaceLoading } from './shell/workspace-loading'
 export { PageHeader } from './shell/page-header'
 export { Wordmark } from './shell/wordmark'
 export { EmptyState, ErrorState } from './shell/states'
