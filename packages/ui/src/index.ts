@@ -24,4 +24,4 @@ export { PRDPreview } from './prd-preview'
 export { ThemeToggle } from './theme-toggle'
 export { ThemeProvider, useTheme } from './theme-provider'
 export { SectionRegenerate } from './section-regenerate'
-
+export { Icon, type IconName } from './icon'

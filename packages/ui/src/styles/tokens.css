@@ -49,11 +49,11 @@
   --rule: oklch(89% 0.006 250);
   --rule-foreground: oklch(55% 0.012 255);
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
-  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: var(--font-sans);
 }
 
 .dark {
@@ -93,4 +93,69 @@
 
   --rule: oklch(30% 0.013 250);
   --rule-foreground: oklch(62% 0.012 250);
+}
+
+/* Approved landing surfaces, scoped to marketing. */
+.landing-direction {
+  --bg: #111915;
+  --panel: #1a251e;
+  --line: #34443a;
+  --ink: #f2f6f1;
+  --muted: #b0bdb3;
+  --mint: #b7edb3;
+  --mint-ink: #172f1b;
+  --paper: #fcfdf9;
+  --paper-ink: #253b2b;
+  --paper-muted: #536656;
+  --paper-line: #dbe3d8;
+  --shade: 0 24px 80px #020c0755;
+}
+.light .landing-direction {
+  --bg: #f2f5ed;
+  --panel: #fff;
+  --line: #cbd5c7;
+  --ink: #193021;
+  --muted: #506555;
+  --mint: #23663c;
+  --mint-ink: #fff;
+  --shade: 0 24px 70px #172c1820;
+}
+.landing-direction {
+  --bg: #090a0c;
+  --panel: #14161c;
+  --line: #30323c;
+  --ink: #f4f4f7;
+  --muted: #a8a9b8;
+  --mint: #caf2df;
+  --mint-ink: #16302a;
+  --paper: #15171d;
+  --paper-ink: #ececf4;
+  --paper-muted: #b0b2c4;
+  --paper-line: #30323c;
+  --shade: 0 28px 100px #0008;
+}
+.light .landing-direction {
+  --paper: #fff;
+  --paper-ink: #202f29;
+  --paper-muted: #58675c;
+  --paper-line: #d9e1d9;
+}
+.landing-direction {
+  --gutter: 32px;
+  --content: 1184px;
+}
+@media (max-width: 850px) {
+  .landing-direction {
+    --gutter: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .landing-direction {
+    --gutter: 20px;
+  }
+}
+@media (max-width: 360px) {
+  .landing-direction {
+    --gutter: 16px;
+  }
 }

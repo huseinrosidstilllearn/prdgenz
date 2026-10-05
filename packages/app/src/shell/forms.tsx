@@ -26,25 +26,20 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+    <div className="auth-direction grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
       {/* Brand panel: the artefact, not a tagline. Hidden where it would
           crowd the form. */}
-      <aside className="relative hidden flex-col justify-between border-r bg-foreground px-10 py-10 text-background lg:flex xl:px-16">
+      <aside className="relative hidden flex-col justify-between overflow-hidden border-r bg-surface-sunken px-10 py-10 text-foreground lg:flex xl:px-16">
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-baseline gap-1.5 text-lg leading-none">
-            <span className="font-display">PRD</span>
-            <span className="font-mono text-[0.8em] font-medium tracking-tight text-primary">
-              GenZ
-            </span>
-          </span>
+          <Wordmark />
           <span className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] opacity-60">
             prd.md
           </span>
         </div>
 
-        <div className="max-w-md space-y-5">
-          <h2 className="font-display text-3xl leading-tight xl:text-4xl">
-            Turn a rough idea into a spec an agent can run.
+        <div className="relative max-w-md space-y-6">
+          <h2 className="font-display text-4xl font-medium leading-tight xl:text-5xl">
+            Your next idea. A clearer first draft.
           </h2>
           <p className="text-sm leading-relaxed opacity-70">
             Numbered sections, acceptance criteria, and a revision history you
@@ -72,7 +67,7 @@ export function AuthShell({
 
       {/* Form panel: quiet on purpose. */}
       <main className="flex items-center justify-center px-4 py-16 sm:px-8">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm rounded-2xl border bg-card p-6 sm:p-8">
           <div className="mb-8 lg:hidden">
             <Wordmark />
           </div>

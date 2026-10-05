@@ -1,122 +1,48 @@
+"use client";
 import Link from "next/link";
-import {
-  AI_PROVIDERS,
-  EXPORT_FORMATS,
-  FREE_PLAN_LIMIT,
-  LANGUAGES,
-  PRD_SECTIONS,
-  PRD_SECTIONS_OPTIONAL,
-  PRO_PRICE,
-} from "@prdgenz/shared";
-import { Badge, Button } from "@prdgenz/ui";
+import { useRef } from "react";
+import { FREE_PLAN_LIMIT, PRO_PRICE } from "@prdgenz/shared";
+import { Icon, ThemeToggle } from "@prdgenz/ui";
 import { Wordmark } from "../shell/wordmark";
-import { SpecPanel } from "./spec-panel";
-
-/**
- * The clauses the AI actually writes, numbered the way the output is numbered.
- * Nothing here is invented: this mirrors the real PRD section list.
- */
-const HERO_CLAUSES = [
-  { number: "01", title: "Problem", lines: 12 },
-  { number: "02", title: "Target user", lines: 10 },
-  { number: "03", title: "Features", lines: 13 },
-  { number: "04", title: "Acceptance criteria", lines: 11 },
-  { number: "05", title: "Out of scope", lines: 8 },
-];
-
-/** Three different workflows, so they read as a list of choices rather than
- *  three identical feature tiles. The numbering carries real order. */
-const WAYS_IN = [
-  {
-    number: "01",
-    title: "Create from Scratch",
-    body: "Work through the sections one at a time. Reorder them, hide the ones you do not need, and regenerate any single section without losing the rest.",
-    href: "/prd/new/wizard",
+import { useLandingExample } from "./use-landing-example";
+export const EXAMPLES = {
+  coffee: {
+    title: "Coffee shop ordering",
+    idea: "An ordering app for a small coffee shop. Customers order ahead, and baristas see a shared queue.",
+    overview:
+      "Let customers browse the menu and order ahead. Give baristas a single queue to prepare and complete orders.",
+    problem:
+      "Customers wait in line while staff track orders on paper. Baristas need one reliable view of pending orders.",
+    scope:
+      "Browse the menu, place an order, and follow its status. Payments and loyalty programs stay outside the first release.",
+    criteria:
+      "A submitted order appears in the barista queue with its items and status.",
   },
-  {
-    number: "02",
-    title: "Chat",
-    body: "Describe the product in conversation. The model asks for what is missing and remembers the whole thread, so the PRD comes out the way you explained it.",
-    href: "/prd/new/chat",
+  study: {
+    title: "Study planner",
+    idea: "A study planner for university students. Split subjects into weekly tasks and keep track of what is finished.",
+    overview:
+      "Give students a weekly plan with subjects, tasks, and completion status.",
+    problem:
+      "Students keep assignments in separate notes and lose track of the work due this week.",
+    scope:
+      "Create subjects, set weekly tasks, and mark work complete. Calendar integration stays outside the first release.",
+    criteria:
+      "A completed task stays marked complete when the student returns to the weekly plan.",
   },
-  {
-    number: "03",
-    title: "One-Shot",
-    body: "Paste an idea and its constraints. Get a complete draft in one pass, then regenerate whenever the direction changes.",
-    href: "/prd/new/oneshot",
+  report: {
+    title: "Team reporting",
+    idea: "A weekly reporting tool for small teams. Collect updates and export one summary for the project lead.",
+    overview:
+      "Collect project updates in one place and hand off a weekly summary.",
+    problem:
+      "Project leads chase updates across messages and cannot tell which reports are missing.",
+    scope:
+      "Submit weekly updates and export a summary. Automated email delivery stays outside the first release.",
+    criteria:
+      "The summary contains each submitted update with its author and reporting week.",
   },
-];
-
-/** Every tile names a capability that ships. No aspirational roadmap. */
-const FEATURES = [
-  {
-    index: "F-01",
-    title: "Version history and diff",
-    body: "Every regeneration writes a new revision. Compare any two side by side and restore the one you liked.",
-  },
-  {
-    index: "F-02",
-    title: "Share links with a password",
-    body: "Publish a read-only link, gate it with a password, and set it to expire when the review is over.",
-  },
-  {
-    index: "F-03",
-    title: "Per-section regeneration",
-    body: "Do not like one clause? Rewrite it alone. The rest of the document keeps its wording and its number.",
-  },
-  {
-    index: "F-04",
-    title: "Export where work happens",
-    body: `Markdown for the repo, print-ready PDF for review, or an AI prompt that hands the spec to your coding agent. ${EXPORT_FORMATS.length} formats.`,
-  },
-  {
-    index: "F-05",
-    title: "Two output languages",
-    body: `Draft the same document in English or Bahasa Indonesia. ${LANGUAGES.length} languages, one click.`,
-  },
-  {
-    index: "F-06",
-    title: "Your key, encrypted",
-    body: "Provider keys are stored with AES-256-GCM encryption and are used only for your own generations.",
-  },
-];
-
-/** Numbers pulled from the shared constants, so the page cannot drift. */
-const STATS = [
-  {
-    value: `${PRD_SECTIONS.length}+${PRD_SECTIONS_OPTIONAL.length}`,
-    label: "numbered sections in every PRD",
-  },
-  {
-    value: String(AI_PROVIDERS.length),
-    label: "AI providers, bring your own key",
-  },
-  {
-    value: String(EXPORT_FORMATS.length),
-    label: "export formats per document",
-  },
-  { value: String(LANGUAGES.length), label: "output languages, EN and ID" },
-];
-
-const FAQ = [
-  {
-    q: "Do I need my own AI provider key?",
-    a: "Yes. PRD GenZ is bring-your-own-key: you paste a key from OpenAI, Anthropic, Google, or an aggregator, and generation is billed by your provider, not by us. Keys are encrypted at rest with AES-256-GCM.",
-  },
-  {
-    q: "What does the free plan include?",
-    a: `${FREE_PLAN_LIMIT} PRDs a month and one project, with all three drafting modes and every export format. Pro removes the monthly limit for $${PRO_PRICE} a month.`,
-  },
-  {
-    q: "Can I run it without an account?",
-    a: "Yes, self-host it. One compose file, SQLite, no sign-up. Your documents and your API key never leave the machine.",
-  },
-  {
-    q: "What does the output look like?",
-    a: "A numbered document: problem, target user, features, user stories, acceptance criteria, tech stack, and timeline, with risks and success metrics optional. The hero panel above is the shape of it.",
-  },
-];
-
+};
 export function Landing({
   signedIn,
   isSelfHost,
@@ -124,518 +50,554 @@ export function Landing({
   signedIn: boolean;
   isSelfHost?: boolean;
 }) {
+  const root = useRef<HTMLDivElement>(null);
+  useLandingExample(root, EXAMPLES);
   const primaryHref = signedIn ? "/prd/new" : "/register";
   const primaryLabel = signedIn ? "New PRD" : "Create an account";
-
+  const header = (
+    <header className="nav">
+      <Wordmark />
+      <nav className="navlinks" aria-label="Main">
+        <a href="#modes">Writing modes</a>
+        <a href="#revisions">Version history</a>
+        <Link href="/pricing">Pricing</Link>
+      </nav>
+      <div className="navtools">
+        <ThemeToggle />
+        <Link href={signedIn ? "/dashboard" : "/login"}>
+          {signedIn ? "Dashboard" : "Log in"}
+        </Link>
+        <Link className="primary" href={primaryHref}>
+          {primaryLabel}
+        </Link>
+      </div>
+    </header>
+  );
+  const footer = (
+    <footer className="footer">
+      <Wordmark />
+      <span>
+        <Link href={primaryHref}>{primaryLabel}</Link> ·{" "}
+        <Link href="/pricing">Pricing</Link>
+        {!signedIn && (
+          <>
+            {" "}
+            · <Link href="/login">Log in</Link>
+          </>
+        )}
+      </span>
+    </footer>
+  );
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* First focusable element on the landing page: keyboard users skip the nav. */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
-      >
+    <div ref={root} className="landing-direction">
+      <a className="skip" href="#main-content">
         Skip to content
       </a>
-      <header className="border-b">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-6">
-          <Wordmark />
-          <nav className="ml-auto flex items-center gap-1 text-sm">
-            <Link
-              href="/pricing"
-              className="whitespace-nowrap rounded-md px-3 py-1.5 text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-            >
-              Pricing
-            </Link>
-            {signedIn ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="whitespace-nowrap rounded-md px-3 py-1.5 text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-                >
-                  Dashboard
-                </Link>
-                <Button asChild size="sm" className="ml-2">
-                  <Link href={primaryHref}>New PRD</Link>
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="whitespace-nowrap rounded-md px-3 py-1.5 text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-                >
-                  Log in
-                </Link>
-                <Button asChild size="sm" className="ml-2">
-                  <Link href={primaryHref}>{primaryLabel}</Link>
-                </Button>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <main id="main-content" className="flex-1">
-        {/* Hero: the accent band carries the drafting-paper grid, and the right
-            column holds the real artefact mid-generation. */}
-        <section className="border-b bg-[color-mix(in_oklab,var(--primary-soft)_45%,var(--background))] bg-blueprint-faint">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
-            <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-              <div className="space-y-7">
-                <p className="flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                  <span
-                    aria-hidden="true"
-                    className="inline-block size-1.5 rounded-[2px] bg-primary"
-                  />
-                  Product requirements, drafted
-                </p>
-                <h1 className="font-display text-5xl leading-[1.04] tracking-[-0.01em] sm:text-6xl">
-                  Turn a rough idea into a spec an agent can run.
-                </h1>
-                <p className="max-w-prose text-lg leading-relaxed text-muted-foreground">
-                  Write down what you want to build. Get back a numbered PRD
-                  with problem, users, features, and acceptance criteria. Every
-                  regeneration is kept as a revision, so you can diff two
-                  versions and restore the one you liked.
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button asChild size="lg">
-                    <Link href={primaryHref}>{primaryLabel}</Link>
-                  </Button>
-                  <Button asChild size="lg" variant="outline">
-                    <Link href="/pricing">See the plans</Link>
-                  </Button>
+      <div className="wrap">
+        {header}
+        <p className="notice">
+          {isSelfHost
+            ? "Self-host / Your infrastructure / BYOK"
+            : `Free · ${FREE_PLAN_LIMIT} PRDs/mo · Pro $${PRO_PRICE}/mo · BYOK`}
+        </p>
+        <main id="main-content">
+          <section className="hero">
+            <div>
+              <p className="eyebrow">Know what you are building.</p>
+              <h1>
+                Your next idea.
+                <br />A <span>clearer first draft.</span>
+              </h1>
+              <p className="intro">
+                Define the problem, decide the scope, and give your team a
+                product brief they can build from.
+              </p>
+            </div>
+            <div className="heroright">
+              <form className="composer" id="composer">
+                <label htmlFor="idea">What would you like to build?</label>
+                <textarea
+                  id="idea"
+                  required
+                  placeholder="An ordering app for a small coffee shop. Customers order ahead, and baristas see a shared queue."
+                  defaultValue="An ordering app for a small coffee shop. Customers order ahead, and baristas see a shared queue."
+                />
+                <div className="composerfooter">
+                  <select aria-label="Drafting mode">
+                    <option>One-Shot</option>
+                    <option>Chat</option>
+                    <option>Create from Scratch</option>
+                  </select>
+                  <button className="primary with-icon" type="submit">
+                    Preview the example
+                    <Icon name="arrow" />
+                  </button>
                 </div>
-                <p className="font-mono text-xs tabular-nums text-muted-foreground">
-                  Free · {FREE_PLAN_LIMIT} PRDs/mo · Pro ${PRO_PRICE}/mo · BYOK
-                </p>
+              </form>
+              <div className="examples" aria-label="Example ideas">
+                <button data-example="coffee" className="with-icon">
+                  <Icon name="coffee" />
+                  Coffee shop
+                </button>
+                <button data-example="study" className="with-icon">
+                  <Icon name="book" />
+                  Study planner
+                </button>
+                <button data-example="report" className="with-icon">
+                  <Icon name="chart" />
+                  Team reporting
+                </button>
               </div>
-
-              <SpecPanel clauses={HERO_CLAUSES} activeIndex={2} />
+              <p className="hint">
+                Local demo. No AI request, account, or API key required.
+              </p>
+            </div>
+          </section>
+          <div
+            className="hero-art wrap"
+            aria-label="Example: an idea becomes a scoped product brief"
+          >
+            <svg viewBox="0 0 570 430" aria-hidden="true">
+              <defs>
+                <linearGradient id="beam" x2="1" y2="1">
+                  <stop stopColor="#5267cc" stopOpacity="0"></stop>
+                  <stop offset=".5" stopColor="#b4c9ff"></stop>
+                  <stop offset="1" stopColor="#7bf7c6" stopOpacity="0"></stop>
+                </linearGradient>
+                <filter id="blur">
+                  <feGaussianBlur stdDeviation="12"></feGaussianBlur>
+                </filter>
+              </defs>
+              <path
+                d="M250 -40C240 120 540 90 420 255S150 290 200 435"
+                fill="none"
+                stroke="#5769cc"
+                strokeWidth="48"
+                opacity=".45"
+                filter="url(#blur)"
+              ></path>
+              <path
+                d="M250 -40C240 120 540 90 420 255S150 290 200 435"
+                fill="none"
+                stroke="url(#beam)"
+                strokeWidth="3"
+              ></path>
+              <circle
+                cx="426"
+                cy="268"
+                r="110"
+                fill="#6d83df"
+                opacity=".08"
+              ></circle>
+            </svg>
+            <div className="scene-card idea-card">
+              <div className="scene-label with-icon">
+                <Icon name="chat" />
+                01 / YOUR STARTING POINT
+              </div>
+              <h3>
+                “Ordering ahead,
+                <br />
+                without the queue.”
+              </h3>
+              <p>
+                A coffee shop idea. A first user.
+                <br />A problem worth solving.
+              </p>
+              <div className="scene-tags">
+                <span>Customers</span>
+                <span>Baristas</span>
+              </div>
+            </div>
+            <div className="scene-card brief-card">
+              <div className="scene-label with-icon">
+                <Icon name="document" />
+                02 / A PRODUCT BRIEF
+              </div>
+              <h3>
+                Clear scope.
+                <br />
+                Testable decisions.
+              </h3>
+              <div className="scene-section">
+                <b>FIRST RELEASE</b>Menu, order, and preparation status.
+              </div>
+              <div className="scene-section">
+                <b>ACCEPTANCE CRITERIA</b>Orders appear in the barista queue.
+              </div>
+            </div>
+            <div className="scene-output">
+              <i aria-hidden="true">
+                <Icon name="check" />
+              </i>
+              03 / Ready to review and build
             </div>
           </div>
-        </section>
-
-        {/* Provider strip: the real roster from the shared constants. */}
-        <section className="border-b">
-          <div className="mx-auto w-full max-w-6xl px-6 py-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
-              <p className="shrink-0 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                Works with your key
-              </p>
-              <ul className="flex flex-wrap items-center gap-2">
-                {AI_PROVIDERS.map((provider) => (
-                  <li
-                    key={provider.id}
-                    className="rounded-md border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground"
+          <div className="product" id="product">
+            <div className="editor">
+              <div className="editortop">
+                <strong style={{ fontSize: "13px" }}>PRD</strong>
+                <span className="crumb">
+                  Example workspace /{" "}
+                  <span id="crumb-title">Coffee shop ordering</span>
+                </span>
+                <span className="demo">DEMO</span>
+                <details className="exportbox">
+                  <summary className="paperbutton with-icon">
+                    <Icon name="download" />
+                    Export
+                    <Icon name="chevron" />
+                  </summary>
+                  <div className="exportlist">
+                    <button data-export="markdown">Download Markdown</button>
+                    <button data-export="prompt">Download AI prompt</button>
+                  </div>
+                </details>
+              </div>
+              <div className="editorlayout">
+                <aside className="sections" aria-label="Document sections">
+                  <h3>IN THIS DOCUMENT</h3>
+                  <button data-section="overview" aria-current="true">
+                    <Icon name="document" />
+                    Overview
+                  </button>
+                  <button data-section="problem" aria-current="false">
+                    <Icon name="target" />
+                    Problem
+                  </button>
+                  <button data-section="scope" aria-current="false">
+                    <Icon name="layers" />
+                    Scope
+                  </button>
+                  <button data-section="criteria" aria-current="false">
+                    <Icon name="list" />
+                    Acceptance criteria
+                  </button>
+                  <small>
+                    Example document
+                    <br />
+                    English / First release
+                  </small>
+                </aside>
+                <div className="draft">
+                  <div
+                    className="tabs"
+                    role="tablist"
+                    aria-label="Document view"
                   >
-                    {provider.name}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-xs leading-relaxed text-muted-foreground sm:ml-auto sm:max-w-52">
-                OpenAI-compatible endpoints supported, including local models.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* How it works: three passes, each numbered the way the output is. */}
-        <section className="border-b bg-surface-sunken">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="max-w-prose space-y-3">
-              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                How it works
-              </p>
-              <h2 className="font-display text-3xl sm:text-4xl">
-                Rough idea in, numbered spec out
-              </h2>
-              <p className="text-base leading-relaxed text-muted-foreground">
-                Three passes, the same way an engineer would write it.
-              </p>
-            </div>
-
-            <ol className="mt-12 grid gap-5 md:grid-cols-3">
-              {[
-                {
-                  step: "01",
-                  title: "Describe the product",
-                  body: `Talk, paste, or fill the wizard. ${WAYS_IN.length} drafting modes, whichever fits how you think.`,
-                },
-                {
-                  step: "02",
-                  title: "The model drafts it",
-                  body: `A numbered document comes back: ${PRD_SECTIONS.length} sections, plus ${PRD_SECTIONS_OPTIONAL.length} optional ones like risks and success metrics.`,
-                },
-                {
-                  step: "03",
-                  title: "Diff, regenerate, share",
-                  body: "Rewrite any section alone, compare revisions line by line, and hand reviewers a passworded link that expires.",
-                },
-              ].map((pass) => (
-                <li
-                  key={pass.step}
-                  className="relative overflow-hidden rounded-lg border bg-card p-6"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="font-display absolute -top-3 right-4 text-6xl text-primary/15"
-                  >
-                    {pass.step}
-                  </span>
-                  <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-primary">
-                    Pass {pass.step}
-                  </p>
-                  <h3 className="mt-3 text-xl leading-snug">{pass.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {pass.body}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* Three ways in: the signature margin rule carries the numbering, the
-            way it does inside a real PRD. */}
-        <section className="border-b">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="max-w-prose space-y-3">
-              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                Workflows
-              </p>
-              <h2 className="font-display text-3xl sm:text-4xl">
-                Three ways to start
-              </h2>
-              <p className="text-base leading-relaxed text-muted-foreground">
-                Same output, different process. Pick the one that fits how you
-                already think about the problem.
-              </p>
-            </div>
-
-            <ol className="mt-12">
-              {WAYS_IN.map((way) => (
-                <li key={way.number} className="spec-rule border-t first:border-t-0">
-                  <Link
-                    href={way.href}
-                    className="group flex flex-col gap-2 py-8 transition-colors duration-[120ms] sm:flex-row sm:items-baseline sm:gap-10"
-                  >
-                    <h3 className="min-w-0 flex-1 text-2xl leading-snug transition-colors duration-[120ms] group-hover:text-primary sm:text-3xl">
-                      {way.title}
-                    </h3>
-                    <p className="max-w-prose flex-1 text-sm leading-relaxed text-muted-foreground">
-                      {way.body}
-                    </p>
-                    <span
-                      aria-hidden="true"
-                      className="hidden shrink-0 font-mono text-sm text-muted-foreground transition-colors duration-[120ms] group-hover:text-primary sm:block"
+                    <button
+                      id="draft-tab"
+                      role="tab"
+                      aria-selected="true"
+                      aria-controls="draft-panel"
+                      tabIndex={0}
                     >
-                      →
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* Feature grid: every tile is a shipped capability. */}
-        <section className="border-b">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div className="max-w-prose space-y-3">
-                <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                  What you get
-                </p>
-                <h2 className="font-display text-3xl sm:text-4xl">
-                  Built like a document tool, not a chat toy
-                </h2>
-              </div>
-              <Button asChild variant="outline">
-                <Link href="/pricing">Compare the plans</Link>
-              </Button>
-            </div>
-
-            <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map((feature) => (
-                <li
-                  key={feature.index}
-                  className="group rounded-lg border bg-card p-6 transition-colors duration-[120ms] hover:border-primary"
-                >
-                  <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground transition-colors duration-[120ms] group-hover:text-primary">
-                    {feature.index}
-                  </p>
-                  <h3 className="mt-3 text-lg leading-snug">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {feature.body}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* Proof: version history is a real capability, so show it working
-            instead of claiming it in a badge. */}
-        <section className="border-b bg-surface-sunken">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-              <div className="max-w-prose space-y-4">
-                <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                  Revisions
-                </p>
-                <h2 className="font-display text-3xl sm:text-4xl">
-                  Change your mind as often as you need
-                </h2>
-                <p className="text-base leading-relaxed text-muted-foreground">
-                  Each regeneration writes a new version instead of overwriting
-                  the old one. Compare any two, read the diff line by line, and
-                  restore whichever revision was better.
-                </p>
-              </div>
-
-              <div className="overflow-hidden rounded-lg border bg-card">
-                <div className="flex items-center justify-between border-b px-4 py-2.5">
-                  <span className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                    prd.md · diff
-                  </span>
-                  <Badge variant="secondary">v2 to v3</Badge>
-                </div>
-                <div className="space-y-6 p-5">
-                  <div className="space-y-3">
-                    <p className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground">
-                      04 · Acceptance criteria
-                    </p>
-                    <div className="overflow-hidden rounded-md border font-mono text-xs leading-6">
-                      <div className="flex gap-3 bg-destructive/5 px-4 py-1.5">
-                        <span className="select-none text-destructive">-</span>
-                        <span className="text-muted-foreground">
-                          Users export the report as CSV.
-                        </span>
-                      </div>
-                      <div className="flex gap-3 bg-success/5 px-4 py-1.5">
-                        <span className="select-none text-success">+</span>
-                        <span>
-                          Users export the report as CSV or as a scheduled
-                          email.
-                        </span>
-                      </div>
-                      <div className="flex gap-3 border-t px-4 py-1.5">
-                        <span className="select-none text-muted-foreground">
-                          {" "}
-                        </span>
-                        <span className="text-muted-foreground">
-                          Scheduled delivery respects the workspace timezone.
-                        </span>
+                      <Icon name="document" />
+                      Document
+                    </button>
+                    <button
+                      id="changes-tab"
+                      role="tab"
+                      aria-selected="false"
+                      aria-controls="changes-panel"
+                      tabIndex={-1}
+                    >
+                      <Icon name="history" />
+                      Version changes
+                    </button>
+                  </div>
+                  <div
+                    id="draft-panel"
+                    className="tabbody document"
+                    role="tabpanel"
+                    aria-labelledby="draft-tab"
+                  >
+                    <p className="eyebrow">Product requirements / Example</p>
+                    <h2 id="doc-title">Coffee shop ordering</h2>
+                    <div className="docmeta">
+                      Customers &amp; baristas · Focused first release
+                    </div>
+                    <div id="section-content">
+                      <h3>The idea, with boundaries.</h3>
+                      <p>
+                        Let customers browse the menu and order ahead. Give
+                        baristas a single queue to prepare and complete orders.
+                      </p>
+                      <div className="check">
+                        <i aria-hidden="true">
+                          <Icon name="check" />
+                        </i>
+                        <p>
+                          <strong>Definition of done</strong>
+                          <br />A submitted order appears in the barista queue
+                          with its items and status.
+                        </p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={signedIn ? "/dashboard" : "/register"}>
-                        Open the diff view
-                      </Link>
-                    </Button>
-                    <span className="text-xs text-muted-foreground">
-                      Then restore whichever revision was better.
-                    </span>
+                  <div
+                    id="changes-panel"
+                    hidden
+                    className="tabbody document"
+                    role="tabpanel"
+                    aria-labelledby="changes-tab"
+                  >
+                    <p className="eyebrow">
+                      Example comparison / Revision 1 → 2
+                    </p>
+                    <h2>A smaller, clearer release.</h2>
+                    <h3>Scope</h3>
+                    <div className="diffrow removed">
+                      − Include checkout and card payments.
+                    </div>
+                    <div className="diffrow added">
+                      + Take orders and show preparation status. Payments stay
+                      outside this release.
+                    </div>
+                    <p>
+                      Review changes before choosing which revision to keep.
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats: every figure derives from the shared constants. */}
-        <section className="border-b">
-          <div className="mx-auto w-full max-w-6xl px-6 py-14">
-            <dl className="grid gap-8 text-center sm:grid-cols-4">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="space-y-1.5">
-                  <dd className="font-display text-4xl tabular-nums text-primary sm:text-5xl">
-                    {stat.value}
-                  </dd>
-                  <dt className="text-sm leading-snug text-muted-foreground">
-                    {stat.label}
-                  </dt>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-
-        {/* FAQ: native details elements, keyboard and screen reader free. */}
-        <section className="border-b bg-surface-sunken">
-          <div className="mx-auto w-full max-w-3xl px-6 py-20">
-            <div className="space-y-3">
-              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                FAQ
-              </p>
-              <h2 className="font-display text-3xl sm:text-4xl">
-                The questions that come up first
-              </h2>
-            </div>
-            <div className="mt-10">
-              {FAQ.map((item) => (
-                <details key={item.q} className="group border-t last:border-b">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-lg font-medium transition-colors duration-[120ms] hover:text-primary [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <span
-                      aria-hidden="true"
-                      className="shrink-0 font-mono text-xl text-muted-foreground transition-transform duration-[120ms] group-open:rotate-45"
+                <aside className="review">
+                  <h3>DOCUMENT TOOLS</h3>
+                  <div className="reviewbox">
+                    <h4>One section at a time</h4>
+                    <p>
+                      Select a section to see how problem, scope, and acceptance
+                      criteria fit together.
+                    </p>
+                    <button className="paperbutton with-icon" id="scope-action">
+                      <Icon name="target" />
+                      Inspect the scope
+                    </button>
+                  </div>
+                  <div className="reviewbox">
+                    <h4>Ready for review?</h4>
+                    <p>
+                      In the product, share a read-only link or export your
+                      requirements.
+                    </p>
+                    <button
+                      className="paperbutton with-icon"
+                      id="review-action"
                     >
-                      +
-                    </span>
-                  </summary>
-                  <p className="max-w-prose pb-6 text-sm leading-relaxed text-muted-foreground">
-                    {item.a}
-                  </p>
-                </details>
-              ))}
+                      <Icon name="list" />
+                      <span data-review-label>View review checklist</span>
+                    </button>
+                  </div>
+                  <div id="review-checklist" hidden>
+                    <label>
+                      <input type="checkbox" /> Problem is clear
+                    </label>
+                    <label>
+                      <input type="checkbox" /> Scope has boundaries
+                    </label>
+                    <label>
+                      <input type="checkbox" /> Criteria are testable
+                    </label>
+                  </div>
+                </aside>
+              </div>
+              <div className="docfooter">
+                <span>Example content, not AI generated in this preview.</span>
+                <span>Markdown · AI prompt</span>
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Self-host note, only where it is true. */}
-        {!isSelfHost ? (
-          <section>
-            <div className="mx-auto w-full max-w-6xl px-6 py-20">
-              <div className="grid items-center gap-12 lg:grid-cols-2">
-                <div className="max-w-prose space-y-4">
-                  <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                    Self-host
-                  </p>
-                  <h2 className="font-display text-3xl sm:text-4xl">
-                    Run it yourself
-                  </h2>
-                  <p className="text-base leading-relaxed text-muted-foreground">
-                    One compose file, SQLite, no account. Your PRDs and your API
-                    key never leave the machine.
-                  </p>
-                </div>
-                <div className="overflow-hidden rounded-lg border bg-card">
-                  <div className="flex items-center justify-between border-b px-4 py-2.5">
-                    <span className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-                      terminal
-                    </span>
-                    <span className="font-mono text-[0.625rem] text-muted-foreground">
-                      sqlite · mit
-                    </span>
-                  </div>
-                  <pre className="overflow-x-auto px-5 py-4 font-mono text-xs leading-6">
-                    <span className="select-none text-muted-foreground">
-                      ${" "}
-                    </span>
-                    docker compose up -d
-                    {"\n"}
-                    <span className="select-none text-muted-foreground">
-                      ${" "}
-                    </span>
-                    <span className="text-muted-foreground">
-                      # open http://localhost:3000
-                    </span>
-                  </pre>
-                </div>
+          <div className="productcaption">
+            <span>
+              Try the section navigation, version tabs, and export menu.
+            </span>
+            <span>Write → Refine → Hand off</span>
+          </div>
+          <div className="providers">
+            <small>
+              BRING YOUR OWN KEY
+              <br />
+              Choose your provider in the live product.
+            </small>
+            <b>OpenAI</b>
+            <b>Anthropic</b>
+            <b>Google</b>
+            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+              Compatible endpoints
+            </span>
+          </div>
+          <section className="section" id="modes">
+            <div className="sectionheading">
+              <div>
+                <p className="eyebrow">Find your starting point</p>
+                <h2>
+                  You do not have to
+                  <br />
+                  think in the same way.
+                </h2>
               </div>
+              <p>
+                Start with a complete idea, talk through the gaps, or build your
+                document section by section.
+              </p>
+            </div>
+            <div className="modegrid">
+              <article className="mode selected">
+                <small className="with-icon">
+                  <Icon name="bolt" />
+                  01 / ONE-SHOT
+                </small>
+                <h3>A brief in, a draft out.</h3>
+                <p>
+                  For the idea you already have. Put the users, needs, and
+                  constraints in one place.
+                </p>
+                <div className="mini">
+                  “A coffee shop app, with ordering
+                  <br />
+                  and a shared barista queue.”
+                  <span>Problem · Scope · Acceptance</span>
+                </div>
+                <button data-mode="One-Shot" className="with-icon">
+                  Try One-Shot in the composer
+                </button>
+              </article>
+              <article className="mode">
+                <small className="with-icon">
+                  <Icon name="chat" />
+                  02 / CHAT
+                </small>
+                <h3>Talk the idea through.</h3>
+                <p>
+                  For the questions you have not answered yet. Work through the
+                  product in conversation.
+                </p>
+                <div className="mini">
+                  <div className="bubble">Who is the first user?</div>
+                  <div className="bubble">The barista taking orders.</div>
+                </div>
+                <button data-mode="Chat" className="with-icon">
+                  Try Chat in the composer
+                </button>
+              </article>
+              <article className="mode">
+                <small className="with-icon">
+                  <Icon name="layers" />
+                  03 / CREATE FROM SCRATCH
+                </small>
+                <h3>Make each section count.</h3>
+                <p>
+                  For a structured approach. Work through requirements one
+                  section at a time.
+                </p>
+                <div className="mini">
+                  <div className="lineitem">01 Problem</div>
+                  <div className="lineitem">02 Target user</div>
+                  <div className="lineitem">03 Acceptance criteria</div>
+                </div>
+                <button data-mode="Create from Scratch" className="with-icon">
+                  Try the structured mode
+                </button>
+              </article>
             </div>
           </section>
-        ) : null}
-
-        {/* Closing CTA: the same accent band the page opened with. */}
-        <section className="border-t bg-[color-mix(in_oklab,var(--primary-soft)_45%,var(--background))] bg-blueprint-faint">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20 text-center">
-            <div className="mx-auto max-w-2xl space-y-6">
-              <h2 className="font-display text-4xl sm:text-5xl">
-                Your next spec is one paragraph away
-              </h2>
-              <p className="text-base leading-relaxed text-muted-foreground">
-                Describe what you want to build. Get back a numbered PRD your
-                team and your agents can actually run.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button asChild size="lg">
-                  <Link href={primaryHref}>{primaryLabel}</Link>
-                </Button>
-                {!isSelfHost ? (
-                  <Button asChild size="lg" variant="outline">
-                    <Link href="/pricing">See the plans</Link>
-                  </Button>
-                ) : null}
-              </div>
-              <p className="font-mono text-xs text-muted-foreground">
-                {isSelfHost
-                  ? "Running locally · your data never leaves this machine"
-                  : `Free plan · ${FREE_PLAN_LIMIT} PRDs a month · no card required`}
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-12 sm:grid-cols-[1.5fr_1fr_1fr]">
-          <div className="space-y-2">
-            <Wordmark />
-            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              A drafting table for product requirements. MIT licensed.
+        </main>
+      </div>
+      <section className="featureband" id="revisions">
+        <div className="wrap section featurelayout">
+          <div>
+            <p className="eyebrow">A draft is a starting point</p>
+            <h2>
+              Change your mind.
+              <br />
+              Keep the reasoning.
+            </h2>
+            <p>
+              Compare revisions, see what changed, and restore the version that
+              captures the right decision.
             </p>
+            <a
+              href={primaryHref}
+              style={{ textDecoration: "underline", fontSize: "13px" }}
+            >
+              Create an account to save your own drafts
+            </a>
           </div>
-          <div className="space-y-2 text-sm">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-              Product
-            </p>
-            <div className="flex flex-col items-start gap-1.5">
-              <Link
-                href="/pricing"
-                className="text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
+          <div className="revision">
+            <div className="revisiontop">
+              <span>EXAMPLE / VERSION COMPARISON</span>
+              <select
+                aria-label="Example revision comparison"
+                id="revision-select"
               >
-                Pricing
-              </Link>
-              {signedIn ? (
-                <Link
-                  href="/settings"
-                  className="text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-                >
-                  Settings
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
+                <option value="scope">Scope change</option>
+                <option value="criteria">Acceptance change</option>
+              </select>
             </div>
-          </div>
-          <div className="space-y-2 text-sm">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-              Get started
-            </p>
-            <div className="flex flex-col items-start gap-1.5">
-              <Link
-                href={primaryHref}
-                className="text-muted-foreground transition-colors duration-[120ms] hover:text-foreground"
-              >
-                {primaryLabel}
-              </Link>
-              {!isSelfHost ? (
-                <span className="text-muted-foreground">
-                  Or self-host with one compose file.
-                </span>
-              ) : null}
+            <h3 id="revision-title">A boundary for the first release</h3>
+            <div className="diffrow removed" id="revision-old">
+              − Include checkout and card payments.
+            </div>
+            <div className="diffrow added" id="revision-new">
+              + Order ahead and track status. Payments are out of scope.
             </div>
           </div>
         </div>
-      </footer>
+      </section>
+      <div className="wrap">
+        {!isSelfHost && (
+          <section className="section selfhost">
+            <p className="eyebrow">Your infrastructure, your workspace</p>
+            <h2>Run it yourself.</h2>
+            <p>
+              Self-host runs separately from cloud subscriptions, with your own
+              provider credentials.
+            </p>
+            <a
+              href="https://github.com/huseinrosidstilllearn/prdgenz"
+              className="with-icon"
+            >
+              View the repository
+              <Icon name="arrow" />
+            </a>
+          </section>
+        )}
+        <section className="section faq" id="faq">
+          <p className="eyebrow">Before your first brief</p>
+          <h2>A few practical answers.</h2>
+          <details>
+            <summary>
+              Do I need my own API key?
+              <Icon name="chevron" />
+            </summary>
+            <p>
+              For AI generation in the live product, yes. Add your provider key
+              in Settings. This design preview uses local example content and
+              sends no AI requests.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Can I use all three writing modes on Free?
+              <Icon name="chevron" />
+            </summary>
+            <p>
+              Yes. Cloud Free includes all three modes, sharing, and version
+              history. PDF export is a Pro feature.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Is self-host part of a subscription?
+              <Icon name="chevron" />
+            </summary>
+            <p>
+              No. Self-host runs separately from cloud subscriptions. It uses
+              your own infrastructure and provider credentials.
+            </p>
+          </details>
+        </section>
+        {footer}
+      </div>
+      <div className="toast" id="status" role="status" hidden></div>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export function AppShell({
   maxWidth?: "2xl" | "3xl" | "4xl" | "full";
 }) {
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[13rem_minmax(0,1fr)]">
+    <div className="workspace-direction min-h-screen lg:grid lg:grid-cols-[14rem_minmax(0,1fr)]">
       {/* First focusable element on every app page: keyboard users skip the rail. */}
       <a
         href="#main-content"
@@ -39,8 +39,8 @@ export function AppShell({
         Skip to content
       </a>
       {/* Rail: wordmark and navigation only. */}
-      <aside className="sticky top-0 hidden h-screen border-r bg-surface-sunken lg:flex lg:flex-col">
-        <div className="flex h-14 items-center border-b px-5">
+      <aside className="sticky top-0 hidden h-screen border-r bg-card lg:flex lg:flex-col">
+        <div className="flex h-20 items-center border-b px-5">
           <Wordmark />
         </div>
         <nav className="flex-1 space-y-1 p-3 pt-6" aria-label="Main">
@@ -76,7 +76,7 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-col">
         {/* Compact bar: the same destinations, reachable without the rail. */}
-        <header className="flex flex-wrap items-center gap-x-3 border-b px-4 sm:px-6">
+        <header className="flex flex-wrap items-center gap-x-3 border-b bg-card px-4 sm:px-8">
           <Wordmark className="lg:hidden" />
           <p className="hidden py-4 text-sm text-muted-foreground lg:block">
             Workspace <span aria-hidden="true" className="mx-2">/</span>
