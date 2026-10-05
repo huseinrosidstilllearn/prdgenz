@@ -2636,3 +2636,4 @@
 }
 .landing-direction .navtools button[aria-label="Toggle theme"] { padding:0;width:44px;height:44px;min-width:44px;background:transparent;border:0 }
 .landing-direction .navtools button[aria-label="Toggle theme"] svg { width:20px;height:20px;flex-shrink:0 }
+@media(max-width:600px){.landing-direction .navtools>a.primary{display:none}}
