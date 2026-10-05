@@ -1,4 +1,5 @@
-import Link from 'next/link'
+import Link from "next/link";
+import { Icon } from "@prdgenz/ui";
 
 /**
  * The three generation modes. These are genuinely different workflows, so they
@@ -7,64 +8,115 @@ import Link from 'next/link'
  */
 const MODES = [
   {
-    number: '01',
-    href: '/prd/new/wizard',
-    title: 'Create from Scratch',
-    body: 'Work through the sections one at a time. Reorder them, hide the ones you do not need, and regenerate any single section on its own.',
+    number: "01",
+    href: "/prd/new/wizard",
+    title: "Create from Scratch",
+    body: "Work through the sections one at a time. Choose what belongs in your brief and refine each part.",
+    bestFor: "You want control over every section.",
+    example:
+      "Define the target users, list the core features, then write acceptance criteria.",
+    result: "A brief assembled section by section.",
   },
   {
-    number: '02',
-    href: '/prd/new/chat',
-    title: 'Chat',
-    body: 'Describe the product in conversation. The model asks follow-up questions and keeps the whole thread in mind while it drafts.',
+    number: "02",
+    href: "/prd/new/chat",
+    title: "Chat",
+    body: "Talk through the product with the model before asking it to draft your PRD.",
+    bestFor: "You are still working out the details.",
+    example:
+      "I want to build a booking app. Help me decide what should be in the first release.",
+    result: "A draft based on your conversation.",
   },
   {
-    number: '03',
-    href: '/prd/new/oneshot',
-    title: 'One-Shot',
-    body: 'Paste an idea along with its constraints. Get a complete draft in one pass and regenerate it whenever the direction changes.',
+    number: "03",
+    href: "/prd/new/oneshot",
+    title: "One-Shot",
+    body: "Describe your idea and constraints. Generate a complete first draft in one pass.",
+    bestFor: "You already know the problem and main features.",
+    example:
+      "A coffee shop ordering app for customers and baristas. Include a menu and order queue; leave payments out.",
+    result: "A complete draft you can edit afterwards.",
   },
-]
+];
 
 export function ModeChooser() {
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div className="mode-chooser mx-auto w-full">
       <header className="space-y-3">
         <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
           New document
         </p>
-        <h1 className="text-3xl sm:text-4xl">How do you want to start?</h1>
+        <h1 className="text-3xl font-medium tracking-tight sm:text-5xl">How do you want to start?</h1>
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          All three produce the same PRD. Pick the process that matches how you
-          already know what you need.
+          Choose how to turn your idea into requirements. You can edit and save
+          versions of the document afterwards.
         </p>
       </header>
 
-      <ol className="mt-8 divide-y border-y">
+      <p className="mt-5 text-sm text-muted-foreground">
+        Writing your first brief?{" "}
+        <Link
+          href="/prd/new/oneshot"
+          className="font-medium text-foreground underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Start with One-Shot.
+        </Link>
+      </p>
+
+      <ol className="mt-7 grid gap-4 lg:grid-cols-3">
         {MODES.map((mode) => (
-          <li key={mode.number}>
+          <li key={mode.number} className="mode-choice rounded-xl border bg-card">
             <Link
               href={mode.href}
-              className="group flex flex-col gap-2.5 py-6 transition-colors duration-[120ms] sm:flex-row sm:gap-8"
+              className="group flex h-full flex-col gap-5 rounded-xl p-6 transition-colors duration-[120ms] hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span className="font-mono text-xs tabular-nums text-muted-foreground sm:pt-2">
-                {mode.number}
+                <Icon
+                  name={
+                    mode.title === "Chat"
+                      ? "chat"
+                      : mode.title === "One-Shot"
+                        ? "bolt"
+                        : "layers"
+                  }
+                  className="h-6 w-6"
+                />
               </span>
               <div className="min-w-0 flex-1 space-y-1.5">
-                <h2 className="text-lg leading-snug group-hover:text-primary">
+                <h2 className="text-xl font-medium leading-snug group-hover:text-primary">
                   {mode.title}
                 </h2>
+                <p className="text-xs font-medium">{mode.bestFor}</p>
                 <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
                   {mode.body}
                 </p>
+                <p className="flex items-center gap-2 pt-2 text-xs font-medium">
+                  Choose {mode.title}
+                  <Icon name="arrow" />
+                </p>
               </div>
-              <span className="shrink-0 self-start font-mono text-xs text-muted-foreground sm:pt-2">
-                Open
-              </span>
+              <div className="mode-example mt-auto rounded-lg border bg-surface-sunken p-4">
+                <p className="mb-2 font-mono text-[0.6875rem] text-muted-foreground">
+                  Example starting point
+                </p>
+                <p className="text-xs leading-relaxed">{mode.example}</p>
+                <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">
+                  {mode.result}
+                </p>
+              </div>
             </Link>
           </li>
         ))}
       </ol>
+      <div className="mt-6 flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:justify-between">
+        <p>Output language: English or Bahasa Indonesia.</p>
+        <Link
+          href="/settings"
+          className="font-medium underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Manage your AI provider
+        </Link>
+      </div>
     </div>
-  )
+  );
 }

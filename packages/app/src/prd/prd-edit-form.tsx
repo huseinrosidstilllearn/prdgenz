@@ -72,7 +72,7 @@ export function PRDEditForm({
         <h1 className="font-display text-3xl leading-tight">Edit document</h1>
       </header>
 
-      <div className="spec-rule space-y-6 pl-6">
+      <div className="generation-panel space-y-6">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
           <Input

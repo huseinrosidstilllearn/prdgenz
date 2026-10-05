@@ -2,8 +2,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@prdgenz/ui'
 
 /**
- * Page header. The eyebrow is a mono clause label, the way a real spec sheet
- * marks a section. The title is display serif.
+ * Page header. The title leads, with context and page actions alongside it.
  */
 export function PageHeader({
   eyebrow,
@@ -19,14 +18,14 @@ export function PageHeader({
   className?: string
 }) {
   return (
-    <div className={cn('mb-8 flex flex-wrap items-start justify-between gap-4', className)}>
+    <div className={cn('workspace-page-header mb-8 flex flex-wrap items-start justify-between gap-4', className)}>
       <div className="min-w-0 space-y-2">
         {eyebrow ? (
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-sm font-medium text-muted-foreground">
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="text-3xl leading-tight sm:text-4xl">{title}</h1>
+        <h1 className="text-3xl font-medium leading-tight tracking-tight sm:text-5xl">{title}</h1>
         {description ? (
           <div className="max-w-prose text-sm leading-relaxed text-muted-foreground">
             {description}

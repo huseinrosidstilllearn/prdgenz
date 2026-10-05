@@ -1,37 +1,32 @@
-import Link from 'next/link'
-import { cn } from '@prdgenz/ui'
+import Link from "next/link";
+import { cn, Icon } from "@prdgenz/ui";
 
-/**
- * The wordmark. "PRD" is set in the display serif, "GenZ" in the mono, because
- * the two halves of the name mean two different things: the document, and the
- * machine that writes it.
- */
 export function Wordmark({
-  href = '/',
+  href = "/",
   className,
   suffix,
 }: {
-  href?: string
-  className?: string
-  suffix?: string
+  href?: string;
+  className?: string;
+  suffix?: string;
 }) {
   return (
     <Link
       href={href}
       className={cn(
-        'inline-flex items-baseline gap-1.5 text-lg leading-none',
-        className
+        "inline-flex items-center gap-2.5 text-lg font-bold leading-none tracking-tight",
+        className,
       )}
     >
-      <span className="font-display">PRD</span>
-      <span className="font-mono text-[0.8em] font-medium tracking-tight text-primary">
-        GenZ
+      <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary-soft text-primary-soft-foreground">
+        <Icon name="document" className="h-5 w-5" />
       </span>
+      <span>PRD GenZ</span>
       {suffix ? (
         <span className="ml-1 font-mono text-[0.625rem] uppercase tracking-widest text-muted-foreground">
           {suffix}
         </span>
       ) : null}
     </Link>
-  )
+  );
 }

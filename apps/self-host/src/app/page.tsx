@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { AppShell, EmptyState, PageHeader, PRDList } from '@prdgenz/app'
+import { AppShell, PageHeader, PRDList, WorkspaceStart } from '@prdgenz/app'
 import { Badge, Button } from '@prdgenz/ui'
 import { prisma } from '@/lib/prisma'
 import { configuredProviderIds, defaultProvider } from '@/lib/env'
@@ -14,6 +14,7 @@ export default async function Home() {
 
   return (
     <AppShell
+      maxWidth="4xl"
       nav={[
         { href: '/', label: 'PRDs', active: true },
         { href: '/prd/new', label: 'New PRD' },
@@ -44,15 +45,7 @@ export default async function Home() {
       />
 
       {prds.length === 0 ? (
-        <EmptyState
-          title="No PRDs yet"
-          body="Write down the idea you have in mind. The model will turn it into a structured document you can iterate on."
-          action={
-            <Button asChild>
-              <Link href="/prd/new">Create your first PRD</Link>
-            </Button>
-          }
-        />
+        <WorkspaceStart providerConfigured={configured.length > 0} />
       ) : (
         <PRDList
           items={prds.map((prd) => ({
@@ -68,4 +61,3 @@ export default async function Home() {
     </AppShell>
   )
 }
-

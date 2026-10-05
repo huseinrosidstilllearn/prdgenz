@@ -129,7 +129,7 @@ export function Chat() {
     }
   }
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col px-6 py-10">
+    <div className="mx-auto flex w-full max-w-3xl flex-col">
       <header className="mb-6 space-y-4">
         <div>
           <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">
@@ -144,7 +144,7 @@ export function Chat() {
         {setup.config}
       </header>
 
-      <div className="spec-rule flex min-h-0 flex-1 flex-col pl-6">
+      <div className="generation-panel flex min-h-0 flex-1 flex-col">
         <div className="flex-1 space-y-4 overflow-y-auto">
           {messages.length === 0 ? (
             <p className="py-8 text-sm text-muted-foreground">

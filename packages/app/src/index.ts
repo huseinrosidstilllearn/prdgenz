@@ -1,4 +1,5 @@
 export { AppShell, type NavItem } from './shell/app-shell'
+export { WorkspaceLoading } from './shell/workspace-loading'
 export { PageHeader } from './shell/page-header'
 export { Wordmark } from './shell/wordmark'
 export { EmptyState, ErrorState } from './shell/states'
@@ -9,6 +10,7 @@ export { Landing } from './marketing/landing'
 export { SpecPanel } from './marketing/spec-panel'
 
 export { ModeChooser } from './prd/mode-chooser'
+export { WorkspaceStart } from './prd/workspace-start'
 export { PRDList, formatDate, type PRDListItem } from './prd/prd-list'
 export { ProjectList, type ProjectListItem } from './prd/project-list'
 export { PRDActions, VersionSidebar, DeletePRDButton, type PRDActionsProps } from './prd/prd-actions'

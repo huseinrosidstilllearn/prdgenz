@@ -93,7 +93,7 @@ export function OneShot({ projectId = "", onProjectIdChange }: OneShotProps) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-10">
+    <div className="mx-auto w-full max-w-2xl">
       <header className="mb-8">
         <p className="mb-2 font-mono text-xs uppercase tracking-wide text-muted-foreground">
           Single pass
@@ -104,7 +104,7 @@ export function OneShot({ projectId = "", onProjectIdChange }: OneShotProps) {
         </p>
       </header>
 
-      <div className="spec-rule space-y-6 pl-6">
+      <div className="generation-panel space-y-6">
         {setup.config}
 
         <div className="space-y-2">

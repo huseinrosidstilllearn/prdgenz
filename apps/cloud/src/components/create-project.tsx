@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Label } from "@prdgenz/ui";
 
@@ -10,37 +11,52 @@ export function CreateProjectButton() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  async function create() {
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (open && !dialog?.open) dialog?.showModal();
+    if (!open && dialog?.open) dialog.close();
+  }, [open]);
+
+  async function create(event: FormEvent) {
+    event.preventDefault();
+    if (loading) return;
     if (!name.trim()) {
       setError("Project name is required.");
       return;
     }
     setLoading(true);
     setError(null);
-    const res = await fetch("/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim() }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      setError(data?.error ?? "Failed to create project.");
-      return;
+    try {
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error ?? "Failed to create project.");
+        return;
+      }
+      setOpen(false);
+      setName("");
+      router.refresh();
+    } catch {
+      setError("Could not connect. Check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-    setOpen(false);
-    setName("");
-    router.refresh();
   }
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>New Project</Button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm space-y-4 rounded-xl border bg-card p-6 shadow-lg">
-            <h2 className="text-lg font-semibold">New Project</h2>
+      <Button variant="outline" onClick={() => { setError(null); setOpen(true); }}>New Project</Button>
+      <dialog ref={dialogRef} aria-labelledby="create-project-title"
+        onCancel={() => setOpen(false)} onClose={() => setOpen(false)}
+        className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-lg border bg-card p-6 text-foreground backdrop:bg-foreground/40">
+          <form onSubmit={create} className="space-y-4">
+            <h2 id="create-project-title" className="text-lg font-semibold">New Project</h2>
             <div className="space-y-2">
               <Label htmlFor="project-name">Name</Label>
               <Input
@@ -49,7 +65,6 @@ export function CreateProjectButton() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Mobile App Revamp"
                 autoFocus
-                onKeyDown={(e) => e.key === "Enter" && create()}
               />
             </div>
             {error && (
@@ -59,19 +74,19 @@ export function CreateProjectButton() {
             )}
             <div className="flex justify-end gap-2">
               <Button
+                type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={loading}
               >
                 Cancel
               </Button>
-              <Button onClick={create} disabled={loading}>
+              <Button type="submit" disabled={loading}>
                 {loading ? "Creating…" : "Create"}
               </Button>
             </div>
-          </div>
-        </div>
-      )}
+          </form>
+      </dialog>
     </>
   );
 }
