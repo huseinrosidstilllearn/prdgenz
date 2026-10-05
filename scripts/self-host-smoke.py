@@ -1,4 +1,5 @@
 import argparse
+import http.client
 import json
 import time
 import urllib.error
@@ -22,7 +23,7 @@ def wait_for_startup(base_url):
     while True:
         try:
             return request(base_url, "/api/prd")
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, ConnectionError, TimeoutError, http.client.RemoteDisconnected):
             if time.monotonic() >= deadline:
                 raise
             time.sleep(1)
