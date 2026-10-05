@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-import { PrismaClient as WorkerPrismaClient } from '@prisma/client/wasm'
+import { PrismaClient as WorkerPrismaClient } from '@prisma/client/wasm.js'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 const globalForPrisma = globalThis as unknown as {

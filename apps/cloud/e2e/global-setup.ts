@@ -66,7 +66,7 @@ export default async function globalSetup(): Promise<void> {
   // interfere across repeated runs against a reused database.
   const promote = spawnSync(
     'pnpm',
-    ['exec', 'prisma', 'db', 'execute', '--stdin'],
+    ['exec', 'prisma', 'db', 'execute', '--schema', 'prisma/schema.prisma', '--stdin'],
     {
       cwd: process.cwd(),
       env: { ...process.env, DATABASE_URL: dbUrl },

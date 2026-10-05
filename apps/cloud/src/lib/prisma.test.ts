@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('@prisma/client', () => ({ PrismaClient: mocks.client }))
-vi.mock('@prisma/client/wasm', () => ({ PrismaClient: mocks.workerClient }))
+vi.mock('@prisma/client/wasm.js', () => ({ PrismaClient: mocks.workerClient }))
 vi.mock('@prisma/adapter-pg', () => ({ PrismaPg: mocks.adapter }))
 vi.mock('@opennextjs/cloudflare', () => ({ getCloudflareContext: mocks.context }))
 
