@@ -1,26 +1,44 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
+import { PrismaClient as WorkerPrismaClient } from '@prisma/client/wasm'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
-  // Pool cached at module level so hot-reload/dev reuse the same connections.
-  pgPool?: import('pg').Pool
 }
+const requestClients = new WeakMap<object, PrismaClient>()
 
-// Cloudflare Workers path: pg driver adapter over a small connection pool
-// (no Node TCP engine — Supabase session pooler, IPv4). Local dev / Vercel:
-// default Prisma engine, unchanged behavior.
-const needsAdapter = process.env.CF_WORKERS === '1' && !!process.env.DATABASE_URL
-
-if (needsAdapter) {
-  globalForPrisma.pgPool ??= new (require('pg').Pool)({
-    connectionString: process.env.DATABASE_URL,
-    max: 1,
+function createClient(connectionString: string | undefined, max: number) {
+  const adapter = new PrismaPg({
+    connectionString,
+    max,
+    ...(max === 1 ? { maxUses: 1 } : {}),
+    connectionTimeoutMillis: 10_000,
   })
+  const Client = max === 1 ? WorkerPrismaClient : PrismaClient
+  return new Client({ adapter })
 }
 
-export const prisma = globalForPrisma.prisma ?? (needsAdapter && globalForPrisma.pgPool
-  ? new PrismaClient({ adapter: new PrismaPg(globalForPrisma.pgPool) })
-  : new PrismaClient())
+function currentClient() {
+  if (process.env.CF_WORKERS === '1') {
+    const context = getCloudflareContext()
+    let client = requestClients.get(context.ctx)
+    if (!client) {
+      const bindings = context.env as unknown as { DATABASE_URL?: string }
+      client = createClient(bindings.DATABASE_URL ?? process.env.DATABASE_URL, 1)
+      requestClients.set(context.ctx, client)
+    }
+    return client
+  }
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+  globalForPrisma.prisma ??= createClient(process.env.DATABASE_URL, 5)
+  return globalForPrisma.prisma
+}
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, property) {
+    const client = currentClient()
+    const value = Reflect.get(client, property, client)
+    return typeof value === 'function' ? value.bind(client) : value
+  },
+})
